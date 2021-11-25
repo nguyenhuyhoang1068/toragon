@@ -1,0 +1,3 @@
+#. Test en_EN.po
+msgid "Pre-Order"
+msgstr "Đặt hàng trước"

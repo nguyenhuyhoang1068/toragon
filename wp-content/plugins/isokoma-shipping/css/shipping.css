@@ -1,0 +1,41 @@
+.woocommerce-checkout ul#shipping_method {
+    margin: 0;
+    padding: 0;
+}
+
+#stripe-cvc-element,
+#stripe-exp-element,
+.stripe-exp-element,
+.stripe-cvc-element,
+.stripe-card-group {
+    width: 100%;
+}
+
+.woocommerce-shipping-fields h3#ship-to-different-address {
+    display: block;
+    overflow: hidden;
+}
+
+.woocommerce-form-login-toggle .woocommerce-info a {
+    color: #6d6d6d;
+}
+
+#shipping_method li {
+    margin-bottom: .2360828548em;
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    clear: both;
+    overflow: hidden;
+    width: 100%;
+}
+
+#shipping_method li input {
+    float: left;
+    margin-top: 5px;
+}
+
+.cart-collaterals .woocommerce-shipping-totals.shipping,
+.cart_totals.calculated_shipping .woocommerce-shipping-totals.shipping {
+    display: none;
+}

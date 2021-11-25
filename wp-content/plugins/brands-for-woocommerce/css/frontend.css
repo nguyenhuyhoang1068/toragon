@@ -1,0 +1,115 @@
+.berocket_brand_post_image {
+    margin: 5px;
+    width: 35%;
+}
+.berocket_brand_description {
+    max-width: 100%;
+    margin: 1em 0;
+    text-align: justify;
+}
+.berocket_brand_description img {
+    box-sizing: border-box;
+    padding: 1%;
+}
+.br_widget_brand_element {
+    float: left;
+    margin-right: 1%;
+    margin-top: 0.3em;
+    text-align:center;
+}
+.br_widget_brand_element_slider {
+    float: left;
+}
+.br_widget_brand_element_slider a {
+    display: block;
+    text-align: center;
+}
+div.berocket_brand_name_letters a {
+    display: inline-block;
+    padding: 0.5em;
+    margin-right: 0.25em;
+    border: 0;
+}
+.br_after_letter.vertical {
+    clear: both;
+}
+.br_brand_letter_block .br_brand_letter_element img,
+.br_brand_letter_element span {
+    display: inline-block;
+}
+.br_brand_letter_block .br_brand_letter_element a {
+    display: inline-block;
+}
+.br_brand_letter_element span {
+    padding: 0 0.3em;
+    text-indent: 0;
+}
+.br_brand_letter_element.pos_3 {
+    float: left;
+    padding: 1em;
+}
+.br_brand_letter_element.pos_3 span {
+    display: block;
+    text-align:center;
+}
+.br_brand_letter_block .br_brand_letter_element.pos_3 img {
+    display:block;
+    margin: auto;
+}
+.brcs_slider_brands ul li .br_widget_brand_element_slider {
+    margin-left: 0.5%;
+    margin-right: 0.5%;
+}
+.br_widget_brand_element_slider .brand_slider_image {
+    text-align: center;
+}
+.br_widget_brand_element_slider .brand_slider_image img {
+    display: inline-block;
+}
+div.unslider a.unslider-arrow.next,
+div.unslider a.unslider-arrow.prev {
+    text-decoration: none;
+}
+.unslider-arrow {
+    display: block;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    right: -50px;
+    left: auto;
+    margin-top: -10px;
+    overflow: hidden;
+    background: rgba(0,0,0,.2) no-repeat 50% 50%;
+    font: normal normal normal 14px/1 FontAwesome;
+    background-size: 7px 11px;
+    border-radius: 32px;
+    opacity: .6;
+    transition: opacity .2s;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 20px;
+}
+.unslider-arrow.prev:after{
+    content: "\f053";
+}
+.unslider-arrow.next:after{
+    content: "\f054";
+}
+.unslider{
+    position: relative;
+}
+.unslider .brcs_slider {
+    margin: 0 20px;
+}
+.unslider .unslider-arrow.prev {
+    left: 0;
+}
+.unslider .unslider-arrow.next {
+    right: 0;
+}
+.unslider .unslider-nav {
+    display:none;
+}
+.unslider .brcs_slider_brands .unslider-wrap li {
+    clear: none;
+}

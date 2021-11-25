@@ -1,0 +1,62 @@
+.rpt-countdown-container { 
+	display: block;
+	padding: 0.5em;
+	font-size: 1em;
+	text-align: center;
+}
+
+.rpt-countdown-container p {
+	margin-bottom: 0;
+	font-weight: 600;
+}
+
+.rpt-countdown .countdown-section {
+	display: inline-block;
+	padding: 0.5em;
+}
+
+.rpt-countdown .countdown-period {
+	display: block;
+}
+
+.rpt-countdown .countdown-amount {
+	font-size: 1.5em;
+	display: block;
+	font-weight: 600;
+	border-bottom: 1px solid rgba( 0, 0, 0, 0.15 );
+}
+
+.rpt-countdown-container.new-layout {
+	display: flex;
+	padding: 10px;
+	justify-content: space-between;
+	background: rgba( 0, 0, 0, 0.05);
+	border: 1px solid rgba(0,0,0,0.1);
+	margin-bottom: 10px;
+	font-size: 1.2em;
+}
+
+.rpt-countdown-price {
+	font-weight: 600;
+	border-left: 1px solid rgba(0,0,0,0.1);
+	margin-top: -10px;
+	margin-bottom: -10px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	padding-left: 10px;
+}
+
+.rpt-loop-item .rpt-countdown-container {
+	font-size: .75em;
+}
+
+.rpt-loop-item .rpt-countdown-container .countdown-row {
+	display: flex;
+	justify-content: center;
+}
+
+.rpt-loop-item .rpt-countdown-container .rpt-countdown .countdown-section {
+	padding: 0.25em;
+}
+
+

@@ -1,0 +1,597 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: WooCommerce Product Brands\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-05-20 13:50+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.2.2; wp-5.2"
+
+#: main.php:382
+msgid "Add New Brand"
+msgstr ""
+
+#: addons/show_brands/show_brands_include.php:40
+#: addons/show_brands/show_brands_include.php:109
+msgid "After Add to cart button"
+msgstr ""
+
+#: addons/show_brands/show_brands_include.php:37
+#: addons/show_brands/show_brands_include.php:106
+msgid "After Image"
+msgstr ""
+
+#: addons/show_brands/show_brands_include.php:39
+#: addons/show_brands/show_brands_include.php:108
+msgid "After Price"
+msgstr ""
+
+#: addons/show_brands/show_brands_include.php:38
+#: addons/show_brands/show_brands_include.php:107
+msgid "After Title"
+msgstr ""
+
+#: templates/alphabet.php:94
+msgid "All"
+msgstr ""
+
+#: main.php:377 main.php:945
+msgid "All Brands"
+msgstr ""
+
+#: includes/widget-links.php:104
+msgid "All brands"
+msgstr ""
+
+#: main.php:678
+msgid "Any brand"
+msgstr ""
+
+#: includes/visual-composer.php:200 includes/visual-composer.php:252
+msgid "Ascending"
+msgstr ""
+
+#: includes/divi-builder.php:287
+msgid "ascending"
+msgstr ""
+
+#: main.php:791
+msgid "Autoplay"
+msgstr ""
+
+#: main.php:797
+msgid "Autoplay Speed"
+msgstr ""
+
+#: addons/show_brands/show_brands_include.php:36
+#: addons/show_brands/show_brands_include.php:105
+msgid "Before all"
+msgstr ""
+
+#. Author of the plugin
+#: includes/visual-composer.php:11 includes/visual-composer.php:73
+#: includes/visual-composer.php:161 includes/visual-composer.php:213
+msgid "BeRocket"
+msgstr ""
+
+#: includes/visual-composer.php:141 includes/widget-links.php:126
+#: includes/divi-builder.php:209
+msgid "Border color"
+msgstr ""
+
+#: includes/visual-composer.php:147 includes/widget-links.php:132
+#: includes/divi-builder.php:213
+msgid "Border width"
+msgstr ""
+
+#: main.php:375
+msgid "Brand"
+msgstr ""
+
+#: includes/divi-builder.php:371
+msgid "Brand ID"
+msgstr ""
+
+#: includes/visual-composer.php:166 includes/visual-composer.php:218
+msgid "Brand ID(s)"
+msgstr ""
+
+#: includes/divi-builder.php:261
+msgid "brand ID(s)"
+msgstr ""
+
+#: includes/visual-composer.php:211
+msgid "Brand Info"
+msgstr ""
+
+#: includes/divi-builder.php:350
+msgid "Brand info"
+msgstr ""
+
+#: includes/divi-builder.php:309
+msgid "Brand info for product page"
+msgstr ""
+
+#: includes/visual-composer.php:129 includes/widget-links.php:112
+#: includes/divi-builder.php:200
+msgid "Brand name"
+msgstr ""
+
+#: addons/show_brands/show_brands_include.php:31
+#: addons/show_brands/show_brands_include.php:101
+msgid "Brand Position"
+msgstr ""
+
+#: includes/visual-composer.php:159
+msgid "Brand Products"
+msgstr ""
+
+#: includes/visual-composer.php:172 includes/visual-composer.php:224
+msgid "Brand slug(s)"
+msgstr ""
+
+#: includes/divi-builder.php:265
+msgid "brand slug(s)"
+msgstr ""
+
+#: includes/divi-builder.php:391
+msgid "Brand thumbnail"
+msgstr ""
+
+#: main.php:372 main.php:374 main.php:937
+msgid "Brands"
+msgstr ""
+
+#: main.php:399 templates/permalink_option.php:9
+msgid "brands"
+msgstr ""
+
+#. Description of the plugin
+msgid ""
+"Brands are a guarantee for quality, they assure product recognition in "
+"customers. WooCommerce Product Brands will help you to showcase them."
+msgstr ""
+
+#: includes/visual-composer.php:9 includes/divi-builder.php:6
+msgid "Brands by Name"
+msgstr ""
+
+#: includes/visual-composer.php:71 includes/divi-builder.php:114
+msgid "Brands List"
+msgstr ""
+
+#: includes/visual-composer.php:114 includes/widget-links.php:99
+#: includes/divi-builder.php:189
+msgid "Brands per row"
+msgstr ""
+
+#: includes/divi-builder.php:238
+msgid "Brands Products"
+msgstr ""
+
+#: main.php:815
+msgid "Brands to Scroll"
+msgstr ""
+
+#: includes/divi-builder.php:78
+msgid "Color"
+msgstr ""
+
+#: includes/visual-composer.php:40 includes/visual-composer.php:178
+#: includes/visual-composer.php:230 includes/widget-alphabet.php:72
+#: includes/divi-builder.php:56
+msgid "Columns"
+msgstr ""
+
+#: includes/divi-builder.php:269
+msgid "count of columns for product list"
+msgstr ""
+
+#: includes/visual-composer.php:130 includes/widget-links.php:113
+#: includes/divi-builder.php:201
+msgid "Count of products"
+msgstr ""
+
+#: main.php:847
+msgid "Custom CSS"
+msgstr ""
+
+#: includes/divi-builder.php:326 includes/divi-builder.php:367
+#: includes/divi-builder.php:417 includes/divi-builder.php:421
+msgid "Data type"
+msgstr ""
+
+#: includes/visual-composer.php:189 includes/visual-composer.php:241
+msgid "Date"
+msgstr ""
+
+#: includes/widget-links.php:129
+msgid "Default"
+msgstr ""
+
+#: includes/visual-composer.php:199 includes/visual-composer.php:251
+msgid "Descending"
+msgstr ""
+
+#: includes/divi-builder.php:288
+msgid "descending"
+msgstr ""
+
+#: main.php:828
+msgid "Disable Font Awesome"
+msgstr ""
+
+#: main.php:809
+msgid "Display Arrows"
+msgstr ""
+
+#: addons/show_brands/show_brands_include.php:63
+#: addons/show_brands/show_brands_include.php:132
+msgid "Display As Link"
+msgstr ""
+
+#: includes/visual-composer.php:110 includes/divi-builder.php:181
+msgid "Display as slider"
+msgstr ""
+
+#: addons/show_brands/show_brands_include.php:24
+#: addons/show_brands/show_brands_include.php:94
+msgid "Display Brand"
+msgstr ""
+
+#: includes/widget-description.php:75
+msgid "Display description"
+msgstr ""
+
+#: main.php:780
+msgid "Display description on brand page"
+msgstr ""
+
+#: includes/visual-composer.php:18 includes/widget-links.php:82
+#: includes/widget-alphabet.php:58 includes/divi-builder.php:32
+#: includes/divi-builder.php:153
+msgid "Display image"
+msgstr ""
+
+#: includes/visual-composer.php:98 includes/widget-links.php:89
+#: includes/widget-alphabet.php:69 includes/divi-builder.php:48
+#: includes/divi-builder.php:165
+msgid "Display name"
+msgstr ""
+
+#: includes/widget-description.php:72
+msgid "Display thumbnails"
+msgstr ""
+
+#: main.php:757
+msgid "Display thumnail on brand page"
+msgstr ""
+
+#: includes/widget-description.php:69
+msgid "Display title"
+msgstr ""
+
+#: main.php:832
+msgid ""
+"Don't loading css file for Font Awesome on site front end. Use it only if "
+"you doesn't uses Font Awesome icons in widgets or you have Font Awesome in "
+"your theme."
+msgstr ""
+
+#: main.php:380
+msgid "Edit Brand"
+msgstr ""
+
+#: main.php:692
+msgid "Exclude brands"
+msgstr ""
+
+#: main.php:839
+msgid "Font Awesome 4"
+msgstr ""
+
+#: main.php:840
+msgid "Font Awesome 5"
+msgstr ""
+
+#: main.php:835
+msgid "Font Awesome Version"
+msgstr ""
+
+#: includes/divi-builder.php:173
+msgid "Hide brands without products"
+msgstr ""
+
+#: includes/widget-links.php:92
+msgid "Hide empty"
+msgstr ""
+
+#: includes/visual-composer.php:86
+msgid "Hide image"
+msgstr ""
+
+#: includes/visual-composer.php:24
+msgid "Hide name"
+msgstr ""
+
+#: includes/visual-composer.php:60 includes/widget-alphabet.php:97
+#: includes/divi-builder.php:74 includes/divi-builder.php:82
+msgid "Horizontal"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "http://berocket.com"
+msgstr ""
+
+#. URI of the plugin
+msgid "https://wordpress.org/plugins/brands-for-woocommerce/"
+msgstr ""
+
+#: includes/visual-composer.php:16 includes/visual-composer.php:84
+#: addons/show_brands/show_brands_include.php:49
+#: addons/show_brands/show_brands_include.php:118
+msgid "Image"
+msgstr ""
+
+#: includes/widget-description.php:82
+msgid "Image align"
+msgstr ""
+
+#: addons/show_brands/show_brands_include.php:78
+#: addons/show_brands/show_brands_include.php:146
+msgid "Image custom CSS"
+msgstr ""
+
+#: includes/visual-composer.php:90 includes/divi-builder.php:161
+msgid "Image height"
+msgstr ""
+
+#: includes/widget-description.php:78
+#: addons/show_brands/show_brands_include.php:70
+#: addons/show_brands/show_brands_include.php:139
+msgid "Image width"
+msgstr ""
+
+#: main.php:803
+msgid "Infinite"
+msgstr ""
+
+#: main.php:774 includes/widget-description.php:87
+msgid "Left"
+msgstr ""
+
+#: includes/divi-builder.php:429
+msgid "left"
+msgstr ""
+
+#: includes/visual-composer.php:28 includes/widget-links.php:85
+#: includes/widget-alphabet.php:61 includes/divi-builder.php:40
+msgid "Maximum image height"
+msgstr ""
+
+#: includes/visual-composer.php:34 includes/widget-alphabet.php:65
+#: includes/divi-builder.php:44
+msgid "Maximum image width"
+msgstr ""
+
+#: includes/visual-composer.php:190 includes/visual-composer.php:242
+msgid "Modified date"
+msgstr ""
+
+#: includes/visual-composer.php:22 includes/visual-composer.php:96
+#: addons/show_brands/show_brands_include.php:55
+msgid "Name"
+msgstr ""
+
+#: includes/visual-composer.php:49 includes/widget-alphabet.php:80
+#: includes/divi-builder.php:63
+msgid "Name after image"
+msgstr ""
+
+#: includes/visual-composer.php:50 includes/widget-alphabet.php:81
+#: includes/divi-builder.php:64
+msgid "Name before image"
+msgstr ""
+
+#: addons/show_brands/show_brands_include.php:85
+#: addons/show_brands/show_brands_include.php:153
+msgid "Name custom CSS"
+msgstr ""
+
+#: includes/visual-composer.php:51 includes/widget-alphabet.php:82
+#: includes/divi-builder.php:65
+msgid "Name under image"
+msgstr ""
+
+#: main.php:383
+msgid "New Brand Name"
+msgstr ""
+
+#: main.php:693
+msgid "No brands"
+msgstr ""
+
+#: main.php:773 includes/widget-description.php:86
+#: includes/divi-builder.php:428
+msgid "none"
+msgstr ""
+
+#: includes/visual-composer.php:120 includes/widget-links.php:103
+#: includes/divi-builder.php:193
+msgid "Number of brands"
+msgstr ""
+
+#: includes/widget-links.php:108
+msgid "Order brands by"
+msgstr ""
+
+#: includes/visual-composer.php:126 includes/visual-composer.php:184
+#: includes/visual-composer.php:196 includes/visual-composer.php:236
+#: includes/visual-composer.php:248 includes/divi-builder.php:197
+#: includes/divi-builder.php:273
+msgid "Order By"
+msgstr ""
+
+#: includes/divi-builder.php:278
+msgid "Order by date"
+msgstr ""
+
+#: includes/divi-builder.php:279
+msgid "Order by last modified date"
+msgstr ""
+
+#: includes/divi-builder.php:277
+msgid "Order by post name (post slug)"
+msgstr ""
+
+#: includes/divi-builder.php:276
+msgid "Order by title"
+msgstr ""
+
+#: includes/divi-builder.php:284
+msgid "Order Type"
+msgstr ""
+
+#: includes/visual-composer.php:135 includes/widget-links.php:122
+#: includes/divi-builder.php:205
+msgid "Padding around brands"
+msgstr ""
+
+#: main.php:378
+msgid "Parent Brand"
+msgstr ""
+
+#: main.php:379
+msgid "Parent Brand:"
+msgstr ""
+
+#: includes/visual-composer.php:46 includes/widget-alphabet.php:76
+#: includes/divi-builder.php:60 includes/divi-builder.php:425
+msgid "Position"
+msgstr ""
+
+#: includes/visual-composer.php:188 includes/visual-composer.php:240
+msgid "Post name (post slug)"
+msgstr ""
+
+#: main.php:677
+msgid "Product brands"
+msgstr ""
+
+#: includes/divi-builder.php:330 includes/divi-builder.php:413
+msgid "Product ID"
+msgstr ""
+
+#: main.php:688
+msgid "Products with these brands will be discounted"
+msgstr ""
+
+#: main.php:704
+msgid "Products with these brands will not be discounted"
+msgstr ""
+
+#: includes/visual-composer.php:191 includes/visual-composer.php:243
+msgid "Random"
+msgstr ""
+
+#: includes/divi-builder.php:280
+msgid "Random order"
+msgstr ""
+
+#: main.php:775 includes/widget-description.php:88
+msgid "Right"
+msgstr ""
+
+#: includes/divi-builder.php:430
+msgid "right"
+msgstr ""
+
+#: main.php:376
+msgid "Search Brands"
+msgstr ""
+
+#: main.php:665
+msgid "Select a brand"
+msgstr ""
+
+#: main.php:860
+msgid "Shortcodes"
+msgstr ""
+
+#: includes/visual-composer.php:104
+msgid "Show brands without products"
+msgstr ""
+
+#: includes/visual-composer.php:102
+msgid "Show empty"
+msgstr ""
+
+#: includes/widget-alphabet.php:83 includes/divi-builder.php:66
+msgid "Show only on letter click"
+msgstr ""
+
+#: includes/visual-composer.php:108 includes/widget-links.php:95
+msgid "Slider"
+msgstr ""
+
+#: main.php:821
+msgid "Stop Autoscroll on Focus"
+msgstr ""
+
+#: includes/visual-composer.php:56 includes/widget-alphabet.php:92
+#: includes/divi-builder.php:70
+msgid "Style"
+msgstr ""
+
+#: addons/show_brands/show_brands_include.php:124
+msgid "Text"
+msgstr ""
+
+#: main.php:562 main.php:572
+msgid "Thumbnail"
+msgstr ""
+
+#: main.php:769
+msgid "Thumbnail align"
+msgstr ""
+
+#: main.php:763
+msgid "Thumbnail width"
+msgstr ""
+
+#: includes/visual-composer.php:78 includes/visual-composer.php:187
+#: includes/visual-composer.php:239 includes/divi-builder.php:149
+msgid "Title"
+msgstr ""
+
+#: main.php:381
+msgid "Update Brand"
+msgstr ""
+
+#: main.php:843
+msgid ""
+"Version of Font Awesome that will be used on front end. Please select "
+"version that you have in your theme"
+msgstr ""
+
+#: includes/visual-composer.php:59 includes/widget-alphabet.php:96
+#: includes/divi-builder.php:73 includes/divi-builder.php:81
+msgid "Vertical"
+msgstr ""
+
+#: addons/show_brands/show_brands_include.php:44
+#: addons/show_brands/show_brands_include.php:113
+msgid "What to display"
+msgstr ""
+
+#. Name of the plugin
+msgid "WooCommerce Product Brands"
+msgstr ""

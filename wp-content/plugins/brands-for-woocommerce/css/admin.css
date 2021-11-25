@@ -1,0 +1,23 @@
+.colorpicker_field_brand {
+    width: 2em;
+    height: 1.5em;
+    border: 1px solid black;
+}
+.br_brand_widget_color .colorpicker_field_brand {
+    display: inline-block!important;
+    height: 26px;
+}
+.br_brand_widget_color .brand_label {
+    float: left;
+    height: 28px;
+    line-height: 28px;
+    padding-right: 1em;
+}
+.br_shortcode_info ul{
+    margin-left: 2em;
+    margin-bottom: 1em;
+    margin-top: 0.3em;
+}
+.br_brands_image img {
+    max-width: 100%;
+}
