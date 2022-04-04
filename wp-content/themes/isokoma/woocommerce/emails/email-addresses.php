@@ -22,28 +22,62 @@ if ( ! defined( 'ABSPATH' ) ) {
 $text_align = is_rtl() ? 'right' : 'left';
 $address    = $order->get_formatted_billing_address();
 $shipping   = $order->get_formatted_shipping_address();
-
-?><table id="addresses" cellspacing="0" cellpadding="0" style="width: 100%; vertical-align: top; margin-bottom: 40px; padding:0;" border="0">
-	<tr>
-		<td style="text-align:<?php echo esc_attr( $text_align ); ?>; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif; border:0; padding:0;" valign="top" width="50%">
-			<h2><?php esc_html_e( 'Billing address', 'woocommerce' ); ?></h2>
-
-			<address class="address">
-				<?php echo wp_kses_post( $address ? $address : esc_html__( 'N/A', 'woocommerce' ) ); ?>
-				<?php if ( $order->get_billing_phone() ) : ?>
-					<br/><?php echo wc_make_phone_clickable( $order->get_billing_phone() ); ?>
-				<?php endif; ?>
-				<?php if ( $order->get_billing_email() ) : ?>
-					<br/><?php echo esc_html( $order->get_billing_email() ); ?>
-				<?php endif; ?>
-			</address>
-		</td>
-		<?php if ( ! wc_ship_to_billing_address_only() && $order->needs_shipping_address() && $shipping ) : ?>
-			<td style="text-align:<?php echo esc_attr( $text_align ); ?>; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif; padding:0;" valign="top" width="50%">
-				<h2><?php esc_html_e( 'Shipping address', 'woocommerce' ); ?></h2>
-
-				<address class="address"><?php echo wp_kses_post( $shipping ); ?></address>
-			</td>
-		<?php endif; ?>
-	</tr>
-</table>
+$language = get_post_meta( $order->id, 'tor_order_translate', true);
+?> 
+<tr><td height="20"></td></tr>
+<?php if ($language == 'vi') { ?>
+<tr>
+  <td>
+    <table cellspacing="0" cellpadding="0" style="width: 100%; vertical-align: top; padding:0;" border="0">
+      <tr>
+        <td style="text-align:left; color: #ffffff !important; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif; border:0; padding:0px;" valign="top" width="50%">
+          <h2 style="font-size:16px; color: #fbcf1f !important;">Địa chỉ thanh toán</h2>
+          <address class="address" style="color: #ffffff !important;">     
+            <?php echo wp_kses_post( $address ? $address : esc_html__( 'N/A', 'woocommerce' ) ); ?>
+            <?php if ( $order->get_billing_phone() ) : ?>
+              <br/> <?php echo wc_make_phone_clickable( $order->get_billing_phone() ); ?>
+            <?php endif; ?>
+            <?php if ( $order->get_billing_email() ) : ?>
+              <br/><a href="mailto:<?php echo esc_html( $order->get_billing_email() ); ?>"><?php echo esc_html( $order->get_billing_email() ); ?></a>
+            <?php endif; ?>
+          </address>
+        </td>
+        <?php if ( ! wc_ship_to_billing_address_only() && $order->needs_shipping_address() && $shipping ) : ?>
+          <td style="text-align:left; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif; padding:0px;" valign="top" width="50%">
+            <h2 style="font-size:16px; color: #fbcf1f !important;">Địa chỉ giao hàng</h2>
+            <address class="address" style="color: #ffffff !important;"><?php echo wp_kses_post( $shipping ); ?></address>
+          </td>
+        <?php endif; ?>
+      </tr>
+    </table>
+  </td>
+</tr>
+<?php } ?>
+<?php if ($language == 'en_US') { ?>
+  <tr>
+  <td>
+    <table cellspacing="0" cellpadding="0" style="width: 100%; vertical-align: top; padding:0;" border="0">
+      <tr>
+        <td style="text-align:left; color: #ffffff !important; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif; border:0; padding:0px;" valign="top" width="50%">
+          <h2 style="font-size:16px; color: #fbcf1f !important;">Billing address</h2>
+          <address class="address" style="color: #ffffff !important;">     
+            <?php echo wp_kses_post( $address ? $address : esc_html__( 'N/A', 'woocommerce' ) ); ?>
+            <?php if ( $order->get_billing_phone() ) : ?>
+              <br/> <?php echo wc_make_phone_clickable( $order->get_billing_phone() ); ?>
+            <?php endif; ?>
+            <?php if ( $order->get_billing_email() ) : ?>
+              <br/><a href="mailto:<?php echo esc_html( $order->get_billing_email() ); ?>"><?php echo esc_html( $order->get_billing_email() ); ?></a>
+            <?php endif; ?>
+          </address>
+        </td>
+        <?php if ( ! wc_ship_to_billing_address_only() && $order->needs_shipping_address() && $shipping ) : ?>
+          <td style="text-align:left; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif; padding:0px;" valign="top" width="50%">
+            <h2 style="font-size:16px; color: #fbcf1f !important;">Shipping address</h2>
+            <address class="address" style="color: #ffffff !important;"><?php echo wp_kses_post( $shipping ); ?></address>
+          </td>
+        <?php endif; ?>
+      </tr>
+    </table>
+  </td>
+</tr>
+<?php } ?>

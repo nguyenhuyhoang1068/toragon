@@ -3978,7 +3978,7 @@ table {
   border-collapse: separate;
 }
 table.cart td.actions {  
-  background-color: #fcfcfc
+  background-color: #fcfcfc;
   padding: 0;
 }
 table:not( .has-background ) th {

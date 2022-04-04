@@ -45,22 +45,10 @@ class WOOMULTI_CURRENCY_F_Frontend_Location {
 		switch ( $auto_detect ) {
 			case 1:
 				/*Auto select currency*/
-			   
 				/*Do not run if a request is rest api or cron*/
-				if ( $this->settings->getcookie( 'wmc_current_currency' ) 
-				|| WOOMULTI_CURRENCY_F_Data::is_request_to_rest_api() 
-				|| ! empty( $_REQUEST['doing_wp_cron'] )) {
+				if ( $this->settings->getcookie( 'wmc_current_currency' ) || WOOMULTI_CURRENCY_F_Data::is_request_to_rest_api() || ! empty( $_REQUEST['doing_wp_cron'] )) {
 					return;
 				} else {
-					// $record = geoip_detect2_get_info_from_ip($_SERVER['REMOTE_ADDR'], NULL);
-				  // if ('VN' === $record->country->isoCode) {
-				  //   wp_redirect(  $_SERVER['HTTP_HOST'].'/product/arttoys/br-fantasia-mickey-1000/', 301 ); 
-				  //   exit();
-				  // } else {
-				  //   wp_redirect( 'https://isokoma.pcw-sandbox.net/product/arttoys/br-fantasia-mickey-1000/', 301 );
-				  //   exit();
-				  // } 
-					//$record = geoip_detect2_get_info_from_ip($_SERVER['REMOTE_ADDR'], NULL);
 					$detect_ip_currency = $this->detect_ip_currency();
 					if ( $settings->get_enable_currency_by_country() && isset( $detect_ip_currency['country_code'] ) && $detect_ip_currency['country_code'] ) {
 						$currency_detected = '';
@@ -71,7 +59,6 @@ class WOOMULTI_CURRENCY_F_Frontend_Location {
 								break;
 							}
 						}
-					
 						if ( $currency_detected ) {
 							$this->settings->set_current_currency( $currency_detected );
 						} else {

@@ -106,7 +106,15 @@ if ( ! function_exists( 'isokoma_out_of_stock' ) ):
             echo '<div class="woocommerce-product-details__short-description out-of-stock">';
 						echo '<div class="text-danger text-center"><div class="cart">';
 						echo '<button type="submit" name="add-to-cart" value="" class="single_add_to_cart_button button alt">';
-						_e('Hết hàng', 'isokoma');
+						if ($product->single_add_to_cart_text() === 'Pre-Order') {  
+
+							esc_html_e( 'Pre-Order closed', 'isokoma' );
+			  
+						  } else {
+			  
+							_e('Hết hàng', 'isokoma');
+			  
+						  }
 						echo "</button></div></div>";
             echo "</div>";
 					}
@@ -144,23 +152,60 @@ if ( ! function_exists( 'isokoma_get_quantity_availability' ) ):
 		if (!$product->is_type('variable')) {
 			if ($product->get_manage_stock()) {
 				if (!$product->is_in_stock()) {
-					echo "<div class='remaining-out-stock'>".esc_html__(' Hết hàng.', 'isokoma') ."</div>";
-          return;
+					if ($product->single_add_to_cart_text() === 'Pre-Order') {  
+
+						esc_html_e( 'Pre-Order closed.', 'isokoma' );
+			
+					  } else {
+			
+						_e('Hết hàng', 'isokoma');
+			
+					  }
+                return;
+
 				}
 				$stockNum = $product->get_stock_quantity();
 				if ($stockNum <= $low_stock_notify) {          
-          echo "<div class='remaining'><span>";
-          echo $stockNum ;
-          echo "</span> <span>";
-          echo _e('sản phẩm có sẵn', 'isokoma');
-          echo "</span> </div>";		
-				} else {
-          echo "<div class='remaining'><span>";
-          echo $stockNum ;
-          echo "</span> <span>";
-          echo _e('sản phẩm có sẵn', 'isokoma');
-          echo "</span> </div>";
+					echo "<div class='remaining'>";
 
+					if ($product->single_add_to_cart_text() != 'Pre-Order') {  					  
+            if ($stockNum == 1) {              
+              echo "<span>";
+              echo _e('Còn 1 sản phẩm ', 'isokoma');
+              echo "</span>";
+            } else {
+              echo "<span>";
+              echo $stockNum ;
+              echo "</span>";
+              echo "<span>";
+              echo _e(' sản phẩm có sẵn ', 'isokoma');
+              echo "</span>";              
+            }
+		  
+					}      
+		  
+					echo "</div>";   		
+				} else {
+					echo "<div class='remaining'>";        
+
+					if ($product->single_add_to_cart_text() != 'Pre-Order') { 
+		  
+            if ($stockNum == 1) {              
+              echo "<span>";
+              echo _e('Còn 1 sản phẩm ', 'isokoma');
+              echo "</span>";
+            } else {
+              echo "<span>";
+              echo $stockNum ;
+              echo "</span>";
+              echo "<span>";
+              echo _e(' sản phẩm có sẵn ', 'isokoma');
+              echo "</span>";              
+            }
+		  
+					}
+		  
+					echo "</div>";
         }
        
 				// return printf(          

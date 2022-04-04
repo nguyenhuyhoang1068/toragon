@@ -231,41 +231,43 @@ class Points_Rewards_For_WooCommerce_Admin {
 	 * @link https://www.makewebbetter.com/
 	 */
 	public function mwb_wpr_points_update() {
-		check_ajax_referer( 'mwb-wpr-verify-nonce', 'mwb_nonce' );
-		if ( isset( $_POST['points'] ) && is_numeric( $_POST['points'] ) && isset( $_POST['user_id'] ) && isset( $_POST['sign'] ) && isset( $_POST['reason'] ) ) {
+    if( current_user_can('administrator') || current_user_can('shop-manager') ) {
+      check_ajax_referer( 'mwb-wpr-verify-nonce', 'mwb_nonce' );
+      if ( isset( $_POST['points'] ) && is_numeric( $_POST['points'] ) && isset( $_POST['user_id'] ) && isset( $_POST['sign'] ) && isset( $_POST['reason'] ) ) {
 
-			$user_id = sanitize_text_field( wp_unslash( $_POST['user_id'] ) );
-			/* Get the user points*/
-			$get_points = (int) get_user_meta( $user_id, 'mwb_wpr_points', true );
-			/* Get the Input Values*/
-			$points     = sanitize_text_field( wp_unslash( $_POST['points'] ) );
-			$sign       = sanitize_text_field( wp_unslash( $_POST['sign'] ) );
-			$reason     = sanitize_text_field( wp_unslash( $_POST['reason'] ) );
-			/* calculate users points*/
-			if ( '+' === $sign ) {
-				$total_points = $get_points + $points;
-			} elseif ( '-' === $sign ) {
-				if ( $points <= $get_points ) {
-					$total_points = $get_points - $points;
-				} else {
-					$points = $get_points;
-					$total_points = $get_points - $points;
-				}
-			}
-			$data = array(
-				'sign'   => $sign,
-				'reason' => $reason,
-			);
-			/* Update user points*/
-			if ( isset( $total_points ) && $total_points >= 0 ) {
-				update_user_meta( $user_id, 'mwb_wpr_points', $total_points );
-			}
-			/* Update user points*/
-			self::mwb_wpr_update_points_details( $user_id, 'admin_points', $points, $data );
-			/* Send Mail to the user*/
-			$this->mwb_wpr_send_mail_details( $user_id, 'admin_notification', $points );
-			wp_die();
-		}
+        $user_id = sanitize_text_field( wp_unslash( $_POST['user_id'] ) );
+        /* Get the user points*/
+        $get_points = (int) get_user_meta( $user_id, 'mwb_wpr_points', true );
+        /* Get the Input Values*/
+        $points     = sanitize_text_field( wp_unslash( $_POST['points'] ) );
+        $sign       = sanitize_text_field( wp_unslash( $_POST['sign'] ) );
+        $reason     = sanitize_text_field( wp_unslash( $_POST['reason'] ) );
+        /* calculate users points*/
+        if ( '+' === $sign ) {
+          $total_points = $get_points + $points;
+        } elseif ( '-' === $sign ) {
+          if ( $points <= $get_points ) {
+            $total_points = $get_points - $points;
+          } else {
+            $points = $get_points;
+            $total_points = $get_points - $points;
+          }
+        }
+        $data = array(
+          'sign'   => $sign,
+          'reason' => $reason,
+        );
+        /* Update user points*/
+        if ( isset( $total_points ) && $total_points >= 0 ) {
+          update_user_meta( $user_id, 'mwb_wpr_points', $total_points );
+        }
+        /* Update user points*/
+        self::mwb_wpr_update_points_details( $user_id, 'admin_points', $points, $data );
+        /* Send Mail to the user*/
+        $this->mwb_wpr_send_mail_details( $user_id, 'admin_notification', $points, $sign );
+        wp_die();
+      }
+    }
 	}
 
 	/**
@@ -317,6 +319,105 @@ class Points_Rewards_For_WooCommerce_Admin {
 		}
 	}
 
+  public static function mwb_wpr_update_admin_points_detail( $user_id, $type ) {
+   
+		/* Get the points of the points details*/
+		$today_date = date_i18n( 'Y-m-d h:i:sa' );
+		$admin_points = get_user_meta( $user_id, 'points_details', true );
+    $get_points = (int) get_user_meta( $user_id, 'mwb_wpr_points', true );
+    $total_point = 0;
+		if ( isset( $user_id ) && ! empty( $user_id ) ) {
+			/* Check the type of the array*/
+      
+			if ( 'admin_points' == $type && ! empty( $type ) ) {
+      
+        foreach ( $admin_points['admin_points'] as $key => $value ) {          
+          if (mwb_wpr_set_the_wordpress_date_number_one_year($value['date']) <= 0 ) {                   
+            unset( $admin_points['admin_points'][ $key ] );     
+            $total_point +=  (int) $value['admin_points'];
+          }          
+        }
+        $remaining_points = $get_points - $total_point;        
+        /*
+				if ( isset( $admin_points['admin_points'] ) && ! empty( $admin_points['admin_points'] ) ) {
+					$admin_array                    = array();
+					$admin_array                    = array(
+						'admin_points' => $points,
+						'date'         => $today_date,
+						'sign'         => $data['sign'],
+						'reason'       => $data['reason'],
+					);
+					$admin_points['admin_points'][] = $admin_array;
+				} else {
+					if ( ! is_array( $admin_points ) ) {
+						$admin_points = array();
+					}
+					$admin_array                    = array(
+						'admin_points' => $points,
+						'date'         => $today_date,
+						'sign'         => $data['sign'],
+						'reason'       => $data['reason'],
+					);
+					$admin_points['admin_points'][] = $admin_array;
+				}*/
+			}
+      
+			/* Update the points details*/
+			if ( ! empty( $admin_points ) && is_array( $admin_points ) ) {
+        update_user_meta( $user_id, 'mwb_wpr_points', $remaining_points );
+				update_user_meta( $user_id, 'points_details', $admin_points );
+			}
+		}
+	}
+
+  public static function mwb_wpr_update_admin_points_order_total( $user_id, $type ) {
+  
+		/* Get the points of the points details*/
+		$today_date = date_i18n( 'Y-m-d h:i:sa' );
+		$admin_points = get_user_meta( $user_id, 'points_details', true );
+    $get_points = (int) get_user_meta( $user_id, 'mwb_wpr_points', true );
+    $total_point = 0;
+		if ( isset( $user_id ) && ! empty( $user_id ) ) {			   
+			if ( 'pro_conversion_points' == $type && ! empty( $type ) ) {      
+        foreach ( $admin_points['pro_conversion_points'] as $key => $value ) {                
+          if (mwb_wpr_set_the_wordpress_date_number_one_year($value['date']) <= 0 ) {                   
+            unset( $admin_points['pro_conversion_points'][ $key ] );     
+            $total_point +=  (int) $value['pro_conversion_points'];
+          }          
+        }
+        $remaining_points = $get_points - $total_point;        
+        /*
+				if ( isset( $admin_points['admin_points'] ) && ! empty( $admin_points['admin_points'] ) ) {
+					$admin_array                    = array();
+					$admin_array                    = array(
+						'admin_points' => $points,
+						'date'         => $today_date,
+						'sign'         => $data['sign'],
+						'reason'       => $data['reason'],
+					);
+					$admin_points['admin_points'][] = $admin_array;
+				} else {
+					if ( ! is_array( $admin_points ) ) {
+						$admin_points = array();
+					}
+					$admin_array                    = array(
+						'admin_points' => $points,
+						'date'         => $today_date,
+						'sign'         => $data['sign'],
+						'reason'       => $data['reason'],
+					);
+					$admin_points['admin_points'][] = $admin_array;
+				}*/
+			}
+      
+			/* Update the points details*/
+			if ( ! empty( $admin_points ) && is_array( $admin_points ) ) {        
+        update_user_meta( $user_id, 'mwb_wpr_points', $remaining_points );
+				update_user_meta( $user_id, 'points_details', $admin_points );
+			}
+		}
+	}
+
 	/**
 	 * This function is use to send mail to the user of points details
 	 *
@@ -328,23 +429,64 @@ class Points_Rewards_For_WooCommerce_Admin {
 	 * @param string $type type of the points details.
 	 * @param int    $point points.
 	 */
-	public function mwb_wpr_send_mail_details( $user_id, $type, $point ) {
+	public function mwb_wpr_send_mail_details( $user_id, $type, $point, $sign ) {
 		$user                      = get_user_by( 'ID', $user_id );
 		$user_email                = $user->user_email;
 		$user_name                 = $user->user_login;
 		$mwb_wpr_notificatin_array = get_option( 'mwb_wpr_notificatin_array', true );
+    $points_notification_translate = get_user_meta( $user_id, 'points_notification_translate', true );
 		if ( 'admin_notification' == $type ) {
 			/* Check is settings array is not empty*/
 			if ( is_array( $mwb_wpr_notificatin_array ) && ! empty( $mwb_wpr_notificatin_array ) ) {
-				/*Get the mail subject*/
-				$mwb_wpr_email_subject = $this->mwb_wpr_get_subject( 'mwb_wpr_email_subject' );
-				/*Get the mail custom description*/
-				$mwb_wpr_email_discription = $this->mwb_wpr_get_email_description( 'mwb_wpr_email_discription_custom_id' );
-				/*Get the total points*/
-				$total_points              = $this->mwb_wpr_get_user_points( $user_id );
-				$mwb_wpr_email_discription = str_replace( '[Total Points]', $total_points, $mwb_wpr_email_discription );
-				$mwb_wpr_email_discription = str_replace( '[USERNAME]', $user_name, $mwb_wpr_email_discription );
-				$mwb_wpr_email_discription = str_replace( '[Points]', $point, $mwb_wpr_email_discription );
+
+        if ( '+' === $sign ) {
+          if ($points_notification_translate == 'vi') {
+            /*Get the mail subject*/
+            $mwb_wpr_email_subject = $this->mwb_wpr_get_subject( 'mwb_wpr_email_subject_vi' );
+            /*Get the mail custom description*/
+            $mwb_wpr_email_discription = $this->mwb_wpr_get_email_description( 'mwb_wpr_email_discription_custom_id_vi' );  
+          } elseif ($points_notification_translate == 'en_US') {
+            /*Get the mail subject*/
+            $mwb_wpr_email_subject = $this->mwb_wpr_get_subject( 'mwb_wpr_deduct_assigned_point_subject' );
+            /*Get the mail custom description*/
+            $mwb_wpr_email_discription = $this->mwb_wpr_get_email_description( 'mwb_wpr_email_discription_custom_id' );  
+          } else {
+            /*Get the mail subject*/
+            $mwb_wpr_email_subject = $this->mwb_wpr_get_subject( 'mwb_wpr_deduct_assigned_point_subject' );
+            /*Get the mail custom description*/
+            $mwb_wpr_email_discription = $this->mwb_wpr_get_email_description( 'mwb_wpr_email_discription_custom_id' );  
+          }
+          	/*Get the total points*/
+          $total_points              = $this->mwb_wpr_get_user_points( $user_id );
+          $mwb_wpr_email_discription = str_replace( '[Total Points]', $total_points, $mwb_wpr_email_discription );
+          $mwb_wpr_email_discription = str_replace( '[USERNAME]', $user_name, $mwb_wpr_email_discription );
+          $mwb_wpr_email_discription = str_replace( '[Points]', $point, $mwb_wpr_email_discription );
+        } 
+        if ( '-' === $sign ) {
+          if ($points_notification_translate == 'vi') {
+            /*Get the mail subject*/
+            $mwb_wpr_email_subject = $this->mwb_wpr_get_subject( 'mwb_wpr_deduct_assigned_point_subject_vi' );
+            /*Get the mail custom description*/
+            $mwb_wpr_email_discription = $this->mwb_wpr_get_email_description( 'mwb_wpr_deduct_assigned_point_desciption_vi' );  
+          } elseif ($points_notification_translate == 'en_US') {
+            /*Get the mail subject*/
+            $mwb_wpr_email_subject = $this->mwb_wpr_get_subject( 'mwb_wpr_deduct_assigned_point_subject' );
+            /*Get the mail custom description*/
+            $mwb_wpr_email_discription = $this->mwb_wpr_get_email_description( 'mwb_wpr_deduct_assigned_point_desciption' );  
+          } else {
+            /*Get the mail subject*/
+            $mwb_wpr_email_subject = $this->mwb_wpr_get_subject( 'mwb_wpr_deduct_assigned_point_subject' );
+            /*Get the mail custom description*/
+            $mwb_wpr_email_discription = $this->mwb_wpr_get_email_description( 'mwb_wpr_deduct_assigned_point_desciption' );  
+          }
+        
+          	/*Get the total points*/
+          $total_points              = $this->mwb_wpr_get_user_points( $user_id );
+          $mwb_wpr_email_discription = str_replace( '[TOTALPOINTS]', $total_points, $mwb_wpr_email_discription );
+          $mwb_wpr_email_discription = str_replace( '[USERNAME]', $user_name, $mwb_wpr_email_discription );
+          $mwb_wpr_email_discription = str_replace( '[DEDUCTEDPOINT]', $point, $mwb_wpr_email_discription );
+        }        
+			
 
 				$check_enable = apply_filters( 'mwb_wpr_check_custom_points_notification_enable', true, 'admin_notification' );
 
@@ -715,7 +857,7 @@ class Points_Rewards_For_WooCommerce_Admin {
 						echo wp_kses( wc_help_tip( $attribute_description ), $allowed_tags );
 						?>
 						<label for="mwb_wpr_membership_discount">
-						<input type="number" min="1" value="<?php echo esc_html( $this->check_is_not_empty( isset( $value['Discount'] ) ? $value['Discount'] : '' ) ); ?>" name="mwb_wpr_membership_discount_<?php echo esc_html( $count ); ?>" id="mwb_wpr_membership_discount_<?php echo esc_html( $count ); ?>" class="input-text" required>
+						<input type="number" min="0" value="<?php echo esc_html( $this->check_is_not_empty( isset( $value['Discount'] ) ? $value['Discount'] : '' ) ); ?>" name="mwb_wpr_membership_discount_<?php echo esc_html( $count ); ?>" id="mwb_wpr_membership_discount_<?php echo esc_html( $count ); ?>" class="input-text" required>
 						</label>			
 					</td>
 					<input type = "hidden" value="<?php echo esc_html( $count ); ?>" name="hidden_count">

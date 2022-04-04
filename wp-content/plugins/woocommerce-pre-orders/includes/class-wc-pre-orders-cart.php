@@ -112,7 +112,7 @@ class WC_Pre_Orders_Cart {
 
 				$woocommerce->cart->empty_cart();
 
-				$string = __( 'Your previous cart was emptied because pre-orders must be purchased separately.', 'wc-pre-orders' );
+				$string = __( 'Đã xóa giỏ hàng trước của bạn vì đơn hàng đặt trước phải được mua riêng.', 'wc-pre-orders' );
 
 				// Backwards compatible (pre 2.1) for outputting notice
 				if ( function_exists( 'wc_add_notice' ) ) {
@@ -132,9 +132,9 @@ class WC_Pre_Orders_Cart {
 
 				// Backwards compatible (pre 2.1) for outputting notice
 				if ( function_exists( 'wc_add_notice' ) ) {
-					wc_add_notice( __( 'This product cannot be added to your cart because it already contains a pre-order, which must be purchased separately.', 'wc-pre-orders' ) );
+					wc_add_notice( __( 'Không thể thêm sản phẩm này vào giỏ hàng của bạn vì đã có đơn đặt hàng trước trong giỏ, đơn hàng đặt trước phải được mua riêng.', 'wc-pre-orders' ) );
 				} else {
-					$woocommerce->add_error( __( 'This product cannot be added to your cart because it already contains a pre-order, which must be purchased separately.', 'wc-pre-orders' ) );
+					$woocommerce->add_error( __( 'Không thể thêm sản phẩm này vào giỏ hàng của bạn vì đã có đơn đặt hàng trước trong giỏ, đơn hàng đặt trước phải được mua riêng.', 'wc-pre-orders' ) );
 				}
 
 				$valid = false;

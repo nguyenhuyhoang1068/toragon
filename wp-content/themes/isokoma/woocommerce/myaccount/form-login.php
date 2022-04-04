@@ -29,7 +29,7 @@ do_action( 'woocommerce_before_customer_login_form' ); ?>
 
 <?php endif; ?>
 
-	<h1 class="mt-5"><?php esc_html_e( 'ĐĂNG NHẬP', 'isokoma' ); ?></h1>
+	<h1 class="mt-5"><?php esc_html_e( 'Đăng nhập', 'isokoma' ); ?></h1>
 
 		<form class="woocommerce-form woocommerce-form-login login" method="post">
 

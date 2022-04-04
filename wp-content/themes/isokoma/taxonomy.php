@@ -203,7 +203,7 @@ if ( is_search() ) {
 				<div class="l-menu">
           
           <?php dynamic_sidebar('leftsidebar'); ?>
-					<h5><?php  _e('THƯƠNG HIỆU', 'isokoma'); ?></h5>
+					<h5><?php  _e('Thương hiệu', 'isokoma'); ?></h5>
 					<div class="list-group">
 					<?php						
 						if ((in_array('toys', $url_array))  && (in_array('product-category', $url_array))

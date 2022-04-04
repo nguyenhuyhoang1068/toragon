@@ -104,77 +104,16 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
         public function calculate_shipping($package = array()) {    
          
        
-          // $this->add_rate(array(
-          //     'id' => $this->id,
-          //     'label' => $this->title,
-          //     'cost' => $cost
-          // ));
-          // add_rate( array(
-          //   'id'       => $this->id,
-          //   'label'    => $this->title,
-          //   'cost'     => array_sum( wp_list_pluck( $packages, 'contents_cost' ) ) * $this->percentage_rate / 100,
-          //   // 'calc_tax' => 'per_item'
-          // ));
-          //$total = WC()->cart->cart_contents_total;
-          //$subtotal = WC()->cart->subtotal;
-        
- 
-     
-          //echo get_post_meta($product->get_id(), 'custom_text_field_size', TRUE); 
-          // $shipping_methods = WC()->shipping->get_shipping_methods();
-          // $shipping_packages = WC()->cart->get_shipping_packages();
-
-          // foreach( array_keys( $shipping_packages ) as $key ) {
-          //   if( $shipping_for_package = WC()->session->get('shipping_for_package_'.$key) ) {
-          //     if( isset($shipping_for_package['rates']) ) {                
-          //       // Loop through customer available shipping methods
-          //       foreach ( $shipping_for_package['rates'] as $rate_key => $rate ) {
-          //          var_dump($rate_key);
-                   
-          //           $rate_id = $rate->id; // the shipping method rate ID (or $rate_key)
-          //           $method_id = $rate->method_id; // the shipping method label
-          //           $instance_id = $rate->instance_id; // The instance ID
-          //           $cost = $rate->label; // The cost
-          //           $label = $rate->label; // The label name
-          //           $taxes = $rate->taxes; // The taxes (array)                   
-          //       }
-          //     }
-          //   }
-          // }
-            
-         
-         
-          // foreach ($package['contents'] as $item_id => $values) {
-          //   $_product = $values['data'];           
-          //   $product_id = $_product->get_id();
-           
-          //   $shiping_id = get_post_meta($product_id, 'shipping_size_field_size', TRUE);            
-          //   if (!empty($shiping_id)) {
-          //     $term_name = get_term( $shiping_id )->name;                        
-          //     foreach ($package['rates'] as $rate_key => $rate) {                        
-          //       if (strcasecmp($term_name, $rate->label) == 0) {               
-          //         $rate_id[$product_id] = array (
-          //           $product_id => $rate->id,
-          //         );
-          //       }                 
-          //     }   
-          //   } else {
-          //     $rate_id[$product_id] = array (
-          //       $product_id => '',
-          //     );
-          //   }  
-                              
-          //   //$weight = $weight + $_product->get_weight() * $values['quantity'];
-          // }         
+                
         
           $cost = 0;
           $flag = false;
           $no_shipping = false;
           foreach ($package['rates'] as $rate_key => $rate) {           
-            if ( $rate->id == 'flat_rate:3') {
+            if ( $rate->id == 'flat_rate:7') {
               $rates_out_hcm = $rate->cost;
             } 
-            if ( $rate->id == 'flat_rate:7') {
+            if ( $rate->id == 'flat_rate:2') {
               $rates_hcm = $rate->cost;
             }             
           }          
@@ -281,14 +220,14 @@ if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_
               }
             }
           } else {
-            $this->title =  __( 'For oversea shipping, our customer service will contact you about the shipping fee', 'isokoma');   
+            $this->title =  __( 'For overseas shipping, our customer service will contact you about the shipping fee', 'isokoma');   
           }
           
                       
           $rate = array(
             'id' => $this->id,
             'label' => $this->title,
-            'cost' =>wc_price( $cost)
+            'cost' => $cost 
           );
           $this->add_rate($rate);
           
@@ -387,14 +326,14 @@ add_filter( 'woocommerce_package_rates', 'isokoma_unset_shipping_available_in_zo
 function isokoma_unset_shipping_available_in_zone( $rates, $package ) {    
   // Only unset rates if free_shipping is available
  // if ( isset( $rates['isokoma_shipping_via_sizes'] ) ) {
-    unset( $rates['flat_rate:6'] );
-    unset( $rates['flat_rate:7'] );
-    unset( $rates['flat_rate:8'] );
-    unset( $rates['flat_rate:2'] );   
+    unset( $rates['flat_rate:1'] );
+    unset( $rates['flat_rate:2'] );
     unset( $rates['flat_rate:3'] );
-    unset( $rates['flat_rate:4'] );     
-    unset( $rates['flat_rate:12'] );   
-    unset( $rates['flat_rate:13'] );   
+    unset( $rates['flat_rate:6'] );   
+    unset( $rates['flat_rate:7'] );
+    unset( $rates['flat_rate:8'] );     
+    //unset( $rates['flat_rate:5'] );   
+    //unset( $rates['flat_rate:9'] );   
        
     
     foreach( $rates as $rate_key => $rate ) {            

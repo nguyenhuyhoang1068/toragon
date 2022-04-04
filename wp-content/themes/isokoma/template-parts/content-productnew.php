@@ -10,16 +10,10 @@
 ?>
 <?php 
 if (( $post->ID  == 199) || ( $post->ID  == 12) || ( $post->ID  == 2)) : ?>
-  <div class="breadcrumbs-area">
-    <div class="box-breadcrumb mobile deskstop">      
-      <div class="banner-text text-center">
-        <h2 class="mb-0"><?php the_title(); ?></h2>
-        <div class="d-none d-sm-block"><?php do_action( 'isokoma_breadcrumb' ); ?></div>
-      </div>
-      <img class="breadcrumb-icon mobile" src="<?php echo get_stylesheet_directory_uri()   ?>/images/icon-1.png" alt="">
-			<img class="breadcrumb-icon desktop" src="<?php echo get_stylesheet_directory_uri()   ?>/images/product_banner_1.jpg" alt="">      
-    </div>
-  </div>
+  <div class="page-title text-center">
+			<h2><?php the_title(); ?></h2>
+			<img src="https://toragon.vn/wp-content/uploads/2022/01/design-element.png" alt="toragon">
+		</div>
 <?php endif ?>   
 
 
@@ -61,7 +55,7 @@ if (( $post->ID  == 199) || ( $post->ID  == 12) || ( $post->ID  == 2)) : ?>
 			$loop = new WP_Query( $args );
 			if ($loop->have_posts()) :
 			while ( $loop->have_posts() ) : $loop->the_post(); global $product;	 ?>				
-				<div class="col-12 col-sm-3 p-item">
+				<div class="col-12 col-md-6 col-lg-3 p-item">
 					<div class="card box-product">
 						<div class="wrap-img">
 							<?php global $post; ?>
@@ -102,9 +96,9 @@ if (( $post->ID  == 199) || ( $post->ID  == 12) || ( $post->ID  == 2)) : ?>
 							?>			
 							
 						</div>
-            <?php   
+						<div class="add-to-wl"><?php   
               echo do_shortcode( '[woosw id="' . $product->get_id() . '"]');
-            ?>	
+            ?>	</div>
 					</div>											
           </div>
 				<?php endwhile; ?>

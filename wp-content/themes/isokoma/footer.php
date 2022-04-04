@@ -38,7 +38,7 @@
           <li><a href="/lien-he/" class="txt-blur"><?php echo _e('Liên hệ', 'isokoma'); ?> </a></li>
           <li><a href="/dieu-khoan-va-dieu-le" class="txt-blur"><?php echo _e('Điều khoản và điều lệ', 'isokoma'); ?></a></li>
           <li><a href="/chinh-sach-bao-mat" class="txt-blur"><?php echo _e('Chính sách bảo mật', 'isokoma'); ?> </a></li>
-          <li><a href="#" class="txt-blur"><?php echo _e('Dịch vụ khách hàng', 'isokoma'); ?> </a></li>
+          <li><a href="/lien-he/" class="txt-blur"><?php echo _e('Dịch vụ khách hàng', 'isokoma'); ?> </a></li>
           <li><a href="/cau-hoi-thuong-gap" class="txt-blur"><?php echo _e('Câu hỏi thường gặp', 'isokoma'); ?> </a></li>
         </ul>
       </div>
@@ -47,7 +47,7 @@
         <ul>
           <li><a href="/my-account" class="txt-blur"><?php echo _e('Tài khoản của tôi', 'isokoma'); ?> </a></li>
           <li><a href="/my-account/orders" class="txt-blur"><?php echo _e('Theo dõi đơn hàng', 'isokoma'); ?> </a></li>
-          <li><a href="/wishlist" class="txt-blur"><?php echo _e('Danh sách yêu thích', 'isokoma'); ?> </a></li>
+          <li><a href="/favorites" class="txt-blur"><?php echo _e('Danh sách yêu thích', 'isokoma'); ?> </a></li>
           <li><a href="/cart" class="txt-blur"><?php echo _e('Giỏ hàng', 'isokoma'); ?> </a></li>
           <li><a href="/checkout" class="txt-blur"><?php echo _e('Thanh toán', 'isokoma'); ?> </a></li>
           
@@ -67,7 +67,7 @@
           <input type="hidden" name="esfpx_es-subscribe" id="es-subscribe" value="c75fc1d1b0">
           <div class="input-group-append">
             <button class="btn btn-subscribe es_subscription_form_submit es_submit_button es_textbox_button" type="button">
-              <image src="https://staging.toragon.vn/wp-content/uploads/2021/11/arrow-right.png">
+              <image src="https://toragon.vn/wp-content/uploads/2022/01/arrow-rightic.png">
             </button>
           </div>
           <input type="hidden" name="formsubmit" value="1" />

@@ -85,13 +85,32 @@ do_action( 'woocommerce_before_account_orders', $has_orders ); ?>
 
 	<?php if ( 1 < $customer_orders->max_num_pages ) : ?>
 		<div class="woocommerce-pagination woocommerce-pagination--without-numbers woocommerce-Pagination">
-			<?php if ( 1 !== $current_page ) : ?>
+			<!--<?php if ( 1 !== $current_page ) : ?>
 				<a class="woocommerce-button woocommerce-button--previous woocommerce-Button woocommerce-Button--previous button" href="<?php echo esc_url( wc_get_endpoint_url( 'orders', $current_page - 1 ) ); ?>"><?php esc_html_e( 'Previous', 'woocommerce' ); ?></a>
 			<?php endif; ?>
 
 			<?php if ( intval( $customer_orders->max_num_pages ) !== $current_page ) : ?>
 				<a class="woocommerce-button woocommerce-button--next woocommerce-Button woocommerce-Button--next button" href="<?php echo esc_url( wc_get_endpoint_url( 'orders', $current_page + 1 ) ); ?>"><?php esc_html_e( 'Next', 'woocommerce' ); ?></a>
-			<?php endif; ?>
+			<?php endif; ?>-->
+
+			<?php //custom orders navigation
+				$args = array(
+					'base'          => esc_url( wc_get_endpoint_url( 'orders') ) . '%_%',
+					'format'        => '%#%',
+					'total'         => $customer_orders->max_num_pages,
+					'current'       => $current_page,
+					'show_all'      => false,
+					'end_size'      => 3,
+					'mid_size'      => 3,
+					'prev_next'     => true,
+					'prev_text'     => '&larr;',
+					'next_text'     => '&rarr;',
+					'type'          => 'list',
+					'add_args'      => false,
+					'add_fragment'  => ''
+				);
+				echo paginate_links( $args );
+			?>
 		</div>
 	<?php endif; ?>
 

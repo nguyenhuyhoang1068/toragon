@@ -85,10 +85,10 @@ function isokoma_featured_slider()
 									<div class="deskstop"><img src="<?php  echo bloginfo('url');  ?>/wp-content/uploads/2021/03/1.jpg"></div>	
 									*/ ?>
 										<?php if (get_post_meta($mypost->ID, '_mobile_banner', true) == '') : ?>
-											<div class="mobile"><img class="attachment-carousel_image" src="https://staging.toragon.vn/wp-content/uploads/2021/10/2021.jpg"></div>
+											<div class="mobile"><img class="attachment-carousel_image" src="https://toragon.vn/wp-content/uploads/2022/01/2021-1.jpg"></div>
 										<?php endif; ?>
 										<?php if (get_the_post_thumbnail($mypost->ID, 'carousel_image') == '') : ?>
-											<div class="deskstop"><img class="attachment-carousel_image" src="https://staging.toragon.vn/wp-content/uploads/2021/10/2021.jpg"></div>
+											<div class="deskstop"><img class="attachment-carousel_image" src="https://toragon.vn/wp-content/uploads/2022/01/2021-1.jpg"></div>
 										<?php endif; ?>
 										<p class="play-icon"><i class="fa fa-play-circle" style="font-size:130px;color:white"></i></p>
 										<!--- New changes -->
@@ -231,7 +231,7 @@ function isokoma_new_product_slider()
 				<div class="info">
 					<h2 class="text-center"><?php _e('Sản phẩm nổi bật', 'isokoma'); ?></h2>
 					<p class="text-center"><?php _e('Những sản phẩm đặc biệt <nobr>của cửa hàng</nobr>', 'isokoma'); ?></p>
-					<img src="https://staging.toragon.vn/wp-content/uploads/2021/11/design-element.png" alt="toragon">
+					<img src="https://toragon.vn/wp-content/uploads/2022/01/design-element.png" alt="toragon">
 				</div>
 				<div class="carousel-wrapper">
 					<div class="flexslider carousel">
@@ -276,9 +276,9 @@ function isokoma_new_product_slider()
 											wp_commerce_template_single_add_to_cart();
 											?>
 										</div>
-										<?php
+										<div class="add-to-wl"><?php
 										echo do_shortcode('[woosw id="' . $product->get_id() . '"]');
-										?>
+										?></div>
 									</div>
 								</li>
 							<?php endwhile; ?>
@@ -336,7 +336,7 @@ function isokoma_hot_product_slider()
 				<div class="info">
 					<h2 class="text-center"><?php _e('Sản phẩm mới', 'isokoma'); ?></h2>
 					<p class="text-center"><?php _e('Liên tục cập nhật các mặt hàng mới', 'isokoma'); ?></p>
-					<img src="https://staging.toragon.vn/wp-content/uploads/2021/11/design-element.png" alt="toragon">
+					<img src="https://toragon.vn/wp-content/uploads/2022/01/design-element.png" alt="toragon">
 
 				</div>
 				<div class="carousel-wrapper">
@@ -384,9 +384,9 @@ function isokoma_hot_product_slider()
 											wp_commerce_template_single_add_to_cart();
 											?>
 										</div>
-										<?php
+										<div class="add-to-wl"><?php
 										echo do_shortcode('[woosw id="' . $product->get_id() . '"]');
-										?>
+										?></div>
 									</div>
 								</li>
 							<?php endwhile; ?>

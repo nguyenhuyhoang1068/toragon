@@ -78,21 +78,24 @@ jQuery(window).load(function () {
   jQuery('.flexslider.carousel .flex-direction-nav').addClass('fix-flex');
   jQuery('.flexslider2.carousel .flex-direction-nav').addClass('fix-flex');
   jQuery('.flexslider3.carousel .flex-direction-nav').addClass('fix-flex');
+
   jQuery('#menu-brandtoys li').find('active').css("display", "none");
 
   var $menudropdown = jQuery('.product-category .main-nav ul.menu');
   var $current = jQuery('.current-menu-item.menu-item-has-children');
   var $filter = jQuery('.product-category ul.menu').find('.menu-item-has-children>.sub-menu');
   var $filter_submenu = $menudropdown.find('.menu-item-has-children .sub-menu .current-menu-item');
-  $filter.hide();
+  $filter.hide();  
+  
+  if ($current.length != 0) {    
+    $filter.show(); 
+    $filter.prev().addClass('active'); 
 
-  if ($current.length != 0) {
-    $filter.show();
-    $filter.find('li a').prepend('<i class="fas fa-caret-right"></i> ');
-  }
-  if ($filter_submenu.length != 0) {
-    $filter.show();
-    $filter.find('li a').prepend('<i class="fas fa-caret-right"></i> ');
+    //$filter.find('li a').prepend('<i class="fas fa-caret-right"></i> ');     
+  } 
+  if ($filter_submenu.length != 0){
+    $filter.show(); 
+    $filter.prev().addClass('active'); 
   }
 
   // jQuery('.button-viewed-product span').click(function() {

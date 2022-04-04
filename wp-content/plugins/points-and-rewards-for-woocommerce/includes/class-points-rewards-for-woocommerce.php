@@ -239,8 +239,8 @@ class Points_Rewards_For_Woocommerce {
 			/*Display the meta key*/
 			$this->loader->add_filter( 'woocommerce_order_item_display_meta_key', $plugin_public, 'mwb_wpr_woocommerce_order_item_display_meta_key', 10, 1 );
 			$this->loader->add_action( 'woocommerce_checkout_create_order_line_item', $plugin_public, 'mwb_wpr_woocommerce_add_order_item_meta_version_3', 10, 4 );
-			$this->loader->add_filter( 'woocommerce_get_price_html', $plugin_public, 'mwb_wpr_user_level_discount_on_price', 10, 2 );
-			$this->loader->add_action( 'woocommerce_before_calculate_totals', $plugin_public, 'mwb_wpr_woocommerce_before_calculate_totals', 10, 1 );
+		//	$this->loader->add_filter( 'woocommerce_get_price_html', $plugin_public, 'mwb_wpr_user_level_discount_on_price', 10, 2 );
+			//$this->loader->add_action( 'woocommerce_before_calculate_totals', $plugin_public, 'mwb_wpr_woocommerce_before_calculate_totals', 10, 1 );
 			$this->loader->add_filter( 'woocommerce_update_cart_action_cart_updated', $plugin_public, 'mwb_update_cart_points' );
 
 			/*Make Tax calculation 0 on the fees applied on the points*/

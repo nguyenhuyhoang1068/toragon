@@ -16,9 +16,11 @@ function isokoma_scripts() {
 	wp_enqueue_style('isokoma-full-style', get_stylesheet_directory_uri() . '/style.css', array(), true);  	
 	wp_enqueue_style("responsive", get_stylesheet_directory_uri() . "/css/responsive.css",  array(), '');
   wp_enqueue_style("woocommerce", get_stylesheet_directory_uri() . "/css/woocommerce.css",  array(), '');    
-	wp_enqueue_style("isokoma", get_stylesheet_directory_uri() . "/css/isokoma.css",  array(), '');	
+	wp_enqueue_style("isokoma", get_stylesheet_directory_uri() . "/css/isokoma.css",  array(), rand(111,9999), 'all' );	
 	wp_enqueue_style( 'isokoma-flexslider-css', get_stylesheet_directory_uri() . '/css/flexslider.min.css', array(), '' );   
   wp_enqueue_style("icons", get_stylesheet_directory_uri() . "/css/icons.css",  array(), '');  
+
+  wp_enqueue_script( 'woocommerce-js', get_stylesheet_directory_uri() . '/js/woocommerce.js', array(), '5.8', true );
 
   wp_enqueue_script('proper-js', get_stylesheet_directory_uri() . '/js/popper.min.js', array(), '', true);
 	wp_enqueue_script('bootstrap-js', get_stylesheet_directory_uri() . '/libs/bootstrap/js/bootstrap.min.js', array(), '', true);  
@@ -86,7 +88,7 @@ if ( ! file_exists( get_stylesheet_directory() . '/inc/class-wp-bootstrap-navwal
 
 // This theme uses wp_nav_menu() in one location.
 register_nav_menus( array(
-  'top-nav' => esc_html__('Main Menu', 'isokoma'),      
+  'top-nav' => esc_html__('Main Menu', 'isokoma'),
   'brandtoys-nav' => 'Brand Toys Nav',
   'brandtranh-nav' => 'Brand Tranh Nav',
   'brandhanggiadung-nav' => 'Brand Hanggiadung Nav',
@@ -376,7 +378,7 @@ require 'inc/storefront-woocommerce-functions.php';
 function isokoma_purchased_products_link( $menu_links ){
 
 	return array_slice( $menu_links, 0, 2, true )
-	+ array( 'purchased-products' => 'Purchased Products' )
+	+ array( 'purchased-products' => 'Sản phẩm đã mua' )
 	+ array_slice( $menu_links, 2, NULL, true );
  
 }
@@ -486,7 +488,7 @@ function isokoma_add_checkout_fee_for_gateway() {
     }    
     $chosen_gateway = WC()->session->get( 'chosen_payment_method' ); 
     if ( $chosen_gateway == 'stripe' ) {
-      WC()->cart->add_fee( 'Transaction fee', round($stripe_fees, 2));
+      WC()->cart->add_fee( 'Phí giao dịch', round($stripe_fees, 2));
     }
 }
  
@@ -737,7 +739,7 @@ add_action( 'woocommerce_register_form', 'woocommerce_register_form_password_rep
 function custom_count_wishlist() {
 	$url = WPcleverWoosw::get_url();
 	$icon_html  = "<div class='menu-item woosw-menu-item menu-item-type-woosw'><a href='{$url}'>";
-	$icon_html .= '<span class="woosw-menu-item-inner" data-count="'.WPcleverWoosw::get_count().'"><img src="https://staging.toragon.vn/wp-content/uploads/2021/11/heart.png" alt="wishlist"></span>';
+	$icon_html .= '<span class="woosw-menu-item-inner" data-count="'.WPcleverWoosw::get_count().'"><img src="https://toragon.vn/wp-content/uploads/2022/01/heartic.png" alt="wishlist"></span>';
 	$icon_html .= '</a></div>';
 	return $icon_html;
 }
@@ -813,27 +815,42 @@ function isokoma_remove_my_account_links( $menu_links ){
 	
 }
 
-add_filter('wp_nav_menu_items', 'add_search_form', 10, 2);
-function add_search_form($items, $args) {
-    if( $args->theme_location == 'top-nav' )
-        $items .= do_shortcode('[language-switcher]');
+// Change the page title of purchased products for my account
+add_filter( 'woocommerce_get_query_vars', 'myaccount_custom_endpoints_query_vars' );
+function myaccount_custom_endpoints_query_vars( $query_vars ) {
+    $query_vars['purchased-products'] = 'purchased-products';
+    return $query_vars;
+}
+
+add_filter( 'woocommerce_endpoint_purchased-products_title', 'change_my_account_delete_account_title' );
+function change_my_account_delete_account_title( $title ) {
+    return __( "Sản phẩm đã mua", "woocommerce" );
+}
+
+//add custom item to menu
+add_filter('wp_nav_menu_items', 'extra_menu', 10, 2);
+function extra_menu($items, $args) {
+    if( $args->theme_location == 'top-nav' ){
+      $items .= do_shortcode('[language-switcher]');
         $items .= "<div class='mb-social d-block d-sm-none'><a href='https://www.facebook.com/ToragonHE/' class='txt-blur' target='_blank'>
-        <img src='https://staging.toragon.vn/wp-content/uploads/2021/11/Facebook.png' alt='facebook'></a>
+        <img src='https://toragon.vn/wp-content/uploads/2022/01/fb.png' alt='facebook'></a>
         <a href='https://www.instagram.com/tigertoyz_isokoma/' class='txt-blur' target='_blank'>
-        <img src='https://staging.toragon.vn/wp-content/uploads/2021/11/ins-logo.png' alt='instagram'>
+        <img src='https://toragon.vn/wp-content/uploads/2022/01/ig.png' alt='instagram'>
         </a>
         </div>
         ";
-
-        return $items;
-
+      }
+    return $items;
+    
+      
 }
 
-/*Email search*/
+
+
 function directory_search_js() {
 	global $wp_query;
 	wp_enqueue_script('jquery');
-	wp_enqueue_script('directory_search_js', get_stylesheet_directory_uri() . '/js/directory-search.js', array('jquery'));
+	wp_enqueue_script('directory_search_js', get_stylesheet_directory_uri() .  '/js/directory-search.js', array('jquery'));
 	//wp_localize_script( 'ajaxjs', 'ajax_object', array( site_url() . '/wp-admin/admin-ajax.php' ) );  
 	wp_localize_script('directory_search_js', 'directory_search_params', array(
 		'ajaxurl' => site_url(null, 'https') . '/wp-admin/admin-ajax.php', // WordPress AJAX
@@ -884,3 +901,95 @@ function sytp_insert_db_record(){
 
 add_action('wp_ajax_sytp_insert_db_record', 'sytp_insert_db_record');
 add_action('wp_ajax_nopriv_sytp_insert_db_record', 'sytp_insert_db_record');
+
+
+
+//REGISTER CUSTOM STATUS
+
+
+function get_custom_order_statuses(){
+  return array(          
+    'wc-shipped'          => __('Shipped'),      
+    'wc-readytocollect'   => __('Ready to collect'),
+    'wc-collected'          => __('Collected'),
+  );
+}
+
+add_action( 'init', 'register_custom_order_statuses' );
+function register_custom_order_statuses() {
+  // Loop through custom order statuses array (key/label pairs)
+  foreach( get_custom_order_statuses() as $key => $label ) {
+      register_post_status( $key, array(
+          'label'                     => $label,
+          'public'                    => true,
+          'exclude_from_search'       => false,
+          'show_in_admin_all_list'    => true,
+          'show_in_admin_status_list' => true,
+          'label_count'               => _n_noop( $label . ' <span class="count">(%s)</span>', $label . ' <span class="count">(%s)</span>' )
+      ) );
+  }
+}
+
+add_filter( 'wc_order_statuses', 'add_custom_order_statuses', 10, 1 );
+function add_custom_order_statuses( $order_statuses ) {
+  $sorted_order_statuses = array(); // Initializing
+
+  foreach ( $order_statuses as $key => $label ) {
+      $sorted_order_statuses[ $key ] = $label;
+      
+      if ( $key === 'wc-completed' ) {
+        $sorted_order_statuses[ 'wc-completed' ] =   _x( 'Delivered', 'Order status', 'woocommerce' );
+          // Loop through custom order statuses array (key/label pairs)
+          foreach( get_custom_order_statuses() as $custom_key => $custom_label ) {            
+            $sorted_order_statuses[$custom_key] = $custom_label;              
+          }
+      }
+  }   
+  return $sorted_order_statuses;
+}
+
+function language_field_update_order_meta( $order_id ) {
+  $current_language = get_locale();
+  $current_user = wp_get_current_user();
+  $current_user_id = $current_user->ID;
+  update_post_meta( $order_id, 'tor_order_translate', $current_language );
+  update_user_meta ( $current_user_id, 'points_notification_translate', $current_language );
+}
+add_action( 'woocommerce_checkout_update_order_meta', 'language_field_update_order_meta' );
+
+
+function remove_shipping_to_display_shipped_via( $nbsp_small_class_shipped_via_sprintf_via_s_woocommerce_this_get_shipping_method_small, $instance ) {   
+  return '';
+};        
+add_filter( 'woocommerce_order_shipping_to_display_shipped_via', 'remove_shipping_to_display_shipped_via', 10, 2 ); 
+
+
+function toragon_currency_symbol( $currency_symbol, $currency ) {
+  switch( $currency ) {
+    case 'USD':
+      $currency_symbol = 'US$';
+      break;      
+  }
+  return $currency_symbol;
+}
+add_filter('woocommerce_currency_symbol', 'toragon_currency_symbol', 30, 2);
+
+
+add_filter( 'woocommerce_currencies', 'add_my_currency' );
+function add_my_currency( $currencies ) {
+     $currencies['USD'] = __( 'Currency name', 'woocommerce' );
+     return $currencies;
+}
+
+
+add_filter( 'rest_authentication_errors', function( $result ) {
+	if ( ! empty( $result ) ) {
+		return $result;
+	}
+	if ( ! is_user_logged_in() ) {
+		return new WP_Error( 'rest_not_logged_in', 'You are not currently logged in.', array( 'status' => 401 ) );
+	}
+	return $result;
+});
+
+ 

@@ -20,28 +20,92 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 ?>
+<!DOCTYPE html>
+<html <?php language_attributes(); ?>>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=<?php bloginfo( 'charset' ); ?>" />
+		<title><?php echo get_bloginfo( 'name', 'display' ); ?></title>
+  </head>
+<body bgcolor="#ffffff">
+<center>
+  <table width="600" border="0" cellspacing="0" cellpadding="0" align="center" class="mFullWidth" bgcolor="black">
+    <tr>  
+      <td width="35"></td>                     
+      <td>    
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" class="mFullWidth">
+          <tr>              
+          <td height="30"></td>
+          </tr>  
+          <tr>                            
+          <td align="center" valign="top" style="font-size:25px; line-height:25px;  font-weight: 300; text-align:center; font-family:arial, sans-serif; color:#fbcf1f;">      
+            <?php esc_html_e( 'Password reset requested', 'isokoma' ); ?>            
+          </td>
+          </tr>  
+          <tr>              
+          <td height="30"></td>
+          </tr> 
+        </table>
+      </td>   
+      <td width="35"></td>                 
+    </tr>  
+    <tr>
+      <td width="35" style="background-color:#1a1918;"></td>
+      <td style="background-color:#1a1918;">    
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" class="mFullWidth" bgcolor="#1a1918" style="background-color: #1a1918;">
+          <tr><td height="30" style="height:30px;"></td></tr>      
+          <tr>                  
+          <td align="left" style="font-size:16px; line-height:1.3; text-align:left; font-family:arial, sans-serif; color:#ffffff;">
+            <?php printf( esc_html__( 'Dear %s,', 'isokoma' ), esc_html( $user_login ) ); ?>
+          </td>            
+          </tr>  
+          <tr>          
+            <td height="30"></td>
+          </tr>
+          <tr>              
+            <td style="font-size:16px; line-height:1.3; text-align:left; font-family:arial, sans-serif; color:#ffffff;">   
+            <?php printf( esc_html__( 'Someone has requested a new password for the following account on', 'isokoma' ) ); ?>
+            <br /> <?php printf( esc_html__( '%s:', 'woocommerce' ), esc_html( wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES ) ) ); ?>
+            </td>
+          </tr>
+          <tr>              
+            <td height="30"></td>
+          </tr>  
+          <tr>              
+            <td style="font-size:16px; line-height:1.3; text-align:left; font-family:arial, sans-serif; color:#ffffff;">             
+              <?php printf( esc_html__( 'Username: %s', 'woocommerce' ), esc_html( $user_login ) ); ?>                     
+            </td>
+          </tr>
+          <tr>              
+            <td style="font-size:16px; line-height:1.3; text-align:left; font-family:arial, sans-serif; color:#ffffff;">
+              <?php esc_html_e( "If you didn't make this request, just ignore this email. If you'd like to proceed:", 'isokoma' ); ?>   
+              <br />
+              <a class="link" href="<?php echo esc_url( add_query_arg( array( 'key' => $reset_key, 'id' => $user_id ), wc_get_endpoint_url( 'lost-password', '', wc_get_page_permalink( 'myaccount' ) ) ) ); ?>"><?php // phpcs:ignore ?>
+                <?php esc_html_e( 'Click here to reset your password', 'isokoma' ); ?>
+              </a>           
+            </td>
+          </tr>             
+          <tr>              
+          <td height="30"></td>
+          </tr>  
+          <tr>                  
+          <td align="left" style="font-size:16px; line-height:1.3; text-align:left; font-family:arial, sans-serif; color:#ffffff;">
+            <?php printf( esc_html__( 'Regards,', 'isokoma' )); ?>
+          </td>            
+          </tr>
+          <tr>                  
+          <td align="left" style="font-size:16px; line-height:1.3; text-align:left; font-family:arial, sans-serif; color:#ffffff;">
+            <?php printf( esc_html__( 'Toragon HE', 'isokoma' )); ?>
+          </td>                
+          </tr>  
+          <tr>              
+          <td height="30"></td>
+          </tr>
+        </table>
+      </td>     
+      <td width="35" style="background-color:#1a1918;"></td>
+    </tr>
+  </table> 
+</center>
 
-<?php do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
-
-<?php /* translators: %s: Customer username */ ?>
-<p><?php printf( esc_html__( 'Hi %s,', 'woocommerce' ), esc_html( $user_login ) ); ?></p>
-<?php /* translators: %s: Store name */ ?>
-<p><?php printf( esc_html__( 'Someone has requested a new password for the following account on %s:', 'woocommerce' ), esc_html( wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES ) ) ); ?></p>
-<?php /* translators: %s: Customer username */ ?>
-<p><?php printf( esc_html__( 'Username: %s', 'woocommerce' ), esc_html( $user_login ) ); ?></p>
-<p><?php esc_html_e( 'If you didn\'t make this request, just ignore this email. If you\'d like to proceed:', 'woocommerce' ); ?></p>
-<p>
-	<a class="link" href="<?php echo esc_url( add_query_arg( array( 'key' => $reset_key, 'id' => $user_id ), wc_get_endpoint_url( 'lost-password', '', wc_get_page_permalink( 'myaccount' ) ) ) ); ?>"><?php // phpcs:ignore ?>
-		<?php esc_html_e( 'Click here to reset your password', 'woocommerce' ); ?>
-	</a>
-</p>
-
-<?php
-/**
- * Show user-defined additional content - this is set in each email's settings.
- */
-if ( $additional_content ) {
-	echo wp_kses_post( wpautop( wptexturize( $additional_content ) ) );
-}
-
-do_action( 'woocommerce_email_footer', $email );
+</body>
+</html>

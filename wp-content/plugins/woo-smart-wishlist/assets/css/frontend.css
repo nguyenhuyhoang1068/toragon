@@ -426,11 +426,14 @@ body.rtl .woosw-content-items .woosw-content-item .woosw-content-item--note {
 }
 
 .woosw-list table.woosw-content-items .woosw-content-item .woosw-content-item--image {
-    width: 100px;
+    width: 130px;
+    text-align: center;
+    background-color: #1a1918;
+    border-radius: 10px 0 0px 10px;
 }
 
 .woosw-list table.woosw-content-items .woosw-content-item .woosw-content-item--image img {
-    width: 80px;
+    width: 130px;
     height: auto;
     border-radius: 2px;
     border: none;

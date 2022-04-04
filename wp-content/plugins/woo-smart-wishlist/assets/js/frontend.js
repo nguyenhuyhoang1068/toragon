@@ -146,10 +146,15 @@
               }, 3000);
             }
           } else {
+            
             if (response['notice'] != null) {
               $('#woosw-area .woosw-content-mid').
                   html('<div class="woosw-content-mid-notice">' +
                       response['notice'] + '</div>');
+              $('.woosw-content-items tbody').
+                  html('<div class="woosw-content-mid-notice">' +
+                     response['notice'] + '</div>');
+
             }
           }
 

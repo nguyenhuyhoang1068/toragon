@@ -42,13 +42,13 @@
           <div class="col-12 col-sm-4 info-col-l d-none d-sm-flex">
             <div class="ml-3">
               <a href="https://www.facebook.com/ToragonHE/" class="txt-blur" target="_blank">
-                <img src="https://staging.toragon.vn/wp-content/uploads/2021/11/fb.png" alt="facebook">
+                <img src="https://toragon.vn/wp-content/uploads/2022/01/fb.png" alt="facebook">
               </a>
             </div>
 
             <div class="ml-3">
               <a href="https://www.instagram.com/tigertoyz_isokoma/" class="txt-blur" target="_blank">
-                <img src="https://staging.toragon.vn/wp-content/uploads/2021/11/ig.png" alt="instagram">
+                <img src="https://toragon.vn/wp-content/uploads/2022/01/ig.png" alt="instagram">
               </a>
             </div>
           </div>
@@ -93,7 +93,7 @@
       <div class="row">
         <div class="col-12 col-sm-2 logo-col-l  d-sm-flex">
           <a href="<?php echo home_url(); ?>" class="navbar-brand">
-            <img class="main-logo" src="https://staging.toragon.vn/wp-content/uploads/2021/11/logo-toragon.png" border="0" alt="Toragon" title="" />
+            <img class="main-logo" src="https://toragon.vn/wp-content/uploads/2022/01/logo_toragon.png" border="0" alt="Toragon" title="" />
           </a>
         </div>
         <div class="col-12 col-sm-6 text-center logo-col-c">
@@ -103,23 +103,23 @@
               <span class="navbar-toggler-icon"><i class="fas fa-bars"></i></span>
             </button>
             <a class="navbar-brand d-sm-none" href="<?php echo home_url(); ?>" class="navbar-brand">
-              <img class="main-logo" src="https://staging.toragon.vn/wp-content/uploads/2021/11/logo-toragon.png" border="0" alt="Toragon" title="" />
+              <img class="main-logo" src="https://toragon.vn/wp-content/uploads/2022/01/logo_toragon.png" border="0" alt="Toragon" title="" />
             </a>
             <div class="logo-col-r mobile-only d-flex d-sm-none">
               <div class="ml-3">
                 <a href="<?php echo get_permalink( get_option('woocommerce_myaccount_page_id') ); ?>">
                   <div class="cart_count">
-                    <img src="https://staging.toragon.vn/wp-content/uploads/2021/11/tiger.png" alt="cart">
+                    <img src="https://toragon.vn/wp-content/uploads/2022/01/tiger.png" alt="cart">
                   </div>
                 </a>
               </div>
               <div class="ml-3">
-                <?php echo do_shortcode('[wishlist_count]'); ?>
+                <?php echo do_shortcode('[wishlist_count]'); ?>               
               </div>
               <div class="ml-3">
                 <a href="<?php echo wc_get_cart_url(); ?>">
                   <div class="cart_count">
-                    <img src="https://staging.toragon.vn/wp-content/uploads/2021/11/briefcase.png" alt="cart">
+                    <img src="https://toragon.vn/wp-content/uploads/2022/01/briefcaseic.png" alt="cart">
                     <div class="header-cart-count"><?php echo WC()->cart->get_cart_contents_count(); ?></div>
                   </div>
                 </a>
@@ -149,17 +149,17 @@
           <div class="ml-3">
             <a href="<?php echo get_permalink( get_option('woocommerce_myaccount_page_id') ); ?>">
               <div class="cart_count">
-                <img src="https://staging.toragon.vn/wp-content/uploads/2021/11/tiger.png" alt="cart">
+                <img src="https://toragon.vn/wp-content/uploads/2022/01/tiger.png" alt="cart">
               </div>
             </a>
           </div>
           <div class="ml-3">
-            <?php echo do_shortcode('[wishlist_count]'); ?>
+            <?php echo do_shortcode('[wishlist_count]'); ?>            
           </div>
           <div class="ml-3">
             <a href="<?php echo wc_get_cart_url(); ?>">
               <div class="cart_count">
-                <img src="https://staging.toragon.vn/wp-content/uploads/2021/11/briefcase.png" alt="cart">
+                <img src="https://toragon.vn/wp-content/uploads/2022/01/briefcaseic.png" alt="cart">
                 <div class="header-cart-count"><?php echo WC()->cart->get_cart_contents_count(); ?></div>
               </div>
             </a>

@@ -1,6 +1,6 @@
 
 jQuery(document).ready(function() { 
-  jQuery('.dropdown-menu a.logout').one('click', function(e) {    
+  jQuery('.dropdown-menu a.logout,.logout-item a span').one('click', function(e) {    
     call_ajax();
   });
 

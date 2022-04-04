@@ -60,9 +60,9 @@ if ( ! class_exists( 'Mwb_Wpr_Emails_Notification' ) ) {
 		 * @return string
 		 */
 		public function get_default_subject() {
-
 			return $this->mwb_wpr_email_subject;
 		}
+
 
 		/**
 		 * Get email heading.
@@ -71,7 +71,8 @@ if ( ! class_exists( 'Mwb_Wpr_Emails_Notification' ) ) {
 		 * @return string
 		 */
 		public function get_default_heading() {
-			return __( 'Points and rewards notification', 'points-and-rewards-for-woocommerce' );
+      return $this->mwb_wpr_email_subject;
+			//return __( 'Points and rewards notification', 'points-and-rewards-for-woocommerce' );
 		}
 		/**
 		 * Trigger function
@@ -84,7 +85,7 @@ if ( ! class_exists( 'Mwb_Wpr_Emails_Notification' ) ) {
 		public function trigger( $user_id, $email_content, $mwb_wpr_email_subject ) {
 			if ( $user_id ) {
 				$this->setup_locale();
-
+       
 				$user = new WP_User( $user_id );
 				$user_info = get_userdata( $user_id );
 				if ( is_a( $user, 'WP_User' ) ) {

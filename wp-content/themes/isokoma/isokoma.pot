@@ -1,0 +1,434 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Isokoma - new\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-01-10 08:17+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.5.5; wp-5.7\n"
+"X-Domain: isokoma"
+
+#: inc/isokoma-functions.php:133
+msgid " Hết hàng"
+msgstr ""
+
+#: woocommerce/emails/admin-new-order.php:70
+#, php-format
+msgid "A new order has been placed on Toragon HE under the ID %s:"
+msgstr ""
+
+#: functions.php:60
+msgid "Add widgets here to appear in Left sidebar."
+msgstr ""
+
+#: functions.php:49
+msgid "Add widgets here to appear in your footer."
+msgstr ""
+
+#: woocommerce/archive-product.php:207
+msgid "All Shops"
+msgstr ""
+
+#: woocommerce/archive-product.php:192
+msgid "Art toys"
+msgstr ""
+
+#: woocommerce/emails/customer-new-account.php:94
+#: woocommerce/emails/customer-on-hold-order.php:224
+#: woocommerce/emails/customer-reset-password.php:96
+msgid "Best,"
+msgstr ""
+
+#: inc/woocommerce.php:308
+msgid "Cart"
+msgstr ""
+
+#: woocommerce/archive-product.php:300
+#, php-format
+msgid "Category Archives: %s"
+msgstr ""
+
+#: footer.php:40
+msgid "Chính sách bảo mật"
+msgstr ""
+
+#: functions.php:289
+msgid "Chưa có sản phẩm đã xem"
+msgstr ""
+
+#: inc/isokoma-functions.php:227
+msgid "Chỉ còn"
+msgstr ""
+
+#: woocommerce/emails/customer-reset-password.php:79
+msgid "Click here to reset your password"
+msgstr ""
+
+#: footer.php:42
+msgid "Câu hỏi thường gặp"
+msgstr ""
+
+#: inc/isokoma-functions.php:239
+msgid "Còn"
+msgstr ""
+
+#: inc/isokoma-functions.php:174 inc/isokoma-functions.php:195
+msgid "Còn 1 sản phẩm "
+msgstr ""
+
+#: footer.php:20
+msgid "Công ty Cổ phần <nobr>TORAGON HE</nobr> "
+msgstr ""
+
+#: inc/isokoma-template-functions.php:477
+msgid "Danh mục"
+msgstr ""
+
+#: footer.php:50
+msgid "Danh sách yêu thích"
+msgstr ""
+
+#: woocommerce/emails/admin-new-order.php:62
+msgid "Dear staff member,"
+msgstr ""
+
+#: footer.php:41
+msgid "Dịch vụ khách hàng"
+msgstr ""
+
+#: functions.php:47
+msgid "Footer"
+msgstr ""
+
+#. Name of the template
+msgid "General"
+msgstr ""
+
+#: footer.php:51
+msgid "Giỏ hàng"
+msgstr ""
+
+#: footer.php:37
+msgid "Giới thiệu"
+msgstr ""
+
+#: woocommerce/emails/customer-new-account.php:86
+msgid "Happy shopping!"
+msgstr ""
+
+#: woocommerce/emails/customer-reset-password.php:88
+msgid "Happy shopping!,"
+msgstr ""
+
+#. 1: user display name 2: logout url
+#: woocommerce/myaccount/dashboard.php:34
+#, php-format
+msgid "Hello %1$s"
+msgstr ""
+
+#. URI of the theme
+#. Author URI of the theme
+msgid "https://patroids.com/"
+msgstr ""
+
+#: taxonomy.php:150 woocommerce/archive-product.php:201
+msgid "Hàng gia dụng"
+msgstr ""
+
+#: woocommerce/archive-product.php:198
+msgid "Hàng điện tử"
+msgstr ""
+
+#: inc/isokoma-functions.php:99 inc/isokoma-functions.php:115
+#: inc/isokoma-functions.php:127 inc/isokoma-functions.php:161
+msgid "Hết hàng"
+msgstr ""
+
+#: inc/isokoma-functions.php:148
+msgid "Hết hàng."
+msgstr ""
+
+#: woocommerce/emails/customer-reset-password.php:76
+msgid ""
+"If you didn't make this request, just ignore this email. If you'd like to "
+"proceed:"
+msgstr ""
+
+#. Name of the theme
+msgid "Isokoma - new"
+msgstr ""
+
+#: search.php:5 taxonomy.php:42
+msgid "Kết quả tìm kiếm"
+msgstr ""
+
+#: search.php:51
+msgid "Kết quả tìm kiếm cho từ khóa"
+msgstr ""
+
+#: functions.php:58
+msgid "Left sidebar"
+msgstr ""
+
+#: footer.php:38
+msgid "Liên hệ"
+msgstr ""
+
+#: inc/isokoma-template-functions.php:338
+msgid "Liên tục cập nhật các mặt hàng mới"
+msgstr ""
+
+#: header.php:67
+msgid "Lịch sử mua hàng"
+msgstr ""
+
+#: functions.php:91
+msgid "Main Menu"
+msgstr ""
+
+#: woocommerce/single-product/short-description.php:29
+msgid "MSP"
+msgstr ""
+
+#: woocommerce/emails/admin-new-order.php:40
+msgid "New order placed!"
+msgstr ""
+
+#: inc/isokoma-template-functions.php:233
+msgid "Những sản phẩm đặc biệt <nobr>của cửa hàng</nobr>"
+msgstr ""
+
+#: functions.php:449
+msgid "Nothing purchased yet"
+msgstr ""
+
+#. Author of the theme
+msgid "Patroids"
+msgstr ""
+
+#: inc/isokoma-functions.php:111
+msgid "Pre-Order closed"
+msgstr ""
+
+#: inc/isokoma-functions.php:157
+msgid "Pre-Order closed."
+msgstr ""
+
+#: woocommerce/myaccount/form-lost-password.php:23
+msgid "Quên mật khẩu"
+msgstr ""
+
+#: woocommerce/emails/admin-new-order.php:211
+msgid "Regards,"
+msgstr ""
+
+#: taxonomy.php:163
+msgid "Shop"
+msgstr ""
+
+#: woocommerce/emails/customer-reset-password.php:62
+msgid "Someone has requested a new password for the following account on"
+msgstr ""
+
+#: single.php:19 taxonomy.php:44 taxonomy.php:167
+#: woocommerce/archive-product.php:119 woocommerce/single-product.php:32
+msgid "Sản phẩm"
+msgstr ""
+
+#: inc/isokoma-functions.php:231 inc/isokoma-functions.php:243
+msgid "sản phẩm"
+msgstr ""
+
+#: inc/isokoma-functions.php:181 inc/isokoma-functions.php:202
+msgid "sản phẩm có sẵn "
+msgstr ""
+
+#: inc/isokoma-template-functions.php:337
+msgid "Sản phẩm mới"
+msgstr ""
+
+#: template-parts/content-productnew.php:53
+msgid "Sản phẩm mới nhất"
+msgstr ""
+
+#: inc/isokoma-template-functions.php:232
+msgid "Sản phẩm nổi bật"
+msgstr ""
+
+#: woocommerce/content-single-product.php:95
+msgid "Sản phẩm đã xem"
+msgstr ""
+
+#: woocommerce/emails/customer-new-account.php:99
+#: woocommerce/emails/customer-on-hold-order.php:229
+#: woocommerce/emails/customer-reset-password.php:101
+msgid "Team Toragon HE,"
+msgstr ""
+
+#: footer.php:52
+msgid "Thanh toán"
+msgstr ""
+
+#: woocommerce/emails/customer-new-account.php:62
+msgid ""
+"Thank you for creating an account at Toragon HE. We welcome you to be a part "
+"of us!"
+msgstr ""
+
+#: woocommerce/emails/customer-on-hold-order.php:70
+msgid ""
+"Thank you for placing an order at Toragon HE. Here is your order summary:"
+msgstr ""
+
+#: woocommerce/emails/customer-on-hold-order.php:216
+msgid "Thank you for shopping with us."
+msgstr ""
+
+#: functions.php:131
+msgid "The size"
+msgstr ""
+
+#. Description of the theme
+msgid "The theme Isokoma"
+msgstr ""
+
+#: footer.php:49
+msgid "Theo dõi đơn hàng"
+msgstr ""
+
+#: footer.php:35
+msgid "Thông tin"
+msgstr ""
+
+#: taxonomy.php:206 woocommerce/archive-product.php:219
+#: woocommerce/archive-product.php:232 woocommerce/archive-product.php:245
+#: woocommerce/archive-product.php:258 woocommerce/archive-product.php:271
+#: woocommerce/archive-product.php:284
+msgid "Thương hiệu"
+msgstr ""
+
+#: taxonomy.php:156
+msgid "Thời Trang"
+msgstr ""
+
+#: woocommerce/archive-product.php:195
+msgid "Thời trang"
+msgstr ""
+
+#: single-post.php:7
+msgid "TIN TỨC"
+msgstr ""
+
+#: single-post.php:8
+msgid "Tin Tức"
+msgstr ""
+
+#: woocommerce/emails/admin-new-order.php:216
+msgid "Toragon HE,"
+msgstr ""
+
+#: taxonomy.php:142
+msgid "Toys"
+msgstr ""
+
+#: single-post.php:8 single.php:19 taxonomy.php:44 taxonomy.php:167
+#: woocommerce/archive-product.php:119 woocommerce/single-product.php:32
+msgid "Trang chủ"
+msgstr ""
+
+#: taxonomy.php:146 woocommerce/archive-product.php:204
+msgid "Tranh"
+msgstr ""
+
+#: footer.php:46 header.php:66
+msgid "Tài khoản"
+msgstr ""
+
+#: footer.php:48
+msgid "Tài khoản của tôi"
+msgstr ""
+
+#: searchform.php:9
+msgid "Tìm kiếm ..."
+msgstr ""
+
+#: header.php:80
+msgid "Tạo tài khoản"
+msgstr ""
+
+#: inc/isokoma-template-functions.php:170
+msgid "View Product"
+msgstr ""
+
+#: woocommerce/emails/customer-new-account.php:33
+msgid "Welcome aboard!"
+msgstr ""
+
+#: inc/isokoma-template-functions.php:479
+msgid "XEM"
+msgstr ""
+
+#: header.php:60
+msgid "Xin chào"
+msgstr ""
+
+#: woocommerce/emails/customer-on-hold-order.php:40
+#, php-format
+msgid "Your order %s has been received by us"
+msgstr ""
+
+#: woocommerce/emails/admin-new-order.php:41
+#: woocommerce/emails/customer-completed-order.php:29
+msgid "Your order has been delivered. Here is your order summary:"
+msgstr ""
+
+#: woocommerce/emails/customer-new-account.php:70
+#, php-format
+msgid ""
+"Your username is  %1$s. You can access your account area to view orders, "
+"change your password, and more at:"
+msgstr ""
+
+#: footer.php:39
+msgid "Điều khoản và điều lệ"
+msgstr ""
+
+#: template-parts/content-register.php:22
+msgid "ĐĂNG KÝ TÀI KHOẢN"
+msgstr ""
+
+#: footer.php:57
+msgid "Đăng kí nhận tin"
+msgstr ""
+
+#: footer.php:58
+msgid "Đăng ký ngay để nhận được thông tin khuyến mãi mới nhất"
+msgstr ""
+
+#: header.php:76 woocommerce/myaccount/form-login.php:32
+msgid "Đăng nhập"
+msgstr ""
+
+#: inc/woocommerce.php:397
+msgid "Đăng nhập để đặt hàng"
+msgstr ""
+
+#: header.php:69
+msgid "Đăng xuất"
+msgstr ""
+
+#: taxonomy.php:160
+msgid "Đồ Điện Tử"
+msgstr ""
+
+#: header.php:68
+msgid "Đổi mật khẩu"
+msgstr ""

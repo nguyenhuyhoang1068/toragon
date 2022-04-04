@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /*
 Theme Name: Isokoma - new
 Theme URI: https://patroids.com/
@@ -5,12 +6,12 @@ Author: Patroids
 Author URI: https://patroids.com/
 Description: The theme Isokoma
 Requires at least: WordPress 5.0
-Text Domain: isokoma
 Version: 1.0.0
+Requires at least: 4.9.6
+Requires PHP: 5.2.4
 Tags: blog, news, grid-layout, one-column, two-column, three-column, right-sidebar, rtl-language
-Domain Path: /languages
+Text Domain: isokoma
 */
-
 
 
 input[type="reset"],
@@ -342,7 +343,9 @@ h1, h2, h3, h4, h5, h6 {
 .flexslider3.carousel .slides li:last-child {
     margin-right: 0px;
 }
-
+p:empty::before {
+  content: "​";
+}
 .info {
     margin-bottom: 50px;
 }
@@ -1071,8 +1074,11 @@ h1.register.mt-5,
 }
 
 .related.products {
-    display: inline-block;
+    display: block;
     width: 100%;
+    clear: both;
+    padding: 0;
+    margin: 0;
 }
 
 .page-numbers {
@@ -1416,6 +1422,8 @@ ins .woocommerce-Price-amount,
 }
 
 @media(min-width:576px) {
+    #navbarIsokomaContent li.menu-item-4659,
+    #navbarIsokomaContent li.menu-item-4660,
     #navbarIsokomaContent li.menu-item-3194,
     #navbarIsokomaContent li.menu-item-3195,
     #navbarIsokomaContent li.menu-item-839,
@@ -1475,4 +1483,7 @@ ins .woocommerce-Price-amount,
 
 #payment .payment_methods li p {
     margin: 0 0 0 -5px;
+}
+@media(min-width:768px){
+.aboutslider ul.slides li{height:426px;}
 }

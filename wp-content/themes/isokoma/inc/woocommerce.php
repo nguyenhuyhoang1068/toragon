@@ -381,7 +381,7 @@ function wp_commerce_template_single_rating(){
 							?>
 							
 							<button type="submit" name="add-to-cart" value="<?php echo esc_attr( $product->get_id() ); ?>" class="single_add_to_cart_button button alt">
-              <i class="fas fa-shopping-basket" aria-hidden="true"></i>  <?php echo esc_html( $product->single_add_to_cart_text() ? 'Cart' : 'Cart' ); ?></button>
+              <i class="fas fa-shopping-basket" aria-hidden="true"></i>  <?php echo esc_html( $product->single_add_to_cart_text() ? 'Giỏ hàng' : 'Giỏ hàng' ); ?></button>
 
 							<?php
 							/**

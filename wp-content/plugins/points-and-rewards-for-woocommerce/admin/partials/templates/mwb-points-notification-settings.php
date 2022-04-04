@@ -57,6 +57,30 @@ $mwb_settings = array(
 	array(
 		'type'  => 'sectionend',
 	),
+  array(
+		'title' => __( "vi_VN Points table's Custom Points Notification Settings", 'points-and-rewards-for-woocommerce' ),
+		'type'  => 'title',
+	),
+	array(
+		'title'         => __( 'vi_VN Email Subject', 'points-and-rewards-for-woocommerce' ),
+		'type'          => 'text',
+		'id'            => 'mwb_wpr_email_subject_vi',
+		'class'             => 'input-text mwb_wpr_new_woo_ver_style_text',
+		'desc_tip'      => __( 'Input subject for email.', 'points-and-rewards-for-woocommerce' ),
+		'default'   => __( 'Custom Points Notification', 'points-and-rewards-for-woocommerce' ),
+	),
+	array(
+		'title'         => __( 'vi_VN Email Description', 'points-and-rewards-for-woocommerce' ),
+		'type'          => 'textarea_email',
+		'id'            => 'mwb_wpr_email_discription_custom_id_vi',
+		'class'             => 'input-text',
+		'desc_tip'      => __( 'Enter Email Description for user.', 'points-and-rewards-for-woocommerce' ),
+		'desc'          => __( 'Use ', 'points-and-rewards-for-woocommerce' ) . '[Total Points]' . __( ' shortcode in place of Total Points, ', 'points-and-rewards-for-woocommerce' ) . '[USERNAME]' . __( ' shortcode in place of username and ', 'points-and-rewards-for-woocommerce' ) . __( 'in this section do not use ', 'points-and-rewards-for-woocommerce' ) . '[Points]' . __( ' shortcode ', 'points-and-rewards-for-woocommerce' ),
+		'default'   => __( 'Your points are updated and your total points are ', 'points-and-rewards-for-woocommerce' ) . '[Total Points].',
+	),
+	array(
+		'type'  => 'sectionend',
+	),
 	array(
 		'title' => __( 'Signup Points Notification Settings', 'points-and-rewards-for-woocommerce' ),
 		'type'  => 'title',
@@ -132,6 +156,31 @@ $mwb_settings = array(
 	array(
 		'type'  => 'sectionend',
 	),
+  array(
+		'title' => __( 'vi_VN Order Amount Points Notification Settings(Per ', 'points-and-rewards-for-woocommerce' ) . get_woocommerce_currency_symbol() . __( ' Spent Points)', 'points-and-rewards-for-woocommerce' ),
+		'type'  => 'title',
+	),
+	array(
+		'title'         => __( 'vi_VN Email Subject', 'points-and-rewards-for-woocommerce' ),
+		'type'          => 'text',
+		'id'            => 'mwb_wpr_amount_email_subject_vi',
+		'class'             => 'input-text',
+		'desc_tip'      => __( 'Input subject for email.', 'points-and-rewards-for-woocommerce' ),
+		'default'   => __( 'Order Amount Points Notification', 'points-and-rewards-for-woocommerce' ),
+	),
+	array(
+		'title'         => __( 'vi_VN Email Description', 'points-and-rewards-for-woocommerce' ),
+		'type'          => 'textarea_email',
+		'id'            => 'mwb_wpr_amount_email_discription_custom_id_vi',
+		'class'             => 'input-text',
+		'desc_tip'      => __( 'Enter Email Description for user.', 'points-and-rewards-for-woocommerce' ),
+		'default'       => __( 'You have received [Points] points and your total points are [Total Points].', 'points-and-rewards-for-woocommerce' ),
+		'desc'          => __( 'Use ', 'points-and-rewards-for-woocommerce' ) . '[Points]' . __( ' shortcode in place of per currency spent points ', 'points-and-rewards-for-woocommerce' ) . '[USERNAME]' . __( ' shortcode in place of username ', 'points-and-rewards-for-woocommerce' ) . '[Refer Points]' . __( ' in place of Referral points ', 'points-and-rewards-for-woocommerce' ) . '[Total Points]' . __( ' shortcode in place of Total Points.', 'points-and-rewards-for-woocommerce' ),
+
+	),
+	array(
+		'type'  => 'sectionend',
+	),
 	array(
 		'title' => __( 'Referral Points Notification Settings', 'points-and-rewards-for-woocommerce' ),
 		'type'  => 'title',
@@ -182,6 +231,30 @@ $mwb_settings = array(
 	array(
 		'type'  => 'sectionend',
 	),
+  array(
+		'title' => __( 'vi_VN Upgrade Membership Level Notification', 'points-and-rewards-for-woocommerce' ),
+		'type'  => 'title',
+	),
+	array(
+		'title'         => __( 'vi_VN Email Subject', 'points-and-rewards-for-woocommerce' ),
+		'type'          => 'text',
+		'id'            => 'mwb_wpr_membership_email_subject_vi',
+		'class'             => 'input-text',
+		'desc_tip'      => __( 'Input subject for email.', 'points-and-rewards-for-woocommerce' ),
+		'default'   => __( 'Upgrade Membership Level Notification', 'points-and-rewards-for-woocommerce' ),
+	),
+	array(
+		'title'         => __( 'vi_VN Email Description', 'points-and-rewards-for-woocommerce' ),
+		'type'          => 'textarea_email',
+		'id'            => 'mwb_wpr_membership_email_discription_custom_id_vi',
+		'class'             => 'input-text',
+		'desc_tip'      => __( 'Enter Email Description for user.', 'points-and-rewards-for-woocommerce' ),
+		'default'   => __( 'Your User Level has been Upgraded to [USERLEVEL]. And Now You will get some offers on some products.', 'points-and-rewards-for-woocommerce' ),
+		'desc'          => __( 'Use ', 'points-and-rewards-for-woocommerce' ) . '[USERLEVEL]' . __( ' shortcode in place of User Level ', 'points-and-rewards-for-woocommerce' ) . '[USERNAME]' . __( ' shortcode in place of username ', 'points-and-rewards-for-woocommerce' ),
+	),
+	array(
+		'type'  => 'sectionend',
+	),
 	array(
 		'title' => __( 'Deduct Assigned Point Notification', 'points-and-rewards-for-woocommerce' ),
 		'type'  => 'title',
@@ -206,6 +279,30 @@ $mwb_settings = array(
 	array(
 		'type'  => 'sectionend',
 	),
+  array(
+		'title' => __( 'vi_VN Deduct Assigned Point Notification', 'points-and-rewards-for-woocommerce' ),
+		'type'  => 'title',
+	),
+	array(
+		'title'         => __( 'vi_VN Email Subject', 'points-and-rewards-for-woocommerce' ),
+		'type'          => 'text',
+		'id'            => 'mwb_wpr_deduct_assigned_point_subject_vi',
+		'class'             => 'input-text',
+		'desc_tip'      => __( 'Input subject for email.', 'points-and-rewards-for-woocommerce' ),
+		'default'   => __( 'Your Points has been Deducted', 'points-and-rewards-for-woocommerce' ),
+	),
+	array(
+		'title'         => __( 'vi_VN Email Description', 'points-and-rewards-for-woocommerce' ),
+		'type'          => 'textarea_email',
+		'id'            => 'mwb_wpr_deduct_assigned_point_desciption_vi',
+		'class'             => 'input-text',
+		'desc_tip'      => __( 'Enter Email Description for user.', 'points-and-rewards-for-woocommerce' ),
+		'default'   => __( 'Your [DEDUCTEDPOINT] has been deducted from your total points as you have requested for your refund, and your Total Point are [TOTALPOINTS].', 'points-and-rewards-for-woocommerce' ),
+		'desc'          => __( 'Use ', 'points-and-rewards-for-woocommerce' ) . '[DEDUCTEDPOINT]' . __( ' shortcode in place of points which has been deducted ', 'points-and-rewards-for-woocommerce' ) . '[USERNAME]' . __( ' shortcode in place of username ', 'points-and-rewards-for-woocommerce' ) . '[TOTALPOINTS]' . __( ' shortcode in place of Total Remaining Points.', 'points-and-rewards-for-woocommerce' ),
+	),
+	array(
+		'type'  => 'sectionend',
+	),
 	array(
 		'title' => __( 'Points On Cart Sub-Total', 'points-and-rewards-for-woocommerce' ),
 		'type'  => 'title',
@@ -222,6 +319,30 @@ $mwb_settings = array(
 		'title'         => __( 'Email Description', 'points-and-rewards-for-woocommerce' ),
 		'type'          => 'textarea_email',
 		'id'            => 'mwb_wpr_point_on_cart_desc',
+		'class'             => 'input-text',
+		'desc_tip'      => __( 'Enter Email Description for user.', 'points-and-rewards-for-woocommerce' ),
+		'default'   => __( 'Your [DEDUCTCARTPOINT] Points has been deducted from your account, now your Total Point are [TOTALPOINTS].', 'points-and-rewards-for-woocommerce' ),
+		'desc'          => __( 'Use ', 'points-and-rewards-for-woocommerce' ) . '[DEDUCTCARTPOINT]' . __( ' shortcode in place of points which has been deducted ', 'points-and-rewards-for-woocommerce' ) . '[USERNAME]' . __( ' shortcode in place of username ', 'points-and-rewards-for-woocommerce' ) . '[TOTALPOINTS]' . __( ' shortcode in place of Total Points.', 'points-and-rewards-for-woocommerce' ),
+	),
+	array(
+		'type'  => 'sectionend',
+	),
+  array(
+		'title' => __( 'vi_VN Points On Cart Sub-Total', 'points-and-rewards-for-woocommerce' ),
+		'type'  => 'title',
+	),
+	array(
+		'title'         => __( 'vi_VN Email Subject', 'points-and-rewards-for-woocommerce' ),
+		'type'          => 'text',
+		'id'            => 'mwb_wpr_point_on_cart_subject_vi',
+		'class'             => 'input-text',
+		'desc_tip'      => __( 'Input subject for email.', 'points-and-rewards-for-woocommerce' ),
+		'default'   => __( 'Points Deducted!!', 'points-and-rewards-for-woocommerce' ),
+	),
+	array(
+		'title'         => __( 'vi_VN Email Description', 'points-and-rewards-for-woocommerce' ),
+		'type'          => 'textarea_email',
+		'id'            => 'mwb_wpr_point_on_cart_desc_vi',
 		'class'             => 'input-text',
 		'desc_tip'      => __( 'Enter Email Description for user.', 'points-and-rewards-for-woocommerce' ),
 		'default'   => __( 'Your [DEDUCTCARTPOINT] Points has been deducted from your account, now your Total Point are [TOTALPOINTS].', 'points-and-rewards-for-woocommerce' ),

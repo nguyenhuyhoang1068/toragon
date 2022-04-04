@@ -217,9 +217,9 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 		return apply_filters(
 			'wc_stripe_payment_icons',
 			[
-				'visa'       => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/visa.svg" class="stripe-visa-icon stripe-icon" alt="Visa" />',
-				'amex'       => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/amex.svg" class="stripe-amex-icon stripe-icon" alt="American Express" />',
-				'mastercard' => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/mastercard.svg" class="stripe-mastercard-icon stripe-icon" alt="Mastercard" />',
+				'visa'       => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/visa.png" class="stripe-visa-icon stripe-icon" alt="Visa" />',
+				'amex'       => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/amex.png" class="stripe-amex-icon stripe-icon" alt="American Express" />',
+				'mastercard' => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/mastercard.png" class="stripe-mastercard-icon stripe-icon" alt="Mastercard" />',
 				'discover'   => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/discover.svg" class="stripe-discover-icon stripe-icon" alt="Discover" />',
 				'diners'     => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/diners.svg" class="stripe-diners-icon stripe-icon" alt="Diners" />',
 				'jcb'        => '<img src="' . WC_STRIPE_PLUGIN_URL . '/assets/images/jcb.svg" class="stripe-jcb-icon stripe-icon" alt="JCB" />',

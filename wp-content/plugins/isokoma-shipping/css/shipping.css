@@ -1,3 +1,62 @@
+/* Backup
+.woocommerce-checkout ul#shipping_method {
+    margin: 0;
+    padding: 0;
+}
+
+#stripe-cvc-element,
+#stripe-exp-element,
+.stripe-exp-element,
+.stripe-cvc-element,
+.stripe-card-group {
+    width: 100%;
+}
+
+.woocommerce-shipping-fields h3#ship-to-different-address {
+    display: block;
+    overflow: hidden;
+}
+
+.woocommerce-shipping-fields h3#ship-to-different-address label {
+    width: 100%;
+}
+
+.woocommerce-shipping-fields h3#ship-to-different-address label span {
+    float: right;
+    width: 90%;
+    text-align: right;
+    margin-right: 40px;
+    margin-top: 10px;
+}
+
+.woocommerce-shipping-fields h3#ship-to-different-address label input {
+    float: left;
+    width: 10%;
+}
+
+.woocommerce-form-login-toggle .woocommerce-info a {
+    color: #6d6d6d;
+}
+
+#shipping_method li {
+    margin-bottom: .2360828548em;
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    clear: both;
+    overflow: hidden;
+    width: 100%;
+}
+
+#shipping_method li input {
+    float: left;
+    margin-top: 5px;
+}
+
+.cart-collaterals .woocommerce-shipping-totals.shipping,
+.cart_totals.calculated_shipping .woocommerce-shipping-totals.shipping {
+    display: none;
+}*/
 .woocommerce-checkout ul#shipping_method {
     margin: 0;
     padding: 0;

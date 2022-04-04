@@ -84,7 +84,7 @@ class WooPfp_Admin_Page
 ?>
     <div class="wrap">
       <h1><?= esc_html(get_admin_page_title()); ?></h1>
-      <form name="woocommerce_pfp_for_vietnam" method="post">
+      <form name="woocommerce_pfp_for_vietnam" method="post" novalidate>
         <?php echo $this->message ?>
         <input type="hidden" id="action" name="action" value="woopfp_save_settings">
         <input type="hidden" id="woopfp_nonce" name="woopfp_nonce" value="<?php echo wp_create_nonce('woopfp_save_settings') ?>">
@@ -183,11 +183,10 @@ class WooPfp_Admin_Page
               <th scope="row"><?php printf(__('Stripe Fees', 'woo-pfp')) ?></th>
               <td>
                 <input name="settings[vnd_stripe_fees][enabled]" type="hidden" value="no">
-                <input name="settings[vnd_stripe_fees][enabled]" type="checkbox" id="vnd_stripe_fees" value="yes" <?php if ('yes' == $settings['vnd_stripe_fees']['enabled'])
-                                                                                                                                            echo 'checked="checked"' ?>>
+                <input name="settings[vnd_stripe_fees][enabled]" type="checkbox" id="vnd_stripe_fees" value="yes" <?php if ('yes' == $settings['vnd_stripe_fees']['enabled']) echo 'checked="checked"' ?>>
                 <label for="vnd_stripe_fees"><?php _e('Enabled', 'woo-pfp') ?></label>
                 <fieldset>  
-                  <input name="settings[vnd_stripe_fees][rate]" type="number" step="0.011" id="vnd_stripe_fees" style="width: 70px; padding-right: 0;" value="<?php echo $settings['vnd_stripe_fees']['rate']; ?>" ><label for="vnd_stripe_fees"><?php _e('Stripe Fee percent e.g 0.035', 'woo-pfp') ?></label> <br/>
+                  <input name="settings[vnd_stripe_fees][rate]" type="number" step="0.034" id="vnd_stripe_fees" style="width: 70px; padding-right: 0;" value="<?php echo $settings['vnd_stripe_fees']['rate']; ?>" ><label for="vnd_stripe_fees"><?php _e('Stripe Fee percent e.g 0.034', 'woo-pfp') ?></label> <br/>
                   <input name="settings[vnd_stripe_fees][fixedfee]" type="number" step="0.011" id="vnd_stripe_fees_fixedfee" style="width: 70px; padding-right: 0;" value="<?php echo $settings['vnd_stripe_fees']['fixedfee']; ?>" ><label for="vnd_stripe_fees_fixedfee"><?php _e('Stripe Fix Fee USD e.g US$0.6', 'woo-pfp') ?></label> <br/>
                   <input name="settings[vnd_stripe_fees][paypalfixedfee]" type="number" step="1" min="5000" max="20000" id="vnd_stripe_fees_paypalfixedfee" style="width: 70px; padding-right: 0;" value="<?php echo $settings['vnd_stripe_fees']['paypalfixedfee']; ?>" ><label for="vnd_stripe_fees_paypalfixedfee"><?php _e('Stripe Fix Fee VND e.g 10000', 'woo-pfp') ?></label>
                 </fieldset>

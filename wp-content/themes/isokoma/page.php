@@ -29,7 +29,7 @@ get_header();
 				get_template_part( 'template-parts/content', 'about' );
 			}elseif($pagename == 'tin-tuc'){
 				get_template_part( 'template-parts/content', 'tintuc' );
-			}elseif($pagename == 'hang-moi'){
+			}elseif($pagename == 'san-pham-moi'){
 				get_template_part( 'template-parts/content', 'productnew' );
 			}elseif($pagename == 'san-pham'){
 				get_template_part( 'template-parts/content', 'productall' );				

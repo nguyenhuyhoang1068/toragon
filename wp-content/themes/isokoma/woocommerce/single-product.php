@@ -25,7 +25,7 @@ foreach ($terms as $term) {
 }
 get_header( 'shop' ); ?>
 <div class="product-detail">
-<div class="breadcrumbs-area">
+<!--<div class="breadcrumbs-area">
 	<div class="box-breadcrumb mobile deskstop">			
 		<div class="banner-text text-center">
 			<h2 class="mb-0"><?php echo $term_name; ?></h2>
@@ -34,9 +34,13 @@ get_header( 'shop' ); ?>
 		<img class="breadcrumb-icon mobile" src="<?php  echo Categories_Multiple_Images::get_image( $term->term_id, 1,'full' ); ?>" alt="">
 		<img class="breadcrumb-icon desktop" src="<?php echo Categories_Multiple_Images::get_image( $term->term_id, 2,'full' ); ?>" alt="">		
 	</div>
-</div>
+</div>-->
 <div class="container">
 	<div class="product-detail-inner">
+		<div class="product-cat-name text-center">
+			<h2><?php echo $term_name; ?></h2>
+			<img src="https://toragon.vn/wp-content/uploads/2022/01/design-element.png" alt="toragon">
+		</div>
 	<?php
 		/**
 		 * woocommerce_before_main_content hook.

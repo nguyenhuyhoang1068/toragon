@@ -31,7 +31,7 @@ _e( 'Your pre-order has been cancelled. Your order details are shown below for y
 
 <?php do_action( 'woocommerce_email_before_order_table', $order, false, $plain_text, $email ); ?>
 
-<h2><?php echo __( 'Order:', 'wc-pre-orders' ) . ' ' . $order->get_order_number(); ?></h2>
+<h2 style="font-size:16px; color: #fbcf1f !important;"><?php echo __( 'Order:', 'wc-pre-orders' ) . ' ' . $order->get_order_number(); ?></h2>
 
 <table cellspacing="0" cellpadding="6" style="width: 100%; border: 1px solid #eee;" border="1" bordercolor="#eee">
 	<thead>
@@ -64,7 +64,7 @@ _e( 'Your pre-order has been cancelled. Your order details are shown below for y
 
 <?php do_action( 'woocommerce_email_order_meta', $order, false, $plain_text, $email ); ?>
 
-<h2><?php _e( 'Customer details', 'wc-pre-orders' ); ?></h2>
+<h2 style="font-size:16px; color: #fbcf1f !important;"><?php _e( 'Customer details', 'wc-pre-orders' ); ?></h2>
 
 <?php if ( $billing_email ) : ?>
 	<p><strong><?php _e( 'Email:', 'wc-pre-orders' ); ?></strong> <?php echo $billing_email; ?></p>

@@ -240,7 +240,7 @@ if ( ! function_exists( 'woosw_init' ) ) {
 								            ) + $products;
 								update_option( 'woosw_list_' . $key, $products );
 								$this->update_meta( $product_id, 'add' );
-								$return['notice'] = self::localization( 'added_message', esc_html__( 'Added to the wishlist!', 'woo-smart-wishlist' ) );
+								$return['notice'] = self::localization( 'added_message', esc_html__( 'Đã thêm vào danh sách yêu thích!', 'woo-smart-wishlist' ) );
 								$return['image']  = WOOSW_URI . 'assets/images/heart_add.svg';
 							} else {
 								$return['notice'] = self::localization( 'already_message', esc_html__( 'Already in the wishlist!', 'woo-smart-wishlist' ) );
@@ -290,8 +290,9 @@ if ( ! function_exists( 'woosw_init' ) ) {
 								$return['status'] = 1;
 
 								if ( count( $products ) > 0 ) {
-									$return['notice'] = self::localization( 'removed_message', esc_html__( 'Removed from wishlist!', 'woo-smart-wishlist' ) );
+									$return['notice'] = self::localization( 'removed_message', esc_html__( 'Đã xóa sản phẩm khỏi danh sách yêu thích!', 'woo-smart-wishlist' ) );
 								} else {
+									$return['status'] = 0;
 									$return['notice'] = self::localization( 'empty_message', esc_html__( 'There are no products on the wishlist!', 'woo-smart-wishlist' ) );
 								}
 							} else {
@@ -1227,65 +1228,99 @@ if ( ! function_exists( 'woosw_init' ) ) {
                                     <td class="woosw-content-item--remove"><span></span></td>
 								<?php } ?>
 
-                                <td class="woosw-content-item--image">
-									<?php if ( $link !== 'no' ) { ?>
-                                        <a <?php echo ( $link === 'yes_popup' ? 'class="woosq-link" data-id="' . $product_id . '"' : '' ) . ' href="' . $product->get_permalink() . '" ' . ( $link === 'yes_blank' ? 'target="_blank"' : '' ); ?>>
-											<?php echo $product->get_image(); ?>
-                                        </a>
-									<?php } else {
-										echo $product->get_image();
-									}
+                  <td class="woosw-content-item--image">
+                    <?php if ( $link !== 'no' ) { ?>
+                                          <a <?php echo ( $link === 'yes_popup' ? 'class="woosq-link" data-id="' . $product_id . '"' : '' ) . ' href="' . $product->get_permalink() . '" ' . ( $link === 'yes_blank' ? 'target="_blank"' : '' ); ?>>
+                        <?php echo $product->get_image(); ?>
+                                          </a>
+                    <?php } else {
+                      echo $product->get_image();
+                    }
+                    do_action( 'woosw_wishlist_item_image', $product, $product_id, $key ); ?>
+                      <?php   
+                        echo do_shortcode( '[woosw id="' . $product->get_id() . '"]');
+                      ?>
+                      <?php if ($product->single_add_to_cart_text() === 'Pre-Order') : ?>			
+                        <div class="pre-order">
+                          <?php echo 'Pre-Order' ; ?>
+                        </div>
+                      <?php endif; ?>		
+                  </td>
 
-									do_action( 'woosw_wishlist_item_image', $product, $product_id, $key ); ?>
-                                </td>
+                  <?php 
+                    if (is_user_logged_in()) { 	
+                  ?> 
+                  <td class="woosw-content-item--info">
+                   <form class="cart" action="<?php echo esc_url( get_permalink() ); ?>" method="post" enctype='multipart/form-data'>
+                   <div class="woosw-content-item--actions-one">
+                      <?php if ( $link !== 'no' ) {
+                        echo apply_filters( 'woosw_item_name', '<div class="woosw-content-item--name"><a ' . ( $link === 'yes_popup' ? 'class="woosq-link" data-id="' . $product_id . '"' : '' ) . ' href="' . $product->get_permalink() . '" ' . ( $link === 'yes_blank' ? 'target="_blank"' : '' ) . '>' . $product->get_name() . '</a></div>', $product );
+                      } else {
+                        echo apply_filters( 'woosw_item_name', '<div class="woosw-content-item--name">' . $product->get_name() . '</div>', $product );
+                      }
 
-                                <td class="woosw-content-item--info">
-									<?php if ( $link !== 'no' ) {
-										echo apply_filters( 'woosw_item_name', '<div class="woosw-content-item--name"><a ' . ( $link === 'yes_popup' ? 'class="woosq-link" data-id="' . $product_id . '"' : '' ) . ' href="' . $product->get_permalink() . '" ' . ( $link === 'yes_blank' ? 'target="_blank"' : '' ) . '>' . $product->get_name() . '</a></div>', $product );
-									} else {
-										echo apply_filters( 'woosw_item_name', '<div class="woosw-content-item--name">' . $product->get_name() . '</div>', $product );
-									}
+                      echo apply_filters( 'woosw_item_price', '<div class="woosw-content-item--price">' . $product->get_price_html() . '</div>', $product );
 
-									echo apply_filters( 'woosw_item_price', '<div class="woosw-content-item--price">' . $product->get_price_html() . '</div>', $product );
+                      echo apply_filters( 'woosw_item_time', '<div class="woosw-content-item--time">' . $product_time . '</div>', $product );
 
-									echo apply_filters( 'woosw_item_time', '<div class="woosw-content-item--time">' . $product_time . '</div>', $product );
-
-									do_action( 'woosw_wishlist_item_info', $product, $product_id, $key ); ?>
-                                </td>
-
-                                <td class="woosw-content-item--actions">
-                                    <div class="woosw-content-item--stock">
-										<?php echo( $product->is_in_stock() ? esc_html__( 'In stock', 'woo-smart-wishlist' ) : esc_html__( 'Out of stock', 'woo-smart-wishlist' ) ); ?>
-                                    </div>
-                    <?php 
-                      if (is_user_logged_in()) { 	
-                    ?>                      
-                      <div class="woosw-content-item--add">   
-                      <form class="cart" action="<?php echo esc_url( get_permalink() ); ?>" method="post" enctype='multipart/form-data'>
+                      do_action( 'woosw_wishlist_item_info', $product, $product_id, $key ); ?>
                       <?php                  
-                        do_action( 'woocommerce_before_add_to_cart_button' );
-                      ?>
-                        <button type="submit" name="add-to-cart" value="<?php echo esc_attr( $product->get_id() ); ?>" class="single_add_to_cart_button button alt"><i class="fas fa-shopping-basket" aria-hidden="true"></i>
-                        <?php echo esc_html( $product->single_add_to_cart_text() ? 'Cart' : 'Cart' ); ?></button>
-                      <?php                        
-                        do_action( 'woocommerce_after_add_to_cart_button' );
-                      ?>
-                      </form>	
+                        echo woocommerce_quantity_input();
+                      ?>                    
+                      <div class="woosw-content-item--stock">
+                      <?php echo( $product->is_in_stock() ? esc_html__( 'In stock', 'woo-smart-wishlist' ) : esc_html__( 'Out of stock', 'woo-smart-wishlist' ) ); ?>
                       </div>
-                    <?php
+                    </div>
+                    <div class="woosw-content-item--actions-two">                                      
+                      <div class="woosw-content-item--add">   
+                          <button type="submit" name="add-to-cart" value="<?php echo esc_attr( $product->get_id() ); ?>" class="single_add_to_cart_button button alt"><i class="fas fa-shopping-basket" aria-hidden="true"></i>
+                          <?php echo esc_html( $product->single_add_to_cart_text() ? 'Giỏ hàng' : 'Giỏ hàng' ); ?></button>
+                        <?php                        
+                          do_action( 'woocommerce_after_add_to_cart_button' );
+                        ?>                      
+                      </div>  								
+                    </div>
+                   </form>	
+                   <?php do_action( 'woosw_wishlist_item_actions', $product, $product_id, $key ); ?>
+                    </td>
+                   <?php
                       } else {
                     ?>
-                      <div class="text-danger">								
-                        <a href="<?php   echo site_url('/my-account'); ?>">
-                          <?php echo _e('Đăng nhập để đặt hàng', 'isokoma'); ?>							
-                        </a>		
+                    <td class="woosw-content-item--info">
+                  <form class="cart" action="<?php echo esc_url( get_permalink() ); ?>" method="post" enctype='multipart/form-data'>
+                    <div class="woosw-content-item--actions-one">
+                        <?php if ( $link !== 'no' ) {
+                          echo apply_filters( 'woosw_item_name', '<div class="woosw-content-item--name"><a ' . ( $link === 'yes_popup' ? 'class="woosq-link" data-id="' . $product_id . '"' : '' ) . ' href="' . $product->get_permalink() . '" ' . ( $link === 'yes_blank' ? 'target="_blank"' : '' ) . '>' . $product->get_name() . '</a></div>', $product );
+                        } else {
+                          echo apply_filters( 'woosw_item_name', '<div class="woosw-content-item--name">' . $product->get_name() . '</div>', $product );
+                        }
+
+                        echo apply_filters( 'woosw_item_price', '<div class="woosw-content-item--price">' . $product->get_price_html() . '</div>', $product );
+
+                        echo apply_filters( 'woosw_item_time', '<div class="woosw-content-item--time">' . $product_time . '</div>', $product );
+
+                        do_action( 'woosw_wishlist_item_info', $product, $product_id, $key ); ?>
+                        <?php                  
+                          echo woocommerce_quantity_input();
+                        ?>                    
+                        <div class="woosw-content-item--stock">
+                        <?php echo( $product->is_in_stock() ? esc_html__( 'In stock', 'woo-smart-wishlist' ) : esc_html__( 'Out of stock', 'woo-smart-wishlist' ) ); ?>
+                        </div>
                       </div>
+                      <div class="woosw-content-item--actions-two">                                      
+                        <div class="text-danger">				
+                            <a href="<?php   echo site_url('/my-account'); ?>">
+                              <?php echo _e('Đăng nhập để đặt hàng', 'isokoma'); ?>							
+                            </a>		
+                          </div>								
+                      </div>
+                  </form>	
+                   <?php do_action( 'woosw_wishlist_item_actions', $product, $product_id, $key ); ?>
+                    </td>
+                     
                     <?php
                       }
                     ?>
-
-									<?php do_action( 'woosw_wishlist_item_actions', $product, $product_id, $key ); ?>
-                                </td>
 
 								<?php do_action( 'woosw_wishlist_item_after', $product, $product_id, $key ); ?>
                             </tr>

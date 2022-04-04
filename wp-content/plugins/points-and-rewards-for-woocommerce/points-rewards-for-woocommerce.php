@@ -249,6 +249,33 @@ if ( $activated ) {
 		$return_date = $wp_date . ' ' . $wp_time;
 		return $return_date;
 	}
+  function mwb_wpr_set_the_wordpress_date_format_custom( $saved_date ) {
+		$saved_date = strtotime( $saved_date );
+		$date_format = get_option( 'date_format', 'Y-m-d' );
+		$time_format = get_option( 'time_format', 'g:i a' );
+		$wp_date = date_i18n( $date_format, $saved_date );
+		$wp_time = date_i18n( $time_format, $saved_date );
+		$return_date = $wp_date ;
+		return $return_date;
+	}
+
+  function mwb_wpr_set_the_wordpress_date_format_custom_one_year( $saved_date ) {     
+    $next_day =  date('d/m/Y', strtotime('365 day', strtotime($saved_date)));      
+  	$date_format = get_option( 'date_format', 'd/m/Y' );		
+		$wp_date = date_i18n( 'd/m/Y', $next_day );	
+		return $next_day;
+	}
+
+  function mwb_wpr_set_the_wordpress_date_number_one_year( $saved_date ) {    
+    $today_date_non_member = date_i18n( 'Y-m-d', current_time( 'timestamp', 0 ) ); 
+    $next_day =  date('Y-m-d', strtotime('365 day', strtotime($saved_date)));    
+    $date1 = new DateTime($today_date_non_member);
+    $date2 = new DateTime($next_day);
+    $diff = $date1->diff($date2);    
+    $day_remaining = $diff->days;
+		return $day_remaining;
+	}
+
 	if ( ! function_exists( 'array_key_first' ) ) {
 		/**
 		 * This function is used to return the first key

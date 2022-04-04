@@ -902,7 +902,7 @@ msgstr ""
 
 #: admin/partials/templates/mwb-generral-settings2.php:147
 #: public/partials/mwb-wpr-points-template.php:75
-msgid "My Points"
+msgid "Total spend"
 msgstr ""
 
 #: admin/partials/templates/mwb-generral-settings2.php:150

@@ -1,16 +1,10 @@
 <?php
 get_header(); 
 ?>
-<div class="breadcrumbs-area">
-    <div class="box-breadcrumb mobile deskstop">
-        <div class="banner-text text-center">
-            <h2 class="mb-0"><?php _e('Kết quả tìm kiếm', 'isokoma');  ?></h2>
-            <div class="d-none d-sm-block"><?php _e('Trang chủ', 'isokoma'); ?> > <?php _e('Sản phẩm', 'isokoma'); ?></div>
-        </div>
-        <img class="breadcrumb-icon mobile" src="<?php echo get_stylesheet_directory_uri()   ?>/images/icon-1.png" alt="">
-        <img class="breadcrumb-icon desktop" src="<?php echo get_stylesheet_directory_uri()   ?>/images/product_banner_1.jpg" alt="">
-    </div>
-</div>
+<div class="page-title text-center">
+    <h2 class=""><?php _e('Kết quả tìm kiếm', 'isokoma');  ?></h2>
+    <img src="https://toragon.vn/wp-content/uploads/2022/01/design-element.png" alt="toragon">
+  </div>
 
 
 <div class="container">
@@ -28,8 +22,11 @@ get_header();
                         $query = preg_replace('/\s\s+/', ' ',$query);             
                       
                           if (!empty($_GET['s'])) {  
-                            if (strlen($query) < 3 ){
+                            if (strlen($query) < 2 ){
                             ?>
+                            <div class="warning">
+                              <p style="color:white;">Vui lòng nhập 2 kí tự trở lên!</p>
+                            </div>
                             <div class="search-box d-sm-none mb-3">
                               <?php get_search_form(); ?> 
                             </div>  
@@ -38,7 +35,7 @@ get_header();
                                                                    
                             $paged = ( get_query_var('paged') ) ? get_query_var('paged') : 1;
                             $args = array(
-                                'posts_per_page'   => 8,   
+                                'posts_per_page'   => 12,   
                                 'paged'      => $paged,                       
                                 'post_type' => array('product'),
                                 'post_status' => 'publish',
@@ -51,7 +48,7 @@ get_header();
                             <div class="search-box d-sm-none mb-3">
                               <?php get_search_form(); ?> 
                             </div>  
-                            <div class="mb-3"><?php _e('Kết quả tìm kiếm cho từ khóa', 'isokoma'); ?> <b><?php echo $_GET['s']; ?></b></div>                          
+                            <div class="mb-3 search-text"><?php _e('Kết quả tìm kiếm cho từ khóa', 'isokoma'); ?> <b><?php echo $_GET['s']; ?></b></div>                          
                             <?php                            
                                 $total_results = $search_query->found_posts ? $search_query->found_posts : 0;                                                                                                               
                             ?>
@@ -100,9 +97,9 @@ get_header();
                                                         wp_commerce_template_single_add_to_cart();								
                                                     ?>		
                                                 </div>
-                                                <?php   
+                                                <div class="add-to-wl"><?php   
                                                   echo do_shortcode( '[woosw id="' . $product->get_id() . '"]');
-                                                ?>
+                                                ?></div>
                                             </div>
                                         </div>
                                     <?php
@@ -111,60 +108,16 @@ get_header();
                                     ?>
                                   </div>
                                 
-                                  <!-- /.row -->
-                                  <nav class="woocommerce-pagination">
-                                          <?php
-                                          $total_pages = $search_query->max_num_pages;
-                                          if($total_pages > 20) {
-                                            $total_pages = 20;
-                                          }
-                                          $current_page = max(1, get_query_var('paged'));    
-                                          if ($total_pages > 1){
-                                              $pages = paginate_links( array(
-                                                  'base'  => str_replace(10, '%#%', esc_url(get_pagenum_link( 10))),
-                                                  'format'    => '/page/%#%',
-                                                  'current'   => $current_page,
-                                                  'total'     => $total_pages,
-                                                  'type'      => 'array',
-                                                  'show_all'  => false,
-                                                  'end_size'  => 2,
-                                                  'mid_size'  => 1,
-                                                  'prev_next' => true,
-                                                  'prev_text' => 'First',
-                                                  'next_text' => 'Last',
-                                                  'add_args'  => false,
-                                                  'add_fragment'  => ''
-                                              ));
-                                              if(is_array($pages)){                                                
-                                                  $pagination = '<ul class="pagination justify-content-center box-pagination page-numbers">';
-                                                  foreach($pages as $page){
-                                                          $pagination .= '<li'. (strpos($page,'current')!== false ? ' class="active page-item" ':' class="page-item" ') .'>';                                                            
-                                                          if(strpos($page,'current')!== false){
-                                                                  if(get_query_var( 'paged' )>1){
-                                                                          $pagination .='<span aria-current="page" class="page-numbers current">'.get_query_var( 'paged' ).'</span>';
-                                                                  }else{
-                                                                          $pagination .= '<span aria-current="page" class="page-numbers current">'. 1 .'</span>';
-                                                                  }       
-                                                          }else{
-                                                                  $pagination .= str_replace('class="page-link"','',$page);
-                                                          }
-                                                          $pagination .='</li>';
-                                                  }
-                                                  // $pagination  .=   
-                                                  $pagination .= '</ul>';
-                                                  echo $pagination;
-                                              }
-                                          }                                        
-                                          //isokoma_custom_pagination();
-                                          ?>
-                                                                  
-                                  </nav>
+                                
                               <?php
                               endif;
                               wp_reset_postdata();
                               ?>    
                               <?php } ?>            
                           <?php } else { ?>  
+                            <div class="warning">
+                              <p style="color:white;">Vui lòng nhập 2 kí tự trở lên!</p>
+                            </div>
                             <div class="search-box d-sm-none mb-3">
                               <?php get_search_form(); ?> 
                             </div>       

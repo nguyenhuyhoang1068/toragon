@@ -133,17 +133,17 @@ jQuery(document).ready(function(){
   
 });
 
-jQuery(document).ready(function(){
+jQuery(document).ready(function () {
   var width = jQuery(window).width();
-   if (width < 768) {
-    jQuery( ".home form.search" ).prependTo( jQuery( "#collapsible_navbar" ) );
-    //jQuery( "#header_info .dropdown.language" ).appendTo( jQuery( "#collapsible_navbar" ) );
+  if (width < 768) {
+    jQuery("body #header_logo form.search").prependTo(jQuery("#collapsible_navbar"));
+    jQuery("#product_product_content #main > div.storefront-sorting:first-child").prependTo(".product-category > div.row");
+    jQuery(".woocommerce-pagination ul.page-numbers .page-numbers.dots").parent().next().hide();
+    jQuery(".woocommerce-pagination ul.page-numbers .page-numbers.dots").parent().prev().hide();
+  }
 
-   }
-  
 });
 
-/**Menu Dropdown */
 const $dropdown = jQuery(".dropdown");
 const $dropdownToggle = jQuery(".dropdown-toggle");
 const $dropdownMenu = jQuery(".dropdown-menu");
@@ -167,3 +167,32 @@ jQuery(window).on("load resize", function () {
 
 });
 
+//
+jQuery(document).ready(function() {
+  var 
+  menu_link = jQuery('#menu-brandarttoys .menu-item-has-children > a'),
+  sub_menu = jQuery('#menu-brandarttoys .sub-menu');   
+  
+  jQuery('<div class="icon-accordion"></div>').appendTo(menu_link);
+  icon = jQuery('.icon-accordion');
+
+  icon.on('click', function(e) {   
+    
+    if (!jQuery(this).parent().hasClass('active')) {
+      sub_menu.slideUp(300,'swing');
+      jQuery(this).parent().next().stop(true,true).slideToggle(300);
+      menu_link.removeClass('active');
+      jQuery(this).parent().addClass('active');
+      jQuery(this).addClass('open');
+
+    } 
+    else {
+      sub_menu.slideUp(300);
+      menu_link.removeClass('active');
+      icon.removeClass('open');
+
+    }
+    e.preventDefault();
+  });
+  
+});

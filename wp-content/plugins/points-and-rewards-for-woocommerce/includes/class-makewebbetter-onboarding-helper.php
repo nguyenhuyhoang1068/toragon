@@ -101,18 +101,18 @@ class Makewebbetter_Onboarding_Helper {
 		}
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_styles' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
-		add_action( 'admin_footer', array( $this, 'add_onboarding_popup_screen' ) );
-		add_action( 'admin_footer', array( $this, 'add_deactivation_popup_screen' ) );
-		add_filter( 'mwb_on_boarding_form_fields', array( $this, 'add_on_boarding_form_fields' ) );
-		add_filter( 'mwb_deactivation_form_fields', array( $this, 'add_deactivation_form_fields' ) );
+		//add_action( 'admin_footer', array( $this, 'add_onboarding_popup_screen' ) );
+		//add_action( 'admin_footer', array( $this, 'add_deactivation_popup_screen' ) );
+		//add_filter( 'mwb_on_boarding_form_fields', array( $this, 'add_on_boarding_form_fields' ) );
+		//add_filter( 'mwb_deactivation_form_fields', array( $this, 'add_deactivation_form_fields' ) );
 
 		// Ajax to send data.
-		add_action( 'wp_ajax_send_onboarding_data', array( $this, 'send_onboarding_data' ) );
-		add_action( 'wp_ajax_nopriv_send_onboarding_data', array( $this, 'send_onboarding_data' ) );
+		// add_action( 'wp_ajax_send_onboarding_data', array( $this, 'send_onboarding_data' ) );
+		// add_action( 'wp_ajax_nopriv_send_onboarding_data', array( $this, 'send_onboarding_data' ) );
 
 		// Ajax to Skip popup.
-		add_action( 'wp_ajax_skip_onboarding_popup', array( $this, 'skip_onboarding_popup' ) );
-		add_action( 'wp_ajax_nopriv_skip_onboarding_popup', array( $this, 'skip_onboarding_popup' ) );
+		// add_action( 'wp_ajax_skip_onboarding_popup', array( $this, 'skip_onboarding_popup' ) );
+		// add_action( 'wp_ajax_nopriv_skip_onboarding_popup', array( $this, 'skip_onboarding_popup' ) );
 	}
 
 	/**

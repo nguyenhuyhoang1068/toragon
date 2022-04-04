@@ -19,15 +19,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 ?>
-<div class="breadcrumbs-area">
-	<div class="box-breadcrumb mobile deskstop">			
-		<div class="banner-text text-center">
-			<h2 class="mb-0"><?php _e('Checkout', 'isokoma');?></h2>
-			<div class="d-none d-sm-block"><?php  _e('Trang chủ', 'isokoma'); ?> > <?php  _e('Sản phẩm', 'isokoma'); ?></div>
-		</div>		
-		<img class="breadcrumb-icon mobile" src="<?php  echo Categories_Multiple_Images::get_image( 22, 1,'full' ); ?>" alt="">
-		<img class="breadcrumb-icon desktop" src="<?php echo Categories_Multiple_Images::get_image( 22, 2,'full' ); ?>" alt="">		
-	</div>
+<div class="checkout page-title text-center">
+	<h2><?php the_title(); ?></h2>
+	<img src="https://toragon.vn/wp-content/uploads/2022/01/design-element.png" alt="toragon">
 </div>
 <div  class="container">
 <?php

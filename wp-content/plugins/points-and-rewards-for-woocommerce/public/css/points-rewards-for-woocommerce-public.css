@@ -562,7 +562,7 @@ html {
 
 .mwb_wpr_heading_para {
     display: inline-block;
-    margin-bottom: 0
+    margin-bottom: 0px;
 }
 
 .mwb_wpr_points_expiry {
