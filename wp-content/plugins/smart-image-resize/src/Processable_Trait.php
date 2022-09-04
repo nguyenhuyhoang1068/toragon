@@ -15,7 +15,10 @@ trait Processable_Trait
      *
      * @return bool
      */
-    function isProcessable( $image_id, $imageMeta )
+    public function isProcessable( $image_id, $imageMeta ){
+        return apply_filters('wp_sir_is_image_processable', $this->_isProcessable($image_id, $imageMeta), $image_id);
+    }
+    function _isProcessable( $image_id, $imageMeta )
     {
         
         $cache = wp_cache_get( 'processable_image_' . $image_id, 'wp_sir_cache' );
@@ -24,6 +27,9 @@ trait Processable_Trait
             return $cache === 'yes';
         }
 
+        if(! wp_attachment_is_image($image_id)){
+            return false;
+        }
         // Since the original image doesn't exist
         // we cannot process it.
         if ( ! is_readable( $imageMeta->getOriginalFullPath() ) ) {

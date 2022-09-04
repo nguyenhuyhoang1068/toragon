@@ -46,7 +46,7 @@ if ( is_plugin_active( 'woocommerce-wholesale-prices/woocommerce-wholesale-price
 				return;
 			}
 			/*Check send from product edit page*/
-			if ( ! isset( $_POST['_wmc_nonce'] ) || ! wp_verify_nonce( $_POST['_wmc_nonce'], 'wmc_save_simple_product_currency' ) ) {
+			if ( ! isset( $_POST['_wmc_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wmc_nonce'] ) ), 'wmc_save_simple_product_currency' ) ) {
 				return;
 			}
 
@@ -74,8 +74,8 @@ if ( is_plugin_active( 'woocommerce-wholesale-prices/woocommerce-wholesale-price
                          style="border-top: 1px solid #EEEEEE;">
 
                         <header>
-                            <h4 style="padding-bottom: 10px;"><?php _e( 'Wholesale Prices', 'woocommerce-wholesale-prices' );
-								echo "($key)"; ?></h4>
+                            <h4 style="padding-bottom: 10px;"><?php esc_html_e( 'Wholesale Prices', 'woocommerce-wholesale-prices' );
+								echo esc_html( "($key)" ); ?></h4>
                         </header>
 
 						<?php foreach ( $all_wholesale_roles as $role_key => $role ) {
@@ -119,7 +119,7 @@ if ( is_plugin_active( 'woocommerce-wholesale-prices/woocommerce-wholesale-price
 				return;
 			}
 			/*Check send from product edit page*/
-			if ( ! isset( $_POST['_wmc_nonce'] ) || ! wp_verify_nonce( $_POST['_wmc_nonce'], 'wmc_save_variable_product_currency' ) ) {
+			if ( ! isset( $_POST['_wmc_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wmc_nonce'] ) ), 'wmc_save_variable_product_currency' ) ) {
 				return;
 			}
 
@@ -153,8 +153,8 @@ if ( is_plugin_active( 'woocommerce-wholesale-prices/woocommerce-wholesale-price
                          style="border-top: 1px solid #EEEEEE;">
 
                         <header>
-                            <h3 style="padding-bottom: 10px;"><?php _e( 'Wholesale Prices', 'woocommerce-wholesale-prices' );
-								echo "($key)"; ?></h3>
+                            <h3 style="padding-bottom: 10px;"><?php esc_html_e( 'Wholesale Prices', 'woocommerce-wholesale-prices' );
+								echo esc_html( "($key)" ); ?></h3>
                         </header>
 
 						<?php foreach ( $all_wholesale_roles as $role_key => $role ) {

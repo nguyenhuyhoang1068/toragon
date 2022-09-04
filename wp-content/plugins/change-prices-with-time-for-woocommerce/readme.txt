@@ -2,8 +2,8 @@
 Contributors: ibenic, freemius
 Tags: woocommerce, prices, time, countdown
 Requires at least: 4.0
-Tested up to: 5.6.0
-Stable tag: 1.7.1
+Tested up to: 5.9.3
+Stable tag: 1.8.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -70,6 +70,17 @@ Regular price will be updated only if the number of sales gets to a defined amou
 3. New Layout
 
 == Changelog ==
+
+= 1.8.2 - 2022-04-17 =
+* Fix: Security Fix
+
+= 1.8.1 - 2021-10-01 =
+* Fix: Fixing critical error in settings page
+* Update: Freemius library updated.
+
+= 1.8.0 - 2021-09-30 =
+* New: Bulk Editing of Products under WooCommerce > Settings > Change Prices with Time
+* Fix: Removing all scheduled timestamps prior to adding new ones.
 
 = 1.7.1 - 2021-01-31 =
 * New: Prices remain the same when added to cart and saves the changes of prices if other plugins are changing it.

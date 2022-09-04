@@ -8,7 +8,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class WOOMULTI_CURRENCY_F_Frontend_Coupon {
 	public function __construct() {
-
 		$this->settings = WOOMULTI_CURRENCY_F_Data::get_ins();
 		if ( $this->settings->get_enable() ) {
 			add_filter( 'woocommerce_coupon_get_amount', array( $this, 'woocommerce_coupon_get_amount' ), 10, 2 );
@@ -35,7 +34,7 @@ class WOOMULTI_CURRENCY_F_Frontend_Coupon {
 	 * @return mixed
 	 */
 	public function woocommerce_coupon_get_amount( $data, $obj ) {
-		if ( $obj->is_type( array( 'percent' ) ) ) {
+		if ( $obj->is_type( array( 'percent', 'recurring_percent', 'sign_up_fee_percent' ) ) ) {
 			return $data;
 		}
 
@@ -54,10 +53,10 @@ class WOOMULTI_CURRENCY_F_Frontend_Coupon {
 	 */
 	public function woocommerce_coupon_get_minimum_amount( $data ) {
 
-		return wmc_get_price( $data );
+		return wmc_get_price( $data, false, false, true );
 	}
 
 	public function woocommerce_coupon_get_maximum_amount( $data ) {
-		return wmc_get_price( $data );
+		return wmc_get_price( $data, false, false, true );
 	}
 }

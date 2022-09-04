@@ -122,9 +122,9 @@ abstract class Optml_App_Replacer {
 	protected $is_allowed_site = [];
 
 	/**
-	 * Holds the most recent value for the cache buster.
+	 * Holds the most recent value for the cache buster, updated to hold only for images if active_cache_buster_assets is defined.
 	 *
-	 * @var string Cache Buster value.
+	 * @var string Cache Buster global value if active_cache_buster_assets is undefined else the value for images.
 	 */
 	protected $active_cache_buster = '';
 
@@ -134,6 +134,13 @@ abstract class Optml_App_Replacer {
 	 * @var array
 	 */
 	protected static $ignored_url_map = [];
+
+	/**
+	 * Holds the most recent value for the cache buster for assets.
+	 *
+	 * @var string Cache Buster value.
+	 */
+	protected $active_cache_buster_assets = '';
 
 	/**
 	 * Returns possible src attributes.
@@ -316,6 +323,14 @@ abstract class Optml_App_Replacer {
 
 		self::$filters = $this->settings->get_filters();
 		add_filter(
+			'optml_should_avif_ext',
+			function( $should_avif, $ext ) {
+				return $ext !== 'svg';
+			},
+			10,
+			2
+		);
+		add_filter(
 			'optml_possible_lazyload_flags',
 			function ( $strings = [] ) {
 				foreach ( self::$filters[ Optml_Settings::FILTER_TYPE_LAZYLOAD ][ Optml_Settings::FILTER_CLASS ] as $rule_flag => $status ) {
@@ -353,8 +368,12 @@ abstract class Optml_App_Replacer {
 		];
 		$this->upload_resource['url_length'] = strlen( $this->upload_resource['url'] );
 
-		$content_parts = parse_url( content_url() );
+		$content_url = content_url();
 
+		if ( strpos( $content_url, '/' ) === 0 ) {
+				$content_url = get_site_url() . $content_url;
+		}
+		$content_parts = parse_url( $content_url );
 		$this->upload_resource['content_path'] = '/';
 		$this->upload_resource['content_folder'] = '/';
 		if ( isset( $content_parts['path'] ) ) {
@@ -392,7 +411,16 @@ abstract class Optml_App_Replacer {
 		);
 
 		$this->allowed_sources              = $this->extract_domain_from_urls( $service_data['whitelist'] );
-		$this->active_cache_buster          = $this->settings->get( 'cache_buster' );
+		$this->active_cache_buster          = $this->settings->get( 'cache_buster_images' );
+		$this->active_cache_buster_assets   = $this->settings->get( 'cache_buster_assets' );
+
+		if ( empty( $this->active_cache_buster ) ) {
+			$this->active_cache_buster  = $this->settings->get( 'cache_buster' );
+		}
+		if ( empty( $this->active_cache_buster_assets ) ) {
+			$this->active_cache_buster_assets  = $this->settings->get( 'cache_buster' );
+		}
+
 		// Allways allow Photon urls.
 		$this->allowed_sources['i0.wp.com'] = true;
 		$this->allowed_sources['i1.wp.com'] = true;
@@ -521,6 +549,9 @@ abstract class Optml_App_Replacer {
 	 **/
 	public function strip_image_size_from_url( $url ) {
 
+		if ( apply_filters( 'optml_should_skip_strip_image_size', false, $url ) === true ) {
+			return $url;
+		}
 		if ( preg_match( '#(-\d+x\d+(?:_c)?|(@2x))\.(' . implode( '|', array_keys( Optml_Config::$image_extensions ) ) . '){1}$#i', $url, $src_parts ) ) {
 			$stripped_url = str_replace( $src_parts[1], '', $url );
 			// Extracts the file path to the image minus the base url

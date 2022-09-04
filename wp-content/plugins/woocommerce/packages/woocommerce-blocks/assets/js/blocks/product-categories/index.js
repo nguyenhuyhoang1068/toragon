@@ -2,9 +2,10 @@
  * External dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { registerBlockType } from '@wordpress/blocks';
-import { Icon, list } from '@woocommerce/icons';
+import { createBlock, registerBlockType } from '@wordpress/blocks';
+import { Icon, listView } from '@wordpress/icons';
 
+import { isFeaturePluginBuild } from '@woocommerce/block-settings';
 /**
  * Internal dependencies
  */
@@ -13,10 +14,15 @@ import './style.scss';
 import Block from './block.js';
 
 registerBlockType( 'woocommerce/product-categories', {
+	apiVersion: 2,
 	title: __( 'Product Categories List', 'woocommerce' ),
 	icon: {
-		src: <Icon srcElement={ list } />,
-		foreground: '#96588a',
+		src: (
+			<Icon
+				icon={ listView }
+				className="wc-block-editor-components-block-icon"
+			/>
+		),
 	},
 	category: 'woocommerce',
 	keywords: [ __( 'WooCommerce', 'woocommerce' ) ],
@@ -27,6 +33,16 @@ registerBlockType( 'woocommerce/product-categories', {
 	supports: {
 		align: [ 'wide', 'full' ],
 		html: false,
+		...( isFeaturePluginBuild() && {
+			color: {
+				background: false,
+				link: true,
+			},
+			typography: {
+				fontSize: true,
+				lineHeight: true,
+			},
+		} ),
 	},
 	example: {
 		attributes: {
@@ -83,6 +99,26 @@ registerBlockType( 'woocommerce/product-categories', {
 		},
 	},
 
+	transforms: {
+		from: [
+			{
+				type: 'block',
+				blocks: [ 'core/legacy-widget' ],
+				// We can't transform if raw instance isn't shown in the REST API.
+				isMatch: ( { idBase, instance } ) =>
+					idBase === 'woocommerce_product_categories' &&
+					!! instance?.raw,
+				transform: ( { instance } ) =>
+					createBlock( 'woocommerce/product-categories', {
+						hasCount: !! instance.raw.count,
+						hasEmpty: ! instance.raw.hide_empty,
+						isDropdown: !! instance.raw.dropdown,
+						isHierarchical: !! instance.raw.hierarchical,
+					} ),
+			},
+		],
+	},
+
 	deprecated: [
 		{
 			// Deprecate HTML save method in favor of dynamic rendering.
@@ -120,12 +156,8 @@ registerBlockType( 'woocommerce/product-categories', {
 				return attributes;
 			},
 			save( props ) {
-				const {
-					hasCount,
-					hasEmpty,
-					isDropdown,
-					isHierarchical,
-				} = props.attributes;
+				const { hasCount, hasEmpty, isDropdown, isHierarchical } =
+					props.attributes;
 				const data = {};
 				if ( hasCount ) {
 					data[ 'data-has-count' ] = true;

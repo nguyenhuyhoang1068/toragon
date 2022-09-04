@@ -1,10 +1,10 @@
 === WooCommerce ===
-Contributors: automattic, mikejolley, jameskoster, claudiosanches, rodrigosprimo, peterfabian1000, vedjain, jamosova, obliviousharmony, konamiman, sadowski, wpmuguru, royho
+Contributors: automattic, mikejolley, jameskoster, claudiosanches, rodrigosprimo, peterfabian1000, vedjain, jamosova, obliviousharmony, konamiman, sadowski, wpmuguru, royho, barryhughes-1
 Tags: e-commerce, store, sales, sell, woo, shop, cart, checkout, downloadable, downloads, payments, paypal, storefront, stripe, woo commerce
-Requires at least: 5.4
-Tested up to: 5.7
-Requires PHP: 7.0
-Stable tag: 5.1.0
+Requires at least: 5.8
+Tested up to: 6.0
+Requires PHP: 7.2
+Stable tag: 6.8.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -25,7 +25,7 @@ Whether you’re launching a business, taking brick-and-mortar retail online, or
 
 Built-in tools and popular integrations help you efficiently manage your business operations. Many services are free to add with a single click via the optional [Setup Wizard](https://docs.woocommerce.com/document/woocommerce-setup-wizard/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing).
 
-- **Choose how you want to get paid**. Conveniently manage payments from the comfort of your store with [WooCommerce Payments](https://woocommerce.com/payments/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) (U.S.-only). Securely accept cards, mobile wallets, bank transfers, and cash thanks to [100+ payment gateways](https://woocommerce.com/product-category/woocommerce-extensions/payment-gateways/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) – including [Stripe](https://woocommerce.com/products/stripe/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing), [PayPal](https://woocommerce.com/products/woocommerce-gateway-paypal-checkout/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing), and [Square](https://woocommerce.com/products/square/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing).
+- **Choose how you want to get paid**. Conveniently manage payments from the comfort of your store with [WooCommerce Payments](https://woocommerce.com/payments/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) (Available in the U.S., U.K., Ireland, Australia, New Zealand, Canada, and now: Spain, France, Germany, and Italy). Securely accept cards, mobile wallets, bank transfers, and cash thanks to [100+ payment gateways](https://woocommerce.com/product-category/woocommerce-extensions/payment-gateways/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) – including [Stripe](https://woocommerce.com/products/stripe/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing), [PayPal](https://woocommerce.com/products/woocommerce-gateway-paypal-checkout/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing), and [Square](https://woocommerce.com/products/square/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing).
 - **Configure your shipping options**. Print USPS labels right from your dashboard and even schedule a pickup with [WooCommerce Shipping](https://woocommerce.com/products/shipping/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) (U.S.-only). Connect with [well-known carriers](https://woocommerce.com/product-category/woocommerce-extensions/shipping-methods/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) such as UPS, FedEx, and ShipStation – plus a wide variety of delivery, inventory, and fulfillment solutions for your locale.
 - **Simplify sales tax**. Add [WooCommerce Tax](https://woocommerce.com/products/tax/?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) or [similar integrated services](https://woocommerce.com/product-category/woocommerce-extensions/tax?utm_medium=referral&utm_source=wordpress.org&utm_campaign=wp_org_repo_listing) to make automated calculations a reality.
 
@@ -140,7 +140,7 @@ Visit the [WooCommerce server requirements documentation](https://docs.woocommer
 
 = Automatic installation =
 
-Automatic installation is the easiest option -- WordPress will handles the file transfer, and you won’t need to leave your web browser. To do an automatic install of WooCommerce, log in to your WordPress dashboard, navigate to the Plugins menu, and click “Add New.”
+Automatic installation is the easiest option -- WordPress will handle the file transfer, and you won’t need to leave your web browser. To do an automatic install of WooCommerce, log in to your WordPress dashboard, navigate to the Plugins menu, and click “Add New.”
  
 In the search field type “WooCommerce,” then click “Search Plugins.” Once you’ve found us,  you can view details about it such as the point release, rating, and description. Most importantly of course, you can install it by! Click “Install Now,” and WordPress will take it from there.
 
@@ -160,112 +160,102 @@ WooCommerce comes with some sample data you can use to see how products look; im
 
 == Changelog ==
 
-= 5.1.0 2021-03-09 =
+= 6.8.1 2022-08-18 =
 
 **WooCommerce**
 
-* Update - WooCommerce Admin package 2.0.2. #29229
-* Update - WooCommerce Blocks package 4.4.3. #29016
-* Fix - Error in notice message of reports when WC Admin is disabled via a filter. #29095
-* Fix - Error when calculating orders with tax option rounding at subtotal level in PHP 8. #29089
-* Fix - price filtering not working properly with variable products whose variations have different prices. #29043
-* Fix - Removed extra closing brace from the Zone regions help text. #29036
-* Fix - Tax name/label is not being updated in the order when it is changed. #28983
-* Fix - Additional protection after wc_get_product to account for invalid ID. #28962
-* Fix - orders list from returning false values if orders are missing. #28927
-* Fix - Terms and Policy checkbox wording settings not shown in customizer. #28735
-* Fix - Admin notices sometimes were persisting even after dismissing. #28500
-* Fix - Calculate discount based on order location in the admin view. #26983
-* Fix - SASS variables not being compile correctly due to recent SASS version. #29120
-* Fix - Placeholder image height in cart. #29139
-* Dev - Updated admin bar icons to use SVG and Dashicons instead of custom font. #29094
-* Dev - Admin menu modification has been moved from admin_head hooks to admin_menu hooks. #29088
-* Dev - status report generation time to the Status Report. #28980
-* Dev - Add the 'woocommerce_exporter_product_types' filter to allow third-parties to filter the product types which can be imported and exported. #28950
-* Dev - Filter added to allow 'woocommerce_hold_stock_minutes' to be customized. #28933
-* Dev - Add optional semicolon to JS code for better compatibility. #28880
-* Dev - Added Guatemala states. #28755
-* Dev - jQuery 3 deprecated functions update. #28753
-* Dev - Add Woo Version as global prop in track events. #28627
-* Dev - Added orders count by payment method to Tracker data and replaced direct DB calls with CRUD. #28584
-* Dev - WC_Tax::get_tax_rate_classes() is now public. #27671
-* Dev - "Store management insights" option now is turned off by default. #29105
-* Dev - Update the woo widget stock links to the new analytics page. #29093
-* Tweak - Updated WooCommerce logo color. #29054
-* Tweak - Correctly aligns content in the checkout with Twenty Twenty-One. #28951
-* Tweak - Use assigned variable for $post_thumbnail_id instead of calling function more than once. #28919
-* Tweak - Ensure that all tracker values collected for orders are of string type. #28893
-* Tweak - Adjust CSS font size and spacing for Twenty Twenty One. #28827
+* Fix - Do not create default shipping zones when a shipping zone already exists [#34351](https://github.com/woocommerce/woocommerce/pull/34351)
 
-**WooCommerce Admin - 2.0.0 & 2.0.1 & 2.0.2**
+= 6.8.0 2022-08-09 =
 
-* Tweak - Bump minimum supported version of PHP to 7.0. #6046
-* Tweak - update the content and timing of the NeedSomeInspiration note. #6076
-* Tweak - Adjust the Marketing note not to show until store is at least 5 days. #6083
-* Tweak - Refactored extended task list. #6081
-* Fix - Add support for a floating-point number as a SummaryNumber's delta. #5926
-* Fix - allow for more terms to be shown for product attributes in the Analytics orders report. #5868
-* Fix - Fixed the Add First Product email note checks. #6260
-* Fix - Onboarding - Fixed "Business Details" error. #6271
-* Fix - Show management links when only main task list is hidden. #6291
-* Fix - Correct the Klarna slug. #6440
-* Add - new inbox message - Getting started in Ecommerce - watch this webinar. #6086
-* Add - Remote inbox notifications contains comparison and fix product rule. #6073
-* Add - Task list payments - include Mollie as an option. #6257
-* Update - store deprecation welcome modal support doc link #6094
-* Update - Homescreen layout, moving Inbox panel for better interaction. #6122
-* Enhancement - Allowing users to create products by selecting a template. #5892
-* Enhancement - Use the new Paypal payments plugin for onboarding. #6261
-* Dev - Add wait script for mysql to be ready for phpunit tests in docker. #6185
-* Dev - Remove old debug code for connecting to Calypso / Wordpress.com. #6097
-* Dev - Allow highlight tooltip to use body tag as parent. #6309
+**WooCommerce**
 
-**WooCommerce Blocks - 4.1.0 & 4.2.0 & 4.3.0 & 4.4.0 & 4.4.1 & 4.4.2 & 4.4.3**
+* Fix - Fix shipping zone transient not cleared when adding via smart defaults [#34099](https://github.com/woocommerce/woocommerce/pull/34099)
+* Fix - Fix incorrect name in Review Shipping Task tracks event [#34045](https://github.com/woocommerce/woocommerce/pull/34045)
+* Fix - Fix shipping zone fails to create after installing jetpack and wcs [#34074](https://github.com/woocommerce/woocommerce/pull/34074)
+* Fix - Stop re-enabling product attributes lookup table usage after each install [#34072](https://github.com/woocommerce/woocommerce/pull/34072)
+* Fix - Add back missing tracks in add product task [#34070](https://github.com/woocommerce/woocommerce/pull/34070)
+* Fix - Fix historical import data in analytics settings [#34054](https://github.com/woocommerce/woocommerce/pull/34054)
+* Fix - Fix undefined offset notice on payment settings page [#33956](https://github.com/woocommerce/woocommerce/pull/33956)
+* Fix - Convert null and '' to 0 before verification to mimic $wpdb->prepare. [#33643](https://github.com/woocommerce/woocommerce/pull/33643)
+* Fix - Correct generation of variation name when attribute is 0. [#33643](https://github.com/woocommerce/woocommerce/pull/33643)
+* Fix - couple of follow up fixes for Playwright tests [#33766](https://github.com/woocommerce/woocommerce/pull/33766)
+* Fix - Fix "Save changes" does not work on "Free features" step [#33844](https://github.com/woocommerce/woocommerce/pull/33844)
+* Fix - Fix AdditionalPayments task name [#33727](https://github.com/woocommerce/woocommerce/pull/33727)
+* Fix - Fix broken design of Single Product template in Twenty Twenty-Two when product had no reviews or additional info. Fix on sale badge being cut off on the Single Product template. [#33643](https://github.com/woocommerce/woocommerce/pull/33643)
+* Fix - Fixed 33810 - Columns of revenue table and when exporting that table, then generating CSV file, I have matched the sequence of columns of that CSV file. And I have also changed the name of the column of Net revenue in the CSV file to Net sales. [#33818](https://github.com/woocommerce/woocommerce/pull/33818)
+* Fix - Fixed incorrect tax calculation in edit order for "Local Pickup" shipping method. [#33643](https://github.com/woocommerce/woocommerce/pull/33643)
+* Fix - Fixed missing wcpay setup task, task fill page was missing for the woocommerce-payments task [#33643](https://github.com/woocommerce/woocommerce/pull/33643)
+* Fix - Fixed some incorrect spellings in the shipping settings areas. [#33836](https://github.com/woocommerce/woocommerce/pull/33836)
+* Fix - Fix for broken table layout when reordering products on the sorting screen. [#33643](https://github.com/woocommerce/woocommerce/pull/33643)
+* Fix - Fix missing manage button for TikTok [#33731](https://github.com/woocommerce/woocommerce/pull/33731)
+* Fix - Fix missing text domain strings [#33780](https://github.com/woocommerce/woocommerce/pull/33780)
+* Fix - Fix print shipping banner close modal styles [#33587](https://github.com/woocommerce/woocommerce/pull/33587)
+* Fix - Fix shipping display logic country code [#33643](https://github.com/woocommerce/woocommerce/pull/33643)
+* Fix - Fix tooltip not showing in variations meta box, and update tooltip copy. #33741 [#33741](https://github.com/woocommerce/woocommerce/pull/33741)
+* Fix - Fix tracks not including required properties when triggered by API requests. #33872 [#33872](https://github.com/woocommerce/woocommerce/pull/33872)
+* Fix - Fix Uncaught DOMException on WooCommerce -> Extensions page [#33711](https://github.com/woocommerce/woocommerce/pull/33711)
+* Fix - Fix untranslated texts on payment setting page [#33718](https://github.com/woocommerce/woocommerce/pull/33718)
+* Fix - Fix WC Status widget errors when analytics feature is disabled [#33816](https://github.com/woocommerce/woocommerce/pull/33816)
+* Fix - Fix wrong copy in payment recommendations [#33665](https://github.com/woocommerce/woocommerce/pull/33665)
+* Fix - Fix wrong copy in the accordion link for payment task [#33662](https://github.com/woocommerce/woocommerce/pull/33662)
+* Fix - Fix wrong copy in the payments task on the Home Task list [#33663](https://github.com/woocommerce/woocommerce/pull/33663)
+* Fix - Fix wrong copy in the payment task [#33749](https://github.com/woocommerce/woocommerce/pull/33749)
+* Fix - Fix wrong link and copy in payment setting page [#33716](https://github.com/woocommerce/woocommerce/pull/33716)
+* Fix - Fix wrong link in Set up payments screen [#33715](https://github.com/woocommerce/woocommerce/pull/33715)
+* Fix - Import correct controls for export function [#33709](https://github.com/woocommerce/woocommerce/pull/33709)
+* Fix - Revert marketing task completion logic to only complete after actioned by user [#33676](https://github.com/woocommerce/woocommerce/pull/33676)
+* Fix - Update StoreDetails task action url to navigate to the setting page [#33671](https://github.com/woocommerce/woocommerce/pull/33671)
+* Fix - WooCommerce Admin plugin deactivation message was causing much unnecessary alarm and has been improved #33592 [#33643](https://github.com/woocommerce/woocommerce/pull/33643)
+* Fix - `WP_Background_Process` updated to work nicely with memory_limits expressed in units other than 'M'. [#30908](https://github.com/woocommerce/woocommerce/pull/30908)
+* Fix - Fixed wrong condition used for showing shipping recommendations tour step [#34120](https://github.com/woocommerce/woocommerce/pull/30908)
+* Add - Added a mechanism to customize the data being sent via AJAX by the order meta box [#33563](https://github.com/woocommerce/woocommerce/pull/33563)
+* Add - Added partial spotlight floater to shipping smart defaults tour. [#33772](https://github.com/woocommerce/woocommerce/pull/33772)
+* Add - Added tests for react admin translations [#33510](https://github.com/woocommerce/woocommerce/pull/33510)
+* Add - Add JS tests for shipping recommendation task [#33633](https://github.com/woocommerce/woocommerce/pull/33633)
+* Add - Add new experimental shipping task flow [#33643](https://github.com/woocommerce/woocommerce/pull/33643)
+* Add - Add shipping-smart-defaults intro tooltips. [#33772](https://github.com/woocommerce/woocommerce/pull/33772)
+* Add - Add the command `wc com extension list` to retrieve and display the extension list for the connected site. [#33783](https://github.com/woocommerce/woocommerce/pull/33783)
+* Add - Implement `create()` in COT datastore. [#33341](https://github.com/woocommerce/woocommerce/pull/33341)
+* Add - Implement `delete()` in the COT datastore [#33708](https://github.com/woocommerce/woocommerce/pull/33708)
+* Add - Include Tracks indicator property for block editor on product update. #33321 [#33321](https://github.com/woocommerce/woocommerce/pull/33321)
+* Add - Product creation experience: improve inventory copy #33754 [#33754](https://github.com/woocommerce/woocommerce/pull/33754)
+* Add - Tracks for shipping smart defaults [#33748](https://github.com/woocommerce/woocommerce/pull/33748)
+* Update - Update composer.lock to WooCommerce Blocks to 8.0.0 [#34021](https://github.com/woocommerce/woocommerce/pull/34021)
+* Update - Deploy header task variant from task list experiment [#33750](https://github.com/woocommerce/woocommerce/pull/33750)
+* Update - Implement bulk actions in the new orders admin list table. [#33687](https://github.com/woocommerce/woocommerce/pull/33687)
+* Update - Making default state of product image meta boxes more prominent. [#33707](https://github.com/woocommerce/woocommerce/pull/33707)
+* Update - Randomize the order of sections in Recommended Marketing Extensions [#33851](https://github.com/woocommerce/woocommerce/pull/33851)
+* Update - Removed two-col task list expierments code [#33643](https://github.com/woocommerce/woocommerce/pull/33643)
+* Update - Remove legacy image sizes [#33772](https://github.com/woocommerce/woocommerce/pull/33772)
+* Update - Set ddefault shipping methods when store country is the US and Jetpack is intalled [#33788](https://github.com/woocommerce/woocommerce/pull/33788)
+* Update - Set smart shipping feature flags to true [#33819](https://github.com/woocommerce/woocommerce/pull/33819)
+* Update - Update display shipping task logic and add ReviewShippingOptions task [#33643](https://github.com/woocommerce/woocommerce/pull/33643)
+* Update - Update review shipping options task complete logic [#33650](https://github.com/woocommerce/woocommerce/pull/33650)
+* Update - Update shipping recommendations display logic [#33643](https://github.com/woocommerce/woocommerce/pull/33643)
+* Update - Update shipping task fields when shipping smart default feature is enabled. [#33630](https://github.com/woocommerce/woocommerce/pull/33630)
+* Update - Update wcpay suggestion UI in payment task [#33717](https://github.com/woocommerce/woocommerce/pull/33717)
+* Update - Update wcpay to include a mention of in-person payments for Canada [#33669](https://github.com/woocommerce/woocommerce/pull/33669)
+* Update - Update WooCommerce Blocks to 8.0.0 [#33736](https://github.com/woocommerce/woocommerce/pull/33736)
+* Update - Uses WC_Data_Store directly to count the shipping zones to avoid any unncessary query to the D.B [#33643](https://github.com/woocommerce/woocommerce/pull/33643)
+* Dev - Exclude "e2e" directory from build [#33934](https://github.com/woocommerce/woocommerce/pull/33934)
+* Dev - Add playwright e2e README.md [#33643](https://github.com/woocommerce/woocommerce/pull/33643)
+* Dev - Add `$transaction_id` as arg to various `payment_complete` hooks. [#33643](https://github.com/woocommerce/woocommerce/pull/33643)
+* Dev - Add `wc com extension install` CLI command [#33775](https://github.com/woocommerce/woocommerce/pull/33775)
+* Dev - Proper comment of get_formatted_shipping_address function. [#33823](https://github.com/woocommerce/woocommerce/pull/33823)
+* Tweak - Add a helper function to simplify ExPlat call [#33871](https://github.com/woocommerce/woocommerce/pull/33871)
+* Tweak - Add payment icons with Discover other payment providers link [#33744](https://github.com/woocommerce/woocommerce/pull/33744)
+* Tweak - Add the `WC_Product_CSV_Exporter` object as a third parameter of the `woocommerce_product_export_row_data` filter. [#33390](https://github.com/woocommerce/woocommerce/pull/33390)
+* Tweak - Fix code that throws deprecation notices in tests in PHP 8.1 [#33643](https://github.com/woocommerce/woocommerce/pull/33643)
+* Tweak - MakeThis PR makes Set your store location and Review your shipping options steps clickable on the shipping task when shipping-smart-defaults feature is enabled. [#33661](https://github.com/woocommerce/woocommerce/pull/33661)
+* Tweak - Remove blog URL from requests to external IP lookup services. [#33643](https://github.com/woocommerce/woocommerce/pull/33643)
+* Tweak - Set default shipping methods based on the OBW selections [#33643](https://github.com/woocommerce/woocommerce/pull/33643)
+* Tweak - Show a generic error when trying to process a checkout while offline. [#33643](https://github.com/woocommerce/woocommerce/pull/33643)
+* Tweak - The file writing mode used during CSV exports is now filterable via new hook `woocommerce_csv_exporter_fopen_mode`. [#33652](https://github.com/woocommerce/woocommerce/pull/33652)
+* Tweak - Update Danish currency symbol to match CLDR R41 spec. [#33643](https://github.com/woocommerce/woocommerce/pull/33643)
+* Tweak - Use transient to cache Shipping:has_shipping_zones() method [#33813](https://github.com/woocommerce/woocommerce/pull/33813)
+* Performance - Improve performance of Shipping Task. [#33886](https://github.com/woocommerce/woocommerce/pull/33886)
+* Enhancement - Add capability for set location step to be manually navigated in shipping recommendation task [#33667](https://github.com/woocommerce/woocommerce/pull/33667)
 
-* Update - Jetpack Autoloader to 2.9.1.
-* Update - Update package for WooCommerce core inclusion.
-* Enhancements - Design tweaks to the cart page which move the quantity picker below each cart item and improve usability on mobile. ([3734](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3734))
-* Enhancements - Store API - Fix selected rate in cart shipping rates response. ([3680](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3680))
-* Enhancements - Create get_item_responses_from_schema abstraction. ([3679](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3679))
-* Enhancements - Show itemized fee rows in the cart/checkout blocks. ([3678](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3678))
-* Enhancements - Extensibility: Show item data in Cart and Checkout blocks and update the variation data styles. ([3665](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3665))
-* Enhancements - Introduce SlotFill for Sidebar. ([3361](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3361))
-* Enhancements - Add the ability to directly upload an image in Featured Category and Featured Product blocks. ([3579](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3579))
-* Enhancements - Fix coupon code button height not adapting to the font size. ([3575](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3575))
-* Enhancements - Fixed Coupon Code panel not expanding/contracting in some themes. ([3569](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3569))
-* Enhancements - Fix: Added fallback styling for screen reader text. ([3557](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3557))
-* Fix - Ensure empty categories are correctly hidden in the product categories block. ([3765](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3765))
-* Fix - Added missing wrapper div within FeaturedCategory and FeatureProduct blocks. ([3746](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3746))
-* Fix - Set correct text color in BlockErrorBoundry notices. ([3738](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3738))
-* Fix - Hidden cart item meta data will not be rendered in the Cart and Checkout blocks. ([3732](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3732))
-* Fix - Improved accessibility of product image links in the products block by using correct aria tags and hiding empty image placeholders. ([3722](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3722))
-* Fix - Add missing aria-label for stars image in the review-list-item component. ([3706](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3706))
-* Fix - Prevent "X-WC-Store-API-Nonce is invalid" error when going back to a page with the products block using the browser back button. ([3770](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3770))
-* Fix - Adds a default "features" array for payment methods which do not define supported features. Fixes conflicts with 3rd Party payment method integrations.
-* Fix - Fix an error that was blocking checkout with some user saved payment methods. ([3627](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3627))
-* Fix - Fix nonce issues when adding product to cart from All Products. ([3598](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3598))
-* Fix - Fix bug inside Product Search in the editor. ([3578](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3578))
-* Fix - Fix console warnings in WordPress 5.6. ([3577](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3577))
-* Fix - Fixed text visibility in select inputs when using Twenty Twenty-One theme's dark mode. ([3554](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3554))
-* Fix - Fix product list images skewed in Widgets editor. ([3553](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3553))
-* Add address validation to values posted to the Checkout via StoreApi. ([3552](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3552))
-* Fix - Fix Fees not visible in Cart & Checkout blocks when order doesn't need shipping. ([3521](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3521))
-* Fix - Fix All Products block edit screen. ([3547](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3547))
-* Fix - Checkout block: Prevent `Create an account` from creating up a user account if the order fails coupon validation. ([3423](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3423))
-* Fix - Make sure cart is initialized before the CartItems route is used in the Store API. ([3488](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3488))
-* Fix - Fix notice close button color in Twenty Twenty One dark mode. ([3472](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3472))
-* Fix - Remove held stock for a draft order if an item is removed from the cart. ([3468](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3468))
-* Fix - Ensure correct alignment of checkout notice's dismiss button. ([3455](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3455))
-* Fix - Fixed a bug in Checkout block (Store API) causing checkout to fail when using an invalid coupon and creating an account.
-* Fix - Checkout block: Correctly handle cases where the order fails with an error (e.g. invalid coupon) and a new user account is created. ([3429](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3429))
-* Update - Hide the All Products Block from the new Gutenberg Widget Areas until full support is achieved. ([3737](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3737))
-* Update - Legacy `star-rating` class name has been removed from Product rating block (inside All Products block). That element is still selectable with the `.wc-block-components-product-rating` class name. ([3717](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3717))
-* Update - Update input colors and alignment. ([3597](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3597))
-* Update - Removed compatibility with packages in WordPress 5.3. ([3541](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3541))
-* Update - Bumped the minimum WP required version to 5.4. ([3537](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3537))
-* Dev - Change register_endpoint_data to use an array of params instead of individual params. ([3478](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3478))
-* Dev - Expose store/cart via ExtendRestApi to extensions. ([3445](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3445))
-* Dev - Added formatting classes to the Store API for extensions to consume.
-* Dev - Refactored and reordered Store API checkout processing to handle various edge cases and better support future extensibility. ([3454](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/3454))
 
-[See changelog for all versions](https://raw.githubusercontent.com/woocommerce/woocommerce/master/changelog.txt).
+[See changelog for all versions](https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/changelog.txt).

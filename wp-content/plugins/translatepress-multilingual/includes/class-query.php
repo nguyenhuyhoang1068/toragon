@@ -14,6 +14,7 @@ class TRP_Query{
     protected $url_converter;
     protected $translation_render;
     protected $error_manager;
+    protected $check_invalid_text;
     protected $tables_exist = array();
     protected $db_sql_version = null;
 
@@ -67,7 +68,7 @@ class TRP_Query{
         }else {
 	        $and_block_type = " AND block_type = " . $block_type;
         }
-        $query = "SELECT original,translated, status FROM `" . sanitize_text_field( $this->get_table_name( $language_code ) ) . "` WHERE status != " . self::NOT_TRANSLATED . $and_block_type . " AND original IN ";
+        $query = "SELECT original,translated, status FROM `" . sanitize_text_field( $this->get_table_name( $language_code ) ) . "` WHERE status != " . self::NOT_TRANSLATED . $and_block_type . " AND translated <>'' AND original IN ";
 
         $placeholders = array();
         $values = array();
@@ -80,15 +81,26 @@ class TRP_Query{
 	    $prepared_query = $this->db->prepare( $query, $values );
         $dictionary = $this->db->get_results( $prepared_query, OBJECT_K  );
 
+
+
+        if( !$this->check_invalid_text ){
+            $trp = TRP_Translate_Press::get_trp_instance();
+            $this->check_invalid_text = $trp->get_component( 'check_invalid_text' );
+        }
+        $dictionary = $this->check_invalid_text->get_existing_translations_without_invalid_text($dictionary, $prepared_query, $strings_array, $language_code, $block_type );
+
         $this->maybe_record_automatic_translation_error(array( 'details' => 'Error running get_existing_translations()' ) );
-        if ( is_array( $dictionary ) && count( $dictionary ) === 0 && !$this->table_exists($this->get_table_name( $language_code )) ){
+
+        if ($this->db->last_error !== '' && !$this->check_invalid_text->is_invalid_data_error())
+            $dictionary = false;
+
+        $dictionary = apply_filters( 'trp_get_existing_translations', $dictionary, $prepared_query, $strings_array, $language_code, $block_type );
+        if ( is_array( $dictionary ) && count( $dictionary ) === 0 && !$this->table_exists($this->get_table_name( $language_code )) && !$this->check_invalid_text->is_invalid_data_error()){
             // if table is missing then last_error is empty for the select query
             $this->maybe_record_automatic_translation_error(array( 'details' => 'Missing table ' . $this->get_table_name( $language_code ) . ' . To regenerate tables, try going to Settings->TranslatePress->General tab and Save Settings.'), true );
         }
-        if ($this->db->last_error !== '')
-            $dictionary = false;
 
-        return apply_filters( 'trp_get_existing_translations', $dictionary, $prepared_query, $strings_array );
+        return $dictionary;
     }
 
     /**
@@ -674,7 +686,11 @@ class TRP_Query{
 
 		$prepared_query = $this->db->prepare($query . ' ', $values);
 		$this->db->query( $prepared_query );
-
+        if( !$this->check_invalid_text ){
+            $trp = TRP_Translate_Press::get_trp_instance();
+            $this->check_invalid_text = $trp->get_component( 'check_invalid_text' );
+        }
+        $this->check_invalid_text->update_translations_without_invalid_text( $update_strings, $language_code, $columns_to_update );
         $this->maybe_record_automatic_translation_error(array( 'details' => 'Error running update_strings()' ) );
 	}
 
@@ -711,9 +727,12 @@ class TRP_Query{
         // you cannot insert multiple rows at once using insert() method.
         // but by using prepare you cannot insert NULL values.
         $this->db->query( $this->db->prepare($query . ' ', $values) );
-
+        if( !$this->check_invalid_text ){
+            $trp = TRP_Translate_Press::get_trp_instance();
+            $this->check_invalid_text = $trp->get_component( 'check_invalid_text' );
+        }
+        $this->check_invalid_text->insert_translations_without_invalid_text($new_strings, $language_code, $block_type);
         $this->maybe_record_automatic_translation_error(array( 'details' => 'Error running insert_strings()' ) );
-
     }
 
     public function insert_gettext_strings( $new_strings, $language_code ){
@@ -916,7 +935,12 @@ class TRP_Query{
         if ( $default_language == null ) {
             $default_language = $this->settings['default-language'];
         }
-        return $this->db->prefix . 'trp_dictionary_' . strtolower( $default_language ) . '_'. strtolower( $language_code );
+        if ( !trp_is_valid_language_code($language_code) || !trp_is_valid_language_code($default_language) ){
+            /* there's are other checks that display an admin notice for this kind of errors */
+            return 'trp_language_code_is_invalid_error';
+        }
+
+        return apply_filters( 'trp_table_name_dictionary', $this->db->prefix . 'trp_dictionary_' . strtolower( $default_language ) . '_'. strtolower( $language_code ), $this->db->prefix, $language_code, $default_language );
     }
 
     public function get_language_code_from_table_name( $table_name, $default_language = null ){
@@ -933,7 +957,7 @@ class TRP_Query{
      * @return string                       Table name.
      */
     public function get_table_name_for_original_strings(){
-        return sanitize_text_field( $this->db->prefix . 'trp_original_strings' );
+        return apply_filters( 'trp_table_name_original_strings', sanitize_text_field( $this->db->prefix . 'trp_original_strings' ), $this->db->prefix );
     }
 
     /**
@@ -942,7 +966,7 @@ class TRP_Query{
      * @return string                       Table name.
      */
     public function get_table_name_for_original_meta(){
-        return sanitize_text_field( $this->db->prefix . 'trp_original_meta' );
+        return apply_filters( 'trp_table_name_original_meta', sanitize_text_field( $this->db->prefix . 'trp_original_meta' ), $this->db->prefix );
     }
     /**
      * Return meta_key for post parent id from meta table
@@ -955,11 +979,11 @@ class TRP_Query{
 
     public function get_all_gettext_strings(  $language_code ){
         $dictionary = $this->db->get_results( "SELECT id, original, translated, domain FROM `" . sanitize_text_field( $this->get_gettext_table_name( $language_code ) ) . "`", ARRAY_A );
+        $this->maybe_record_automatic_translation_error(array( 'details' => 'Error running get_all_gettext_strings()' ) );
         if ( is_array( $dictionary ) && count( $dictionary ) === 0 && !$this->table_exists($this->get_gettext_table_name( $language_code )) ){
             // if table is missing then last_error is empty
             $this->maybe_record_automatic_translation_error(array( 'details' => 'Missing table ' . $this->get_gettext_table_name( $language_code ). ' . To regenerate tables, try going to Settings->TranslatePress->General tab and Save Settings.'), true );
         }
-        $this->maybe_record_automatic_translation_error(array( 'details' => 'Error running get_all_gettext_strings()' ) );
         return $dictionary;
     }
 
@@ -970,8 +994,11 @@ class TRP_Query{
     }
 
     public function get_gettext_table_name( $language_code ){
-		global $wpdb;
-        return $wpdb->get_blog_prefix() . 'trp_gettext_' . strtolower( $language_code );
+        if ( !trp_is_valid_language_code($language_code) ){
+            /* there's are other checks that display an admin notice for this kind of errors */
+            return 'trp_language_code_is_invalid_error';
+        }
+        return apply_filters( 'trp_table_name_gettext', $this->db->prefix . 'trp_gettext_' . strtolower( $language_code ), $this->db->prefix, $language_code );
     }
 
     /**
@@ -1129,11 +1156,20 @@ class TRP_Query{
 	 *
 	 * @param $table
 	 */
-	public function remove_duplicate_rows_in_dictionary_table( $language_code, $batch ){
+	public function remove_duplicate_rows_in_dictionary_table( $language_code, $inferior_limit, $batch_size ) {
 		$table_name = $this->get_table_name( $language_code );
-        $query = $this->get_remove_identical_duplicates_query($table_name, $batch, 'regular' );
-		return $this->db->query( $query );
-	}
+        if ($this->table_exists($table_name)) {
+            $last_id = $this->get_last_id( $table_name );
+            $query = $this->get_remove_identical_duplicates_query( $table_name, $inferior_limit, 'regular' );
+            $this->db->query( $query );
+            if ( $inferior_limit > $last_id ) {
+                return true;
+            }
+            return false;
+        }else{
+            return true;
+        }
+    }
 
     /**
      * Removes duplicate rows of gettext strings table
@@ -1143,10 +1179,25 @@ class TRP_Query{
      *
      * @param $table
      */
-	public function remove_duplicate_rows_in_gettext_table( $language_code, $batch ){
+    /**
+     * @param $language_code
+     * @param $inferior_limit 1000, 2000
+     * @param $batch_size
+     * @return bool|int
+     */
+	public function remove_duplicate_rows_in_gettext_table( $language_code, $inferior_limit, $batch_size ){
         $table_name = $this->get_gettext_table_name( $language_code );
-        $query = $this->get_remove_identical_duplicates_query($table_name, $batch, 'gettext' );
-        return $this->db->query( $query );
+        if ($this->table_exists($table_name)) {
+            $last_id = $this->get_last_id( $table_name );
+            $query = $this->get_remove_identical_duplicates_query( $table_name, $inferior_limit, 'gettext' );
+            $this->db->query( $query );
+            if ( $inferior_limit > $last_id ) {
+                return true;
+            }
+            return false;
+        }else{
+            return true;
+        }
     }
 
     /**
@@ -1156,7 +1207,7 @@ class TRP_Query{
      * @param $type string possible values are 'regular' or 'gettext'
      * @return string
      */
-    private function get_remove_identical_duplicates_query( $table_name, $batch, $type ){
+    private function get_remove_identical_duplicates_query( $table_name, $inferior_limit, $type ){
         $charset_collate = $this->db->get_charset_collate();
         $charset = "utf8mb4";
         if( strpos( 'latin1', $charset_collate ) === 0 )
@@ -1168,8 +1219,8 @@ class TRP_Query{
 					    ' . $table_name . ' AS `b`
 					WHERE
 					    -- IMPORTANT: Ensures one version remains
-					    `a`.ID < ' . $batch . '
-					    AND `b`.ID < ' . $batch . '
+					    `a`.ID < ' . $inferior_limit . '
+					    AND `b`.ID < ' . $inferior_limit . '
 					    AND `a`.`ID` < `b`.`ID`
 
 					    -- Check for all duplicates. Binary ensure case sensitive comparison
@@ -1189,10 +1240,14 @@ class TRP_Query{
 	 *
 	 * Only the original with translation remains
 	 */
-	public function remove_untranslated_strings_if_translation_available( $language_code ){
+	public function remove_untranslated_strings_if_translation_available( $language_code, $inferior_limit, $batch_size ){
 		$table_name = $this->get_table_name( $language_code );
-		$query = $this->get_remove_untranslated_duplicates_query( $table_name, 'regular' );
-		return $this->db->query( $query );
+
+        if ($this->table_exists($table_name)) {
+            $query = $this->get_remove_untranslated_duplicates_query( $table_name, 'regular' );
+            $this->db->query( $query );
+        }
+        return true;
 	}
 
     /**
@@ -1200,10 +1255,14 @@ class TRP_Query{
      *
      * Only the original with translation remains
      */
-    public function remove_untranslated_strings_if_gettext_translation_available( $language_code ){
+    public function remove_untranslated_strings_if_gettext_translation_available( $language_code, $inferior_limit, $batch_size ){
         $table_name = $this->get_gettext_table_name( $language_code );
-        $query = $this->get_remove_untranslated_duplicates_query( $table_name, 'gettext' );
-        return $this->db->query( $query );
+
+        if ($this->table_exists($table_name)) {
+            $query = $this->get_remove_untranslated_duplicates_query( $table_name, 'gettext' );
+            $this->db->query( $query );
+        }
+        return true;
     }
 
     /**
@@ -1235,11 +1294,91 @@ class TRP_Query{
         return $query;
     }
 
-	/*
-	 * Get last inserted ID for this table
-	 *
-	 * Useful for optimizing database by removing duplicate rows
-	 */
+
+    /**
+     * Removes CDATA from original and dictionary tables.
+     * @param $language_code
+     * @param $inferior_limit
+     * @param $batch_size
+     * @return bool
+     */
+    public function remove_cdata_in_original_and_dictionary_tables($language_code, $inferior_limit, $batch_size){
+
+        if ($language_code == $this->settings['default-language']){
+            $table_name = $this->get_table_name_for_original_strings();
+            $query = $this->get_remove_cdata_query($table_name, $batch_size);
+
+            $rows_affected = $this->db->query( $query );
+            if ( $rows_affected > 0 ) {
+                return false;
+            }else{
+                return true;
+            }
+        }
+        $table_name = $this->get_table_name( $language_code );
+        if ($this->table_exists($table_name)) {
+            $query = $this->get_remove_cdata_query($table_name, $batch_size);
+            $rows_affected = $this->db->query( $query );
+            if ( $rows_affected > 0 ) {
+                return false;
+            }else{
+                return true;
+            }
+        }else{
+            return true;
+        }
+    }
+
+    /**
+     * @param $table_name
+     * @param $batch_size
+     * @return string
+     */
+    private function get_remove_cdata_query( $table_name, $batch_size ){
+
+        $query = "DELETE FROM " . $table_name . " WHERE original LIKE '<![CDATA[%' LIMIT " . $batch_size;
+
+        return $query;
+    }
+
+    /**
+     * Removes untranslated links from the dictionary table
+     * @param $language_code
+     * @param $inferior_limit
+     * @param $batch_size
+     * @return bool
+     */
+    public function remove_untranslated_links_in_dictionary_table($language_code, $inferior_limit, $batch_size){
+        $table_name = $this->get_table_name( $language_code );
+        if ($this->table_exists($table_name)) {
+            $query = $this->get_remove_untranslated_links_query($table_name, $batch_size);
+            $rows_affected = $this->db->query( $query );
+            if ( $rows_affected > 0 ) {
+                return false;
+            }else{
+                return true;
+            }
+        }else{
+            return true;
+        }
+    }
+
+    /**
+     * @param $table_name
+     * @return $query
+     */
+    private function get_remove_untranslated_links_query($table_name, $batch_size){
+
+        $query = "DELETE FROM " . $table_name . " WHERE original LIKE 'http%' AND (translated = '' OR translated IS NULL) LIMIT " . $batch_size;
+
+        return $query;
+    }
+
+    /*
+     * Get last inserted ID for this table
+     *
+     * Useful for optimizing database by removing duplicate rows
+     */
 	public function get_last_id( $table_name ){
 		$last_id = $this->db->get_var("SELECT MAX(id) FROM " . $table_name );
 		return $last_id;
@@ -1284,7 +1423,12 @@ class TRP_Query{
 	}
 
 	public function maybe_record_automatic_translation_error($error_details = array(), $ignore_last_error = false ){
-        if ( !empty( $this->db->last_error) || $ignore_last_error ){
+        if( !$this->check_invalid_text ){
+            $trp = TRP_Translate_Press::get_trp_instance();
+            $this->check_invalid_text = $trp->get_component( 'check_invalid_text' );
+        }
+
+        if ( ( !empty( $this->db->last_error) && !$this->check_invalid_text->is_invalid_data_error() ) || $ignore_last_error ){
             $trp = TRP_Translate_Press::get_trp_instance();
             if( !$this->error_manager ){
                 $this->error_manager = $trp->get_component( 'error_manager' );
@@ -1316,7 +1460,7 @@ class TRP_Query{
         }
 
 	    $table_name = sanitize_text_field($table_name);
-        $table_found = $this->db->get_var( "SHOW TABLES LIKE '$table_name'" ) == $table_name;
+        $table_found = strtolower( $this->db->get_var( "SHOW TABLES LIKE '$table_name'" ) ) == strtolower( $table_name );
         if ( $table_found ) {
             $this->tables_exist[] = $table_name;
         }

@@ -1,99 +1,188 @@
 <?php
-class BeRocket_product_brand_description_Widget extends WP_Widget 
-{
-    public static $defaults = array(
-        'display_title'         => '',
-        'display_thumbnail'     => '1',
-        'display_description'   => '1',
-        'width'                 => '100%',
-        'align'                 => 'none',
-    );
+class BeRocket_product_brand_description_Widget extends BeRocket_Base_Product_List_Widget {
 	public function __construct() {
-        parent::__construct("berocket_product_brand_description_widget", "WooCommerce Product Brands Description",
-            array("description" => ""));
+        parent::__construct( 
+            "berocket_product_brand_description_widget", 
+            __( "WooCommerce Product Brands Description", 'brands-for-woocommerce' ),
+            array( "description" => "" ) 
+        );
+
+        $this->defaults += array(
+            'brand_id'                 => '',
+            'display_title'            => '',
+            'display_description'      => '',
+            'banner_display'           => '',
+            'banner_width'             => 100,
+            'banner_width_units'       => '%',
+            'banner_height'            => '',
+            'banner_height_units'      => 'px',
+            'banner_fit'               => 'cover',
+            'banner_align'             => 'center',
+            'thumbnail_display'        => '',
+            'thumbnail_width'          => 100,
+            'thumbnail_width_units'    => '%',
+            'thumbnail_height'         => '',
+            'thumbnail_height_units'   => 'px',
+            'thumbnail_fit'            => 'cover',
+            'thumbnail_align'          => 'none',
+            'related_products_display' => '',
+            'display_link'             => '',
+            'featured'                 => '',
+        );
+
+        // $related_keys = array_diff( array_keys( $this->form_fields ), array( 'title' ) );
+        $title = array( 'title' => $this->form_fields['title'] );
+        $related = $this->form_fields;
+        unset( $related['title'] );
+        foreach ( $related as $key => $value ) {
+            $related[$key]['class'] .= ' related_products_display_depending';
+        }
+
+        $this->form_fields = $title + array(
+            'brand_id' => array(
+                "title"  => __( 'Brand', 'brands-for-woocommerce' ),
+                'type'   => 'autocomplete',
+                'class'  => 'width100',
+                // 'walker' => 'Br_Walker_Brand_Selectlist',
+            ),
+            'display_title' => array(
+                "title" => __( 'Display brand title', 'brands-for-woocommerce' ),
+                'type'  => 'checkbox',
+                'class' => 'br_brands_checkbox_block',
+            ),
+            'display_description' => array(
+                "title" => __( 'Display brand description', 'brands-for-woocommerce' ),
+                'type'  => 'checkbox',
+                'class' => 'br_brands_checkbox_block',
+            ),
+            'thumbnail' => array(
+                "title" => __( 'Thumbnail:', 'brands-for-woocommerce' ),
+                'type'  => 'image',
+                'class' => 'width100',
+                'align_options' => array(
+                    "left"  => array( 'name' => __( 'Left to text', 'brands-for-woocommerce' ) ),
+                    "right" => array( 'name' => __( 'Right to text', 'brands-for-woocommerce' ) ),
+                    "none"  => array( 'name' => __( 'None', 'brands-for-woocommerce' ) ),
+                )
+            ),
+            'banner' => array(
+                "title" => __( 'Banner:', 'brands-for-woocommerce' ),
+                'type'  => 'image',
+                'class' => 'width100',
+                'align_options' => array(
+                    "left"   => array( 'name' => __( 'Left', 'brands-for-woocommerce' ) ),
+                    "right"  => array( 'name' => __( 'Right', 'brands-for-woocommerce' ) ),
+                    "center" => array( 'name' => __( 'Center', 'brands-for-woocommerce' ) ),
+                )
+            ),
+            'related_products' => array(
+                "title" => __( 'Related products', 'brands-for-woocommerce' ),
+                'type'  => 'fieldset',
+                'items' => array(
+                    'related_products_display' => array(
+                        "title" => __( 'Display', 'brands-for-woocommerce' ),
+                        'type'  => 'checkbox',
+                        'class' => 'width100 br_brand_show_more_options',
+                        'id' => "related_products_display_depending", 
+                    )
+                ) + $related,
+            ),
+            'display_link' => array(
+                "title" => __( 'Display external link', 'brands-for-woocommerce' ),
+                'type'  => 'checkbox',
+                'class' => 'br_brands_checkbox_block',
+            ),
+            'featured' => array(
+                "title" => __( 'Display last created featured brand', 'brands-for-woocommerce' ),
+                'type'  => 'checkbox',
+                'class' => 'br_brands_checkbox_block',
+            ),
+        );
+
+        $this->shortcode_args = array(
+            'display_thumbnail' => 'thumbnail_display',
+            'width'             => 'thumbnail_width',
+            'align'             => 'thumbnail_align',
+        );
     }
-    /**
-     * WordPress widget
-     */
-    public function widget($args, $instance)
-    {
+
+    public function update( $new_instance, $old_instance ) {
+        $new_instance['brand_id'] = empty( $_REQUEST['berocket_brand'] ) ? '' : serialize( $_REQUEST['berocket_brand'] );
+        $instance = parent::update( $new_instance, $old_instance );
+        return $instance;
+    }
+
+    public function widget( $args, $instance ) {
+        $instance = $this->replace_shortcode_keys( $instance );
+        $instance = $this->get_size( 'thumbnail_width', $instance );
+        $instance = $this->get_size( 'thumbnail_height', $instance );
+        $instance = $this->get_size( 'banner_width', $instance );
+        $instance = $this->get_size( 'banner_height', $instance );
+
+        if ( ( !is_tax( BeRocket_product_brand::$taxonomy_name ) || !get_query_var( 'term' ) ) && empty( $instance['id'] ) 
+            && empty( $instance['featured'] ) ) {
+            return;
+        }
+
         $instance['display_title'] = apply_filters( 'widget_title', empty($instance['display_title']) ? '' : $instance['display_title'], $instance );
-        if ( ! is_tax( 'berocket_brand' ) ) {
-			return;
+        $instance = wp_parse_args( (array) $instance, $this->defaults );
+
+        if ( !empty( $instance['featured'] ) ) {
+            $terms = get_terms( 
+                array(
+                    'hide_empty' => false, // also retrieve terms which are not used yet
+                    'meta_query' => array(
+                        array(
+                           'key'   => 'br_brand_featured',
+                           'value' => 1,
+                        )
+                    ),
+                    'number'   => 1,
+                    'orderby'  => 'id',
+                    'order'    => 'DESC',
+                    'taxonomy' => BeRocket_product_brand::$taxonomy_name,
+                )
+            );
+            if ( empty( $terms ) ) return;
+            $term = $terms[0];
+        } else {
+            $term = empty( $instance['id'] ) ? 
+                get_term_by( 'slug', get_query_var( 'term' ), BeRocket_product_brand::$taxonomy_name ) :
+                get_term_by( 'id', $instance['id'], BeRocket_product_brand::$taxonomy_name );            
         }
-		if ( ! get_query_var( 'term' ) ) {
-			return;
-        }
-        $instance = wp_parse_args( (array) $instance, self::$defaults );
-        $term = get_term_by( 'slug', get_query_var( 'term' ), 'berocket_brand' );
+
         $image 	= get_term_meta( $term->term_id, 'brand_image_url', true );
-        set_query_var( 'display_thumbnail', @ $instance['display_thumbnail'] );
-        set_query_var( 'display_description', @ $instance['display_description'] );
-        set_query_var( 'width', @ $instance['width'] );
-        set_query_var( 'align', @ $instance['align'] );
-        set_query_var( 'brand_term', @ $term );
-        set_query_var( 'brand_image', @ $image );
-        ob_start();
+
         $BeRocket_product_brand = BeRocket_product_brand::getInstance();
-        $BeRocket_product_brand->br_get_template_part( 'description' );
-        $content = ob_get_clean();
-        if( $content ) {
-            echo $args['before_widget'];
-            if( @ $instance['display_title'] ) {
-                echo $args['before_title'].$term->name.$args['after_title'];
-            }
-            echo $content;
-            echo $args['after_widget'];
+        $options = $BeRocket_product_brand->get_option();
+        $instance['link_text'] = empty( $options['link_text'] ) ? '' : $options['link_text'];
+        $instance['link_open_in_new_tab'] = empty( $options['link_open_in_new_tab'] ) ? '' : $options['link_open_in_new_tab'];
+
+        $related_products_options = array(
+            'columns',
+            'orderby',
+            'order',
+            'slider',
+            'hide_brands',
+            'per_page',
+            'cache_key',
+        );
+        foreach ( $related_products_options as $option ) {
+            $instance["related_products_$option"] = $instance[$option];
         }
+
+        set_query_var( 'options', $instance );
+        set_query_var( 'brand_term', $term );
+        set_query_var( 'tooltip', BeRocket_product_brand::get_tooltip( $term->term_id ) );
+        $args['template'] = 'description';
+        parent::widget( $args, $instance );
 	}
-    /**
-     * Update widget settings
-     */
-	public function update( $new_instance, $old_instance ) {
-		$instance = $old_instance;
-		$instance['display_title'] = strip_tags( $new_instance['display_title'] );
-		$instance['display_thumbnail'] = strip_tags( $new_instance['display_thumbnail'] );
-		$instance['display_description'] = strip_tags( $new_instance['display_description'] );
-		$instance['width'] = strip_tags( $new_instance['width'] );
-		$instance['align'] = strip_tags( $new_instance['align'] );
-		return $instance;
-	}
-    /**
-     * Widget settings form
-     */
-	public function form($instance)
-	{
-        $instance = wp_parse_args( (array) $instance, self::$defaults );
-		?>
-        <p>
-            <label><input type="checkbox" value="1" name="<?php echo $this->get_field_name('display_title'); ?>"<?php if(@ $instance['display_title']) echo ' checked'; ?>><?php _e( 'Display title', 'brands-for-woocommerce' ); ?></label>
-        </p>
-        <p>
-            <label><input type="checkbox" value="1" name="<?php echo $this->get_field_name('display_thumbnail'); ?>"<?php if(@ $instance['display_thumbnail']) echo ' checked'; ?>><?php _e( 'Display thumbnails', 'brands-for-woocommerce' ); ?></label>
-        </p>
-        <p>
-            <label><input type="checkbox" value="1" name="<?php echo $this->get_field_name('display_description'); ?>"<?php if(@ $instance['display_description']) echo ' checked'; ?>><?php _e( 'Display description', 'brands-for-woocommerce' ); ?></label>
-        </p>
-        <p>
-            <label><?php _e( 'Image width', 'brands-for-woocommerce' ); ?></label>
-            <input type="text" value="<?php echo $instance['width']; ?>" name="<?php echo $this->get_field_name('width'); ?>">
-        </p>
-        <p>
-            <label><?php _e( 'Image align', 'brands-for-woocommerce' ); ?></label>
-            <select name="<?php echo $this->get_field_name('align'); ?>">
-                <?php
-                $align = array(
-                    'none' => __( 'none', 'brands-for-woocommerce' ),
-                    'left' => __( 'Left', 'brands-for-woocommerce' ),
-                    'right' => __( 'Right', 'brands-for-woocommerce' ),
-                );
-                foreach($align as $align_id => $align_name) {
-                    echo '<option value="', $align_id, '"', ($align_id == $instance['align'] ? 'selected' : ''), '>', $align_name, '</option>';
-                }
-                ?>
-            </select>
-        </p>
-		<?php
-	}
+
+    protected function replace_shortcode_keys( $instance ) {
+        $instance = parent::replace_shortcode_keys( $instance );
+        $instance = $this->get_size( 'thumbnailw', $instance );
+        return $instance;
+    }
+
 }
-?>
+

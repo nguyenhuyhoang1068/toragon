@@ -77,6 +77,10 @@ class TRP_Advanced_Tab {
                         $settings[ $registered_setting['name'] ] = sanitize_text_field($submitted_settings[ $registered_setting['name'] ]);
                         break;
                     }
+                    case 'radio' : {
+                        $settings[ $registered_setting['name'] ] = sanitize_text_field( $submitted_settings[ $registered_setting['name'] ] );
+                        break;
+                    }
                     case 'custom': {
 						foreach ( $registered_setting['rows'] as $row_label => $row_type ) {
                             if (isset($submitted_settings[$registered_setting['name']][$row_label])) {
@@ -206,7 +210,6 @@ class TRP_Advanced_Tab {
 
 	public function include_custom_codes(){
         include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/disable-dynamic-translation.php');
-        include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/enable-auto-translate-slug.php');
         include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/force-slash-at-end-of-links.php');
         include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/enable-numerals-translation.php');
         include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/custom-date-format.php');
@@ -216,7 +219,6 @@ class TRP_Advanced_Tab {
         include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/exclude-selectors.php');
 		include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/exclude-selectors-automatic-translation.php');
         include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/fix-broken-html.php');
-        include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/fix-invalid-space-between-html-attr.php');
         include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/show-dynamic-content-before-translation.php');
         include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/enable-hreflang-xdefault.php');
         include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/strip-gettext-post-content.php');
@@ -228,6 +230,9 @@ class TRP_Advanced_Tab {
         include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/remove-duplicates-from-db.php');
         include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/do-not-translate-certain-paths.php');
         include_once (TRP_PLUGIN_DIR . 'includes/advanced-settings/opposite-flag-shortcode.php');
+        include_once (TRP_PLUGIN_DIR . 'includes/advanced-settings/open-language-switcher-shortcode-on-click.php');
+        include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/hreflang-remove-locale.php');
+        include_once(TRP_PLUGIN_DIR . 'includes/advanced-settings/html-lang-remove-locale.php');
 	}
 
 	/*
@@ -236,7 +241,9 @@ class TRP_Advanced_Tab {
 
     function trp_advanced_settings_content_table(){
         $advanced_settings_array = $this->get_registered_advanced_settings();
+
         $html = '<p id="trp_advanced_tab_content_table">';
+        $advanced_settings_array = apply_filters('trp_advanced_tab_add_element', $advanced_settings_array);
         foreach( $advanced_settings_array as $setting ){
             if ( $setting['type'] !== 'separator' ){
                 continue;
@@ -328,16 +335,29 @@ class TRP_Advanced_Tab {
      */
     public function radio_setting( $setting ){
         $adv_option = $this->settings['trp_advanced_settings'];
-        $checked = '';
         $html = "
              <tr>
                 <th scope='row'>" . esc_html($setting['label'] ) . "</th>
                 <td class='trp-adst-radio'>";
 
         foreach($setting[ 'options' ] as $key => $option ){
-             if( isset( $adv_option[ $setting['default'] ] ) && $adv_option[ $setting['default'] ] === $option ) {
-					$checked = 'checked="checked"';
+
+            if( isset( $adv_option[ $setting['name'] ] ) && !empty( $adv_option[ $setting['name'] ] ) ){
+                if( $adv_option[ $setting['name'] ] === $option ){
+                    $checked = 'checked="checked"';
+                }
+                else{
+                    $checked = '';
+                }
 	        }
+            else{
+                if( $setting['default'] === $option ){
+                    $checked = 'checked="checked"';
+                }
+                else{
+                    $checked = '';
+                }
+            }
             $setting_name  = $setting['name'];
             $label  = $setting[ 'labels' ][$key];
             $html .= "<label>

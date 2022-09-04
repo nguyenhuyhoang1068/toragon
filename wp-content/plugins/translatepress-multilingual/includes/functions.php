@@ -94,7 +94,11 @@ function trp_x( $text, $context, $domain, $language ){
  * @return string the path of the mo file if it is found else an empty string
  */
 function trp_find_translation_location_for_domain( $domain, $language ){
-
+    global $trp_template_directory;
+    if ( !isset($trp_template_directory)){
+        // "caching" this because it sometimes leads to increased page load time due to many calls
+        $trp_template_directory = get_template_directory();
+    }
     $path = '';
 
     if( file_exists( WP_LANG_DIR . '/plugins/'. $domain .'-' . $language . '.mo') ) {
@@ -107,8 +111,8 @@ function trp_find_translation_location_for_domain( $domain, $language ){
     } else {
         $possible_translation_folders = array( '', 'languages/', 'language/', 'translations/', 'translation/', 'lang/' );
         foreach( $possible_translation_folders as $possible_translation_folder ){
-            if (file_exists(get_template_directory() . '/' . $possible_translation_folder . $domain . '-' . $language . '.mo')) {
-                $path = get_template_directory() . '/' . $possible_translation_folder . $domain . '-' . $language . '.mo';
+            if (file_exists($trp_template_directory . '/' . $possible_translation_folder . $domain . '-' . $language . '.mo')) {
+                $path = $trp_template_directory . '/' . $possible_translation_folder . $domain . '-' . $language . '.mo';
             } elseif ( file_exists(WP_PLUGIN_DIR . '/' . $domain . '/' . $possible_translation_folder . $domain . '-' . $language . '.mo') ) {
                 $path = WP_PLUGIN_DIR . '/' . $domain . '/' . $possible_translation_folder . $domain . '-' . $language . '.mo';
             }
@@ -148,7 +152,7 @@ function trp_add_affiliate_id_to_link( $link ){
  * Removes any unwanted html code from the string.
  * Do not confuse with trim.
  */
-function trp_sanitize_string( $filtered ){
+function trp_sanitize_string( $filtered, $execute_wp_kses = true ){
 	$filtered = preg_replace( '/<script\b[^>]*>(.*?)<\/script>/is', '', $filtered );
 
 	// don't remove \r \n \t. They are part of the translation, they give structure and context to the text.
@@ -166,7 +170,10 @@ function trp_sanitize_string( $filtered ){
 		$filtered = trim( preg_replace('/ +/', ' ', $filtered) );
 	}
 
-    return trp_wp_kses( $filtered );
+    if ( $execute_wp_kses ){
+        $filtered = trp_wp_kses( $filtered );
+    }
+    return $filtered;
 }
 
 function trp_wp_kses($string){
@@ -616,4 +623,78 @@ function trp_force_slash_at_end_of_link( $settings ){
         return true;
     else
         return false;
+}
+
+/**
+ * This function is used by users to create their own language switcher.
+ *It returns an array with all the necessary information for the user to create their own custom language switcher.
+ *
+ * @return array
+ *
+ * The array returned has the following indexes: language_name, language_code, short_language_name, flag_link, current_page_url
+ */
+
+function trp_custom_language_switcher() {
+    $trp           = TRP_Translate_Press::get_trp_instance();
+    $trp_languages = $trp->get_component( 'languages' );
+    $trp_settings  = $trp->get_component( 'settings' );
+    $settings      = $trp_settings->get_settings();
+
+    $languages_to_display  = $settings['publish-languages'];
+    $translation_languages = $trp_languages->get_language_names( $languages_to_display );
+
+    $url_converter = $trp->get_component( 'url_converter' );
+
+    $custom_ls_array = array();
+
+    foreach ( $translation_languages as $item => $language ) {
+
+        $custom_ls_array[ $item ]['language_name']       = $language;
+        $custom_ls_array[ $item ]['language_code']       = $item;
+        $custom_ls_array[ $item ]['short_language_name'] = $url_converter->get_url_slug( $item, false );
+
+        $flags_path = TRP_PLUGIN_URL . 'assets/images/flags/';
+        $flags_path = apply_filters( 'trp_flags_path', $flags_path, $item );
+
+        $flag_file_name = $item . '.png';
+        $flag_file_name = apply_filters( 'trp_flag_file_name', $flag_file_name, $item );
+
+        $custom_ls_array[ $item ]['flag_link'] = esc_url( $flags_path . $flag_file_name );
+
+        $custom_ls_array[ $item ]['current_page_url'] = esc_url( $url_converter->get_url_for_language( $item, null, '' ) );
+    }
+
+    return $custom_ls_array;
+}
+
+/**Function that provides translation for a specific text or html content, into another language.
+ * The function can be used by third party plugin/theme authors.
+ *
+ * @param string $content is the content you want to translate, it must be in the default language and it can be any text or html code
+ * @param string $language is the language you want to translate the content into, if it is left undefined the content will be translated
+ * to the current language; it's set to current language by default
+ * @param bool $prevent_over_translation is a parameter that prevents the translated content from being translated again during the translation
+ * of the page. This can be set to false if the translated content is used in a way that TranslatePress can't detect the text.
+ * It's set to true by default
+ * @return string is the translated content in the chosen language
+ */
+function trp_translate( $content, $language = null, $prevent_over_translation = true ){
+    $trp = TRP_Translate_Press::get_trp_instance();
+    $trp_render = $trp->get_component( 'translation_render' );
+    global $TRP_LANGUAGE;
+
+    $lang_backup = $TRP_LANGUAGE;
+
+    if ($language !== null){
+        $TRP_LANGUAGE = $language;
+    }
+    $translated_custom_content = $trp_render->translate_page($content);
+
+    if ($prevent_over_translation === true){
+        $translated_custom_content = '<span data-no-translation>' . $translated_custom_content .'</span>';
+    }
+
+    $TRP_LANGUAGE = $lang_backup;
+
+    return $translated_custom_content;
 }

@@ -10,6 +10,8 @@ use WPMailSMTP\Tasks\Meta;
 use WPMailSMTP\UsageTracking\UsageTracking;
 use WPMailSMTP\Compatibility\Compatibility;
 use WPMailSMTP\Reports\Reports;
+use ReflectionFunction;
+use Exception;
 
 /**
  * Class Core to handle all plugin initialization.
@@ -446,7 +448,8 @@ class Core {
 						)
 					),
 					'<strong>WP Mail SMTP</strong>',
-					'https://wpmailsmtp.com/docs/supported-php-versions-for-wp-mail-smtp/'
+					// phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
+					esc_url( wp_mail_smtp()->get_utm_url( 'https://wpmailsmtp.com/docs/supported-php-versions-for-wp-mail-smtp/', [ 'medium' => 'outdated-php-notice', 'content' => 'Read more' ] ) )
 				) .
 				'<br><br><em>' .
 				wp_kses(
@@ -483,47 +486,47 @@ class Core {
 				<p>
 					<?php
 					$notices[] = sprintf(
-						wp_kses( /* translators: %s - plugin name and its version. */
-							__( '<strong>EMAILING DISABLED:</strong> The %s is currently blocking all emails from being sent.', 'wp-mail-smtp' ),
-							array(
-								'strong' => true,
-							)
-						),
+						/* translators: %s - plugin name and its version. */
+						__( '<strong>EMAILING DISABLED:</strong> The %s is currently blocking all emails from being sent.', 'wp-mail-smtp' ),
 						esc_html( 'WP Mail SMTP v' . WPMS_PLUGIN_VER )
 					);
 
 					if ( Options::init()->is_const_defined( 'general', 'do_not_send' ) ) {
 						$notices[] = sprintf(
-							wp_kses( /* translators: %1$s - constant name; %2$s - constant value. */
-								__( 'To send emails, change the value of the %1$s constant to %2$s.', 'wp-mail-smtp' ),
-								array(
-									'code' => true,
-								)
-							),
+							/* translators: %1$s - constant name; %2$s - constant value. */
+							__( 'To send emails, change the value of the %1$s constant to %2$s.', 'wp-mail-smtp' ),
 							'<code>WPMS_DO_NOT_SEND</code>',
 							'<code>false</code>'
 						);
 					} else {
 						$notices[] = sprintf(
-							wp_kses( /* translators: %s - plugin Misc settings page URL. */
-								__( 'To send emails, go to plugin <a href="%s">Misc settings</a> and disable the "Do Not Send" option.', 'wp-mail-smtp' ),
-								array(
-									'a' => array(
-										'href' => true,
-									),
-								)
-							),
+							/* translators: %s - plugin Misc settings page URL. */
+							__( 'To send emails, go to plugin <a href="%s">Misc settings</a> and disable the "Do Not Send" option.', 'wp-mail-smtp' ),
 							esc_url( add_query_arg( 'tab', 'misc', wp_mail_smtp()->get_admin()->get_admin_page_url() ) )
 						);
 					}
 
-					echo implode( ' ', $notices );
+					if (
+						wp_mail_smtp()->get_admin()->is_admin_page( 'tools' ) &&
+						(
+							! isset( $_GET['tab'] ) ||
+							( isset( $_GET['tab'] ) && $_GET['tab'] === 'test' )
+						)
+					) {
+						$notices[] = esc_html__( 'If you create a test email on this page, it will still be sent.', 'wp-mail-smtp' );
+					}
+
+					echo wp_kses_post( implode( ' ', $notices ) );
 					?>
 				</p>
 			</div>
 
 			<?php
 			return;
+		}
+
+		if ( wp_mail_smtp()->get_admin()->is_admin_page() ) {
+			wp_mail_smtp()->wp_mail_function_incorrect_location_notice();
 		}
 
 		if ( wp_mail_smtp()->get_admin()->is_error_delivery_notice_enabled() ) {
@@ -558,7 +561,7 @@ class Core {
 					</p>
 
 					<blockquote>
-						<pre><?php echo $notice; ?></pre>
+						<pre><?php echo wp_kses_post( $notice ); ?></pre>
 					</blockquote>
 
 					<p>
@@ -792,10 +795,34 @@ class Core {
 	 */
 	public function get_upgrade_link( $utm ) {
 
+		$url = $this->get_utm_url( 'https://wpmailsmtp.com/lite-upgrade/', $utm );
+
+		/**
+		 * Filters upgrade link.
+		 *
+		 * @since 1.5.0
+		 *
+		 * @param string $url Upgrade link.
+		 */
+		return apply_filters( 'wp_mail_smtp_core_get_upgrade_link', $url );
+	}
+
+	/**
+	 * Get UTM URL.
+	 *
+	 * @since 3.4.0
+	 *
+	 * @param string       $url Base url.
+	 * @param array|string $utm Array of UTM params, or if string provided - utm_content URL parameter.
+	 *
+	 * @return string
+	 */
+	public function get_utm_url( $url, $utm ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+
 		// Defaults.
 		$source   = 'WordPress';
 		$medium   = 'plugin-settings';
-		$campaign = 'liteplugin';
+		$campaign = $this->is_pro() ? 'plugin' : 'liteplugin';
 		$content  = 'general';
 
 		if ( is_array( $utm ) ) {
@@ -815,13 +842,17 @@ class Core {
 			$content = $utm;
 		}
 
-		$url = 'https://wpmailsmtp.com/lite-upgrade/?utm_source=' . esc_attr( $source ) . '&utm_medium=' . esc_attr( $medium ) . '&utm_campaign=' . esc_attr( $campaign );
+		$query_args = [
+			'utm_source'   => esc_attr( rawurlencode( $source ) ),
+			'utm_medium'   => esc_attr( rawurlencode( $medium ) ),
+			'utm_campaign' => esc_attr( rawurlencode( $campaign ) ),
+		];
 
 		if ( ! empty( $content ) ) {
-			$url .= '&utm_content=' . esc_attr( $content );
+			$query_args['utm_content'] = esc_attr( rawurlencode( $content ) );
 		}
 
-		return apply_filters( 'wp_mail_smtp_core_get_upgrade_link', $url );
+		return add_query_arg( $query_args, $url );
 	}
 
 	/**
@@ -1002,7 +1033,7 @@ class Core {
 			$usage_tracking = apply_filters( 'wp_mail_smtp_core_get_usage_tracking', new UsageTracking() );
 
 			if ( method_exists( $usage_tracking, 'load' ) ) {
-				$usage_tracking->load();
+				add_action( 'after_setup_theme', [ $usage_tracking, 'load' ] );
 			}
 		}
 
@@ -1167,5 +1198,72 @@ class Core {
 		}
 
 		return $reports;
+	}
+
+	/**
+	 * Detect incorrect `wp_mail` function location and display warning.
+	 *
+	 * @since 3.5.0
+	 */
+	private function wp_mail_function_incorrect_location_notice() { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+
+		/**
+		 * Filters whether to display incorrect `wp_mail` function location warning.
+		 *
+		 * @since 3.5.0
+		 *
+		 * @param bool $display Whether to display incorrect `wp_mail` function location warning.
+		 */
+		$display_notice = apply_filters( 'wp_mail_smtp_core_wp_mail_function_incorrect_location_notice', true );
+
+		if ( ! $display_notice || ! defined( 'ABSPATH' ) || ! defined( 'WPINC' ) ) {
+			return;
+		}
+
+		try {
+			$wp_mail_reflection = new ReflectionFunction( 'wp_mail' );
+			$wp_mail_filepath   = $wp_mail_reflection->getFileName();
+			$separator          = defined( 'DIRECTORY_SEPARATOR' ) ? DIRECTORY_SEPARATOR : '/';
+
+			$wp_mail_original_filepath = ABSPATH . WPINC . $separator . 'pluggable.php';
+
+			if ( str_replace( '\\', '/', $wp_mail_filepath ) === str_replace( '\\', '/', $wp_mail_original_filepath ) ) {
+				return;
+			}
+
+			$conflict = WP::get_initiator( $wp_mail_filepath );
+
+			$message = esc_html__( 'WP Mail SMTP has detected incorrect "wp_mail" function location. Usually, this means that emails will not be sent successfully!', 'wp-mail-smtp' );
+
+			if ( $conflict['type'] === 'plugin' ) {
+				$message .= '<br><br>' . sprintf(
+					/* translators: %s - plugin name. */
+					esc_html__( 'It looks like the "%s" plugin is overwriting the "wp_mail" function. Please reach out to the plugin developer on how to disable or remove the "wp_mail" function overwrite to prevent conflicts with WP Mail SMTP.', 'wp-mail-smtp' ),
+					esc_html( $conflict['name'] )
+				);
+			} elseif ( $conflict['type'] === 'mu-plugin' ) {
+				$message .= '<br><br>' . sprintf(
+					/* translators: %s - must-use plugin name. */
+					esc_html__( 'It looks like the "%s" must-use plugin is overwriting the "wp_mail" function. Please reach out to your hosting provider on how to disable or remove the "wp_mail" function overwrite to prevent conflicts with WP Mail SMTP.', 'wp-mail-smtp' ),
+					esc_html( $conflict['name'] )
+				);
+			} elseif ( $wp_mail_filepath === ABSPATH . 'wp-config.php' ) {
+				$message .= '<br><br>' . esc_html__( 'It looks like it\'s overwritten in the "wp-config.php" file. Please reach out to your hosting provider on how to disable or remove the "wp_mail" function overwrite to prevent conflicts with WP Mail SMTP.', 'wp-mail-smtp' );
+			}
+
+			$message .= '<br><br>' . sprintf(
+				/* translators: %s - path. */
+				esc_html__( 'Current function path: %s', 'wp-mail-smtp' ),
+				$wp_mail_filepath . ':' . $wp_mail_reflection->getStartLine()
+			);
+
+			printf(
+				'<div class="notice %1$s"><p>%2$s</p></div>',
+				esc_attr( WP::ADMIN_NOTICE_ERROR ),
+				wp_kses( $message, [ 'br' => [] ] )
+			);
+		} catch ( Exception $e ) {
+			return;
+		}
 	}
 }

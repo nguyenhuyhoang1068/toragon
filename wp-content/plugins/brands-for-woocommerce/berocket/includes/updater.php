@@ -19,7 +19,7 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
 
         public static function admin_init() {
             add_filter('woocommerce_addons_sections', array(__CLASS__, 'woocommerce_addons_sections'));
-            if( isset($_GET['page']) && isset($_GET['section']) && $_GET['page'] == 'wc-addons' && $_GET['section'] == 'berocket' ) {
+            if( isset($_GET['page']) && isset($_GET['section']) && $_GET['page'] == 'wc-addons' && ( $_GET['section'] == 'berocket' || ! empty($_GET['search']) ) ) {
                 add_action('admin_footer', array(__CLASS__, 'woocommerce_addons_berocket'));
             }
         }
@@ -85,10 +85,18 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
 
         public static function error_log() {
             if ( self::$debug_mode ) {
+                $plugins_list = self::$plugin_info;
+                if( is_array($plugins_list) && count($plugins_list) > 0 ) {
+                    foreach($plugins_list as &$plugin) {
+                        if( ! empty($plugin['key']) ) {
+                            $plugin['key'] = self::hide_key($plugin['key']);
+                        }
+                    }
+                }
                 self::$error_log                          = apply_filters( 'BeRocket_updater_error_log', self::$error_log );
                 self::$error_log[ 'real_memory_usage' ]   = memory_get_peak_usage( true );
                 self::$error_log[ 'script_memory_usage' ] = memory_get_peak_usage( false );
-                self::$error_log[ 'plugins' ]             = self::$plugin_info;
+                self::$error_log[ 'plugins' ]             = $plugins_list;
                 self::$error_log[ 'memory_limit' ]        = ini_get( 'memory_limit' );
                 self::$error_log[ 'WP_DEBUG' ]            = 'WP_DEBUG:' . ( defined( 'WP_DEBUG' ) ? ( WP_DEBUG ? 'true' : 'false' ) : 'false' ) . '; WP_DEBUG_DISPLAY:' . ( defined( 'WP_DEBUG_DISPLAY' ) ? ( WP_DEBUG_DISPLAY ? 'true' : 'false' ) : 'false' );
                 $error_log = unserialize(preg_replace('/R:\d+/', 's:18:"RECURSION DETECTED"', serialize(self::$error_log)));
@@ -291,6 +299,18 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
                 $fast  = ! empty($_POST[ 'fast' ]);
                 $site_url = get_site_url();
                 $plugins  = self::$plugin_info;
+                if( strpos($key, '**') !== false ) {
+                    if ($id == 0 ) {
+                        $key = self::$key;
+                    } elseif( is_array($plugins) && count($plugins) > 0 ) {
+                        foreach($plugins as $plugin_info) {
+                            if($plugin_info['id'] == $id) {
+                                $key = $plugin_info['key'];
+                            }
+                        }
+                    }
+                }
+                
 
                 if ( is_array( $plugins ) ) {
                     $plugins = array_keys( $plugins );
@@ -340,7 +360,6 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
 
                                     if ( isset( $out[ 'versions' ][ $id ] ) && version_compare( $current_plugin[ 'version' ], $out[ 'versions' ][ $id ], '<' ) ) {
                                         $upgrade_button        = '<a href="' . wp_nonce_url( self_admin_url( 'update.php?action=upgrade-plugin&plugin=' ) . $current_plugin[ 'plugin' ], 'upgrade-plugin_' . $current_plugin[ 'plugin' ] ) . '" class="button tiny-button">Upgrade plugin</a>';
-                                        $out[ 'plugin_table' ] = '<p>' . $upgrade_button . '</p>' . $out[ 'plugin_table' ];
                                         $out[ 'upgrade' ][]    = array( 'id' => $id, 'upgrade' => $upgrade_button );
                                     }
                                 }
@@ -404,9 +423,6 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
                             if (data.key_exist == 1) {
                                 if (show_correct) {
                                     html = '<h3>' + data.status + '</h3>';
-                                    html += '<p><b>UserName: </b>' + data.username + '</p>';
-                                    html += '<p><b>E-Mail: </b>' + data.email + '</p>';
-                                    html += data.plugin_table;
                                     jQuery('.berocket_test_result').html(html);
                                     data.upgrade.forEach(function (el, i, arr) {
                                         jQuery('.berocket_product_key_' + el.id + '_status').html(el.upgrade);
@@ -473,10 +489,11 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
             register_setting( 'BeRocket_account_option_settings', 'BeRocket_account_option', array('sanitize_callback' => array(__CLASS__, 'reset_update_plugin_data')) );
         }
 
-        public static function reset_update_plugin_data($data) {
+        public static function reset_update_plugin_data($options) {
+            $options = self::restore_keys($options);
             self::update_check_set('');
             delete_site_transient( 'update_plugins' );
-            return $data;
+            return $options;
         }
 
         public static function account_form() {
@@ -499,7 +516,8 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
                 <form method="post" action="edit.php?page=berocket_account" class="account_key_send br_framework_settings">
                     <?php
                     if ( isset( $_POST[ 'BeRocket_account_option' ] ) ) {
-                        $option = berocket_sanitize_array( $_POST[ 'BeRocket_account_option' ] );
+                        $previous_options = get_site_option( 'BeRocket_account_option' );
+                        $option = berocket_sanitize_array( $_POST[ 'BeRocket_account_option' ], array('BeRocket_account_option'), $previous_options );
                         update_site_option( 'BeRocket_account_option', $option );
                         self::update_check_set('');
                         delete_site_transient( 'update_plugins' );
@@ -520,6 +538,42 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
             } else {
                 $plugins_key = array();
             }
+            $has_free = false;
+            foreach(self::$plugin_info as $plugin) {
+                if( $plugin['version_capability'] < 10 ) {
+                    $has_free = true;
+                }
+            }
+            if( $has_free ) {
+                if ( time() > 1637841600 and time() < 1637841600+302400 ) {
+                    echo "
+                    <div class='berocket-above-settings-banner' style='background: #1a1a1a; padding: 0;'>
+                        <a href='https://berocket.com/products?utm_source=free_plugin&utm_medium=settings&utm_campaign=account_keys&utm_content=top' target='_blank' 
+                        style='background: transparent; width: auto; border: 0 none; box-shadow: none; padding: 0; margin: 0;'>
+                            <img alt='BeRocket Products' src='https://berocket.ams3.cdn.digitaloceanspaces.com/g/bf21-1202x280.jpg' style='display: block;'>
+                        </a>
+                    </div>";
+                } else if ( time() > 1637841600+302400 and time() < 1637841600+302400+518400 ) {
+	                echo "
+                    <div class='berocket-above-settings-banner berocket-cm21-settings-wrapper' style='background: #07002e; padding: 0;'>
+                        <a href='https://berocket.com/products?utm_source=free_plugin&utm_medium=settings&utm_campaign=account_keys&utm_content=top' target='_blank' >
+                            <img alt='BeRocket Products' src='https://berocket.ams3.cdn.digitaloceanspaces.com/g/cm21.jpg'>
+                            <div class='berocket-cm21-settings'>
+                                <div class='berocket-cm21-settings-header'>
+                                    <p>Don't lose another 5% of the discount. Purchase now!</p>
+                                </div>
+                                <p style='top: 30%; left: 6%; '><span>Monday: <span style='padding-left: 20px; font-size: 1.25em; font-weight: bold;'>-30%</span></span></p>
+                                <p style='top: 32%; left: 55%;'><span>Tuesday: <span style='padding-left: 15px; font-size: 1.2em; font-weight: bold;'>-25%</span></span></p>
+                                <p style='top: 48%; left: 10%;'><span>Wednesday: <span style='padding-left: 5px; font-size: 1.15em'>-20%</span></span></p>
+                                <p style='top: 50%; left: 59%;'><span>Thursday: <span style='padding-left: 10px; font-size: 1.1em'>-15%</span></span></p>
+                                <p style='top: 66%; left: 16%;'><span>Friday: <span style='padding-left: 20px; font-size: 0.9em'>-10%</span></span></p>
+                                <p style='top: 68%; left: 63%;'><span>Saturday: <span style='padding-left: 15px; font-size: 0.9em'>-5%</span></span></p>
+                            </div>
+                            <div class='berocket-cm21-settings-mobiles-title' style='display: none;'>Up to 30% off sitewide!</div>
+                        </a>
+                    </div>";
+                }
+            }
             ?>
             <h2><?php _e('BeRocket Account Settings', 'BeRocket_domain'); ?></h2>
             <div>
@@ -534,7 +588,7 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
                         <td><h3><?php _e('Account key', 'BeRocket_domain'); ?></h3></td>
                         <td><input type="text" id="berocket_account_key" name="BeRocket_account_option[account_key]"
                                    size="50"
-                                   value="<?php echo( empty( $options[ 'account_key' ] ) ? '' : $options[ 'account_key' ] ) ?>">
+                                   value="<?php echo( empty( $options[ 'account_key' ] ) ? '' : self::hide_key($options[ 'account_key' ]) ) ?>">
                         </td>
                         <td><input class="berocket_test_account button tiny-button" type="button" value="Test"></td>
                         <td class="berocket_product_key_0_status"></td>
@@ -549,7 +603,7 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
                             echo $plugin[ 'slug' ];
                         }
                         echo '</h4></td>';
-                        echo '<td><input class="berocket_test_account_product_key" id="berocket_product_key_', $plugin[ 'id' ], '" size="50" name="BeRocket_account_option[plugin_key][', $plugin[ 'id' ], ']" type="text" value="', ( empty( $options[ 'plugin_key' ][ $plugin[ 'id' ] ] ) ? '' : $options[ 'plugin_key' ][ $plugin[ 'id' ] ] ), '"></td>';
+                        echo '<td><input class="berocket_test_account_product_key" id="berocket_product_key_', $plugin[ 'id' ], '" size="50" name="BeRocket_account_option[plugin_key][', $plugin[ 'id' ], ']" type="text" value="', ( empty( $options[ 'plugin_key' ][ $plugin[ 'id' ] ] ) ? '' : self::hide_key($options[ 'plugin_key' ][ $plugin[ 'id' ] ]) ), '"></td>';
                         echo '<td><input class="berocket_test_account_product save_checked button tiny-button" data-id="', $plugin[ 'id' ], '" data-product="#berocket_product_key_', $plugin[ 'id' ], '" type="button" value="Test"></td>';
                         echo '<td class="berocket_product_key_status berocket_product_key_', $plugin[ 'id' ], '_status"></td>';
                         echo '</tr>';
@@ -813,6 +867,7 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
                 require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
             }
 
+            $options = self::restore_keys($options);
             if ( is_multisite() && is_plugin_active_for_network( plugin_basename( __FILE__ ) ) ) {
                 update_site_option( 'BeRocket_account_option', $options );
             } else {
@@ -864,7 +919,7 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
                     foreach($products as $product) {
                         $addons[] = (object)array(
                             'title' => $product->name,
-                            'image' => '',
+                            'image' => $product->mini_image,
                             'excerpt' => $product->about,
                             'link'      => $product->plugin_url,
                             'price'     => '$'.$product->price,
@@ -873,12 +928,22 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
                         );
                     }
 
-                    set_transient( 'wc_addons_berocket', $addons, WEEK_IN_SECONDS );
+                    set_transient( 'wc_addons_berocket', $addons, DAY_IN_SECONDS );
                 }
                 
             }
+            if(! empty($_GET['search']) ) {
+                $correct_addon = array();
+                $search  = isset( $_GET['search'] ) ? sanitize_text_field( wp_unslash( $_GET['search'] ) ) : '';
+                foreach($addons as $addon) {
+                    if( stripos($addon->title, $search) !== FALSE || stripos($addon->excerpt, $search) !== FALSE ) {
+                        $correct_addon[] = $addon;
+                    }
+                }
+                $addons = $correct_addon;
+            }
             ?>
-            <ul class="products berocket_section_wc_addons">
+            <ul class="berocket_section_wc_addons" style="display: none;">
             <?php foreach ( $addons as $addon ) : ?>
                 <li class="product">
                     <a href="<?php echo esc_attr( $addon->link ); ?>">
@@ -893,12 +958,133 @@ if ( ! class_exists( 'BeRocket_updater' ) ) {
                 </li>
             <?php endforeach; ?>
             </ul>
+            <ul class="berocket_section_wc_addons_new" style="display: none;">
+            <?php 
+            $class_names = array( 'product' );
+            $product_details_classes = 'product-details';
+            foreach( $addons as $addon ) {
+                ?>
+                <li class="<?php echo esc_attr( implode( ' ', $class_names ) ); ?>">
+                    <div class="<?php echo esc_attr( $product_details_classes ); ?>">
+                        <div class="product-text-container">
+                            <a href="<?php echo esc_url( self::link_marketplace($addon->link) ); ?>">
+                                <h2><?php echo esc_html( $addon->title ); ?></h2>
+                            </a>
+                            <div class="product-developed-by">
+                                <?php
+                                $vendor_url = self::link_marketplace('https://berocket.com');
+
+                                printf(
+                                /* translators: %s vendor link */
+                                    esc_html__( 'Developed by %s', 'woocommerce' ),
+                                    sprintf(
+                                        '<a class="product-vendor-link" href="%1$s" target="_blank">%2$s</a>',
+                                        esc_url_raw( $vendor_url ),
+                                        esc_html( 'BeRocket' )
+                                    )
+                                );
+                                ?>
+                            </div>
+                            <p><?php echo wp_kses_post( $addon->excerpt ); ?></p>
+                        </div>
+                        <?php if ( ! empty( $addon->image ) ) : ?>
+                            <span class="product-img-wrap">
+                                <?php /* Show an icon if it exists */ ?>
+                                <img src="<?php echo esc_url( $addon->image ); ?>" />
+                            </span>
+                        <?php endif; ?>
+                    </div>
+                    <div class="product-footer">
+                        <div class="product-price-and-reviews-container">
+                            <div class="product-price-block">
+                                <?php if ( $addon->price == 0 || $addon->price == '$0' ) : ?>
+                                    <span class="price"><?php esc_html_e( 'Free', 'woocommerce' ); ?></span>
+                                <?php else : ?>
+                                    <span class="price">
+                                        <?php
+                                        echo wp_kses(
+                                            $addon->price,
+                                            array(
+                                                'span' => array(
+                                                    'class' => array(),
+                                                ),
+                                                'bdi'  => array(),
+                                            )
+                                        );
+                                        ?>
+                                    </span>
+                                    <span class="price-suffix"><?php esc_html_e( 'one time', 'woocommerce' ); ?></span>
+                                <?php endif; ?>
+                            </div>
+                            <?php if ( ! empty( $mapped->reviews_count ) && ! empty( $mapped->rating ) ) : ?>
+                                <?php /* Show rating and the number of reviews */ ?>
+                                <div class="product-reviews-block">
+                                    <?php for ( $index = 1; $index <= 5; ++$index ) : ?>
+                                        <?php $rating_star_class = 'product-rating-star product-rating-star__' . self::get_star_class( $mapped->rating, $index ); ?>
+                                        <div class="<?php echo esc_attr( $rating_star_class ); ?>"></div>
+                                    <?php endfor; ?>
+                                    <span class="product-reviews-count">(<?php echo (int) $mapped->reviews_count; ?>)</span>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                        <a class="button" href="<?php echo esc_url( self::link_marketplace($addon->link) ); ?>">
+                            <?php esc_html_e( 'View details', 'woocommerce' ); ?>
+                        </a>
+                    </div>
+                </li>
+                <?php
+            }
+            ?>
+            </ul>
             <script>
                 if( jQuery('.berocket_section_wc_addons').length && jQuery('.wc_addons_wrap .search-form').length ) {
+                    jQuery('.berocket_section_wc_addons').addClass('products').show();
                     jQuery('.wc_addons_wrap .search-form').after(jQuery('.berocket_section_wc_addons'));
+                }
+                if( jQuery('.berocket_section_wc_addons_new').length && jQuery('.marketplace-content-wrapper').length ) {
+                    jQuery('.berocket_section_wc_addons_new').show();
+                    if( jQuery('.marketplace-content-wrapper .products').length > 0 ) {
+                        jQuery('.marketplace-content-wrapper .products').prepend(jQuery('.berocket_section_wc_addons_new .product'));
+                    } else {
+                        jQuery('.berocket_section_wc_addons_new').addClass('products');
+                        jQuery('.marketplace-content-wrapper').prepend(jQuery('.berocket_section_wc_addons_new'));
+                    }
                 }
             </script>
             <?php
+        }
+        public static function link_marketplace($link) {
+            $link = add_query_arg( array(
+                'utm_source'    => 'free_plugin',
+                'utm_medium'    => 'marketplace',
+                'utm_campaign'  => 'marketplace',
+            ), $link );
+            return $link;
+        }
+        public static function hide_key($key) {
+            if( ! empty($key) ) {
+                $part = (int)(strlen($key) / 3);
+                $replace = strlen($key) - $part;
+                $key = substr($key, $replace);
+                for($i = 0; $i < $replace; $i++) {
+                    $key = '*'.$key;
+                }
+            }
+            return $key;
+        }
+        public static function restore_keys($options) {
+            $options_old = self::get_options();
+            if( ! empty($options['account_key']) && strpos($options['account_key'], '**') !== false && ! empty($options_old['account_key']) ) {
+                $options['account_key'] = $options_old['account_key'];
+            }
+            if( ! empty($options['plugin_key']) && is_array($options['plugin_key']) ) {
+                foreach($options['plugin_key'] as $plugin_id => $plugin_key) {
+                    if( ! empty($plugin_key) && strpos($plugin_key, '**') !== false && ! empty($options_old['plugin_key']) && ! empty($options_old['plugin_key'][$plugin_id]) ) {
+                        $options['plugin_key'][$plugin_id] = $options_old['plugin_key'][$plugin_id];
+                    }
+                }
+            }
+            return $options;
         }
     }
 

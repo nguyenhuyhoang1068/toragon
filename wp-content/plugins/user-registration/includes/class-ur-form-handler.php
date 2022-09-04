@@ -1,17 +1,18 @@
 <?php
-
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
-}
-
 /**
  * Handle frontend forms.
  *
  * @class       UR_Form_Handler
  * @version     1.0.0
  * @package     UserRegistration/Classes/
- * @category    Class
- * @author      WPEverest
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
+/**
+ * UR_Form_Handler Class.
  */
 class UR_Form_Handler {
 
@@ -36,8 +37,15 @@ class UR_Form_Handler {
 	 * Remove key and login from querystring, set cookie, and redirect to account page to show the form.
 	 */
 	public static function redirect_reset_password_link() {
-		if ( is_ur_account_page() && ! empty( $_GET['key'] ) && ! empty( $_GET['login'] ) ) {
-			$value = sprintf( '%s:%s', wp_unslash( $_GET['login'] ), wp_unslash( $_GET['key'] ) );
+		$ur_account_page_exists = ur_get_page_id( 'myaccount' ) > 0;
+		$is_ur_login_or_account_page = is_ur_account_page();
+
+		if ( ! $ur_account_page_exists ) {
+			$is_ur_login_or_account_page = is_ur_login_page();
+		}
+
+		if ( $is_ur_login_or_account_page && ! empty( $_GET['key'] ) && ! empty( $_GET['login'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
+			$value = sprintf( '%s:%s', sanitize_text_field( wp_unslash( $_GET['login'] ) ), sanitize_text_field( wp_unslash( $_GET['key'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification
 			UR_Shortcode_My_Account::set_reset_password_cookie( $value );
 
 			wp_safe_redirect( add_query_arg( 'show-reset-form', 'true', ur_lostpassword_url() ) );
@@ -52,11 +60,12 @@ class UR_Form_Handler {
 	 */
 	public static function save_profile_details() {
 
-		if ( 'POST' !== strtoupper( $_SERVER['REQUEST_METHOD'] ) ) {
+		global $wp;
+		if ( isset( $_SERVER['REQUEST_METHOD'] ) && 'POST' !== strtoupper( wp_unslash( sanitize_key( $_SERVER['REQUEST_METHOD'] ) ) ) ) {
 			return;
 		}
 
-		if ( empty( $_POST['action'] ) || 'save_profile_details' !== $_POST['action'] || empty( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'save_profile_details' ) ) {
+		if ( empty( $_POST['action'] ) || 'save_profile_details' !== $_POST['action'] || empty( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'save_profile_details' ) ) { //phpcs:ignore
 			return;
 		}
 
@@ -65,59 +74,98 @@ class UR_Form_Handler {
 		if ( $user_id <= 0 ) {
 			return;
 		}
-
 		if ( has_action( 'uraf_profile_picture_buttons' ) ) {
-			if ( isset( $_POST['profile_pic_url'] ) && ! empty( $_POST['profile_pic_url'] ) ) {
-				update_user_meta( $user_id, 'user_registration_profile_pic_url', $_POST['profile_pic_url'] );
+			$profile_picture_attachment_id = isset( $_POST['profile_pic_url'] ) ? absint( wp_unslash( $_POST['profile_pic_url'] ) ) : '';
+
+			if ( '' === $profile_picture_attachment_id ) {
+				update_user_meta( $user_id, 'user_registration_profile_pic_url', '' );
+			} else {
+					update_user_meta( $user_id, 'user_registration_profile_pic_url', $profile_picture_attachment_id );
 			}
 		} else {
-			if ( isset( $_FILES['profile-pic'] ) && $_FILES['profile-pic']['size'] ) {
+			if ( isset( $_FILES['profile-pic'] ) ) {
 
-				if ( ! function_exists( 'wp_handle_upload' ) ) {
-					require_once ABSPATH . 'wp-admin/includes/file.php';
-				}
+				if ( isset( $_FILES['profile-pic'] ) && ! empty( $_FILES['profile-pic']['size'] ) ) {
 
-				$upload           = $_FILES['profile-pic'];
-				$upload_overrides = array(
-					'action' => 'save_profile_details',
-				);
-				$uploaded         = wp_handle_upload( $upload, $upload_overrides );
+					$upload = $_FILES['profile-pic']; // phpcs:ignore
 
-				if ( $uploaded && ! isset( $uploaded['error'] ) ) {
-					$image = wp_get_image_editor( $uploaded['file'] );
+					$upload_dir  = wp_upload_dir();
+					$upload_path = apply_filters( 'user_registration_profile_pic_upload_url', $upload_dir['basedir'] . '/user_registration_uploads/profile-pictures' ); /*Get path of upload dir of WordPress*/
 
-					if ( ! is_wp_error( $image ) ) {
-						$image->resize( 150, 150, true );
-						$image->save( $uploaded['file'] );
+					// Checks if the upload directory exists and create one if not.
+					if ( ! file_exists( $upload_path ) ) {
+						wp_mkdir_p( $upload_path );
 					}
-					update_user_meta( $user_id, 'user_registration_profile_pic_url', $uploaded['url'] );
-				} else {
-					ur_add_notice( $uploaded['error'], 'error' );
-				}
-			} elseif ( UPLOAD_ERR_NO_FILE !== $_FILES['profile-pic']['error'] ) {
 
-				switch ( $_FILES['profile-pic']['error'] ) {
-					case UPLOAD_ERR_INI_SIZE:
-						ur_add_notice( __( 'File size exceed, please check your file size.', 'user-registration' ), 'error' );
-						break;
-					default:
-						ur_add_notice( __( 'Something went wrong while uploading, please contact your site administrator.', 'user-registration' ), 'error' );
-						break;
-				}
-			} elseif ( empty( $_POST['profile-pic-url'] ) ) {
-				$upload_dir  = wp_upload_dir();
-				$profile_url = get_user_meta( $user_id, 'user_registration_profile_pic_url', true );
-
-				// Check if profile already set?
-				if ( $profile_url ) {
-
-					// Then delete file and user meta.
-					$profile_url = $upload_dir['basedir'] . explode( '/uploads', $profile_url )[1];
-
-					if ( ! empty( $profile_url ) && file_exists( $profile_url ) ) {
-						@unlink( $profile_url );
+					if ( ! wp_is_writable( $upload_path ) ) {  /*Check if upload dir is writable*/
+						ur_add_notice( 'Upload path permission deny.', 'error' );
 					}
-					delete_user_meta( $user_id, 'user_registration_profile_pic_url' );
+
+					$upload_path = $upload_path . '/';
+					$file_ext    = strtolower( pathinfo( $upload['name'], PATHINFO_EXTENSION ) );
+
+					$file_name = user_registration_incremental_file_name( $upload_path, $upload );
+
+					$file_path = $upload_path . sanitize_file_name( $file_name );
+
+					if ( move_uploaded_file( $upload['tmp_name'], $file_path ) ) {
+
+						$attachment_id = wp_insert_attachment(
+							array(
+								'guid'           => $file_path,
+								'post_mime_type' => $file_ext,
+								'post_title'     => preg_replace( '/\.[^.]+$/', '', sanitize_file_name( $file_name ) ),
+								'post_content'   => '',
+								'post_status'    => 'inherit',
+							),
+							$file_path
+						);
+
+						if ( is_wp_error( $attachment_id ) ) {
+
+							wp_send_json_error(
+								array(
+
+									'message' => $attachment_id->get_error_message(),
+								)
+							);
+						}
+
+						include_once ABSPATH . 'wp-admin/includes/image.php';
+
+						// Generate and save the attachment metas into the database.
+						wp_update_attachment_metadata( $attachment_id, wp_generate_attachment_metadata( $attachment_id, $file_path ) );
+
+						update_user_meta( $user_id, 'user_registration_profile_pic_url', $attachment_id );
+
+					} else {
+						ur_add_notice( 'File cannot be uploaded.', 'error' );
+					}
+				} elseif ( isset( $_FILES['profile-pic']['error'] ) && UPLOAD_ERR_NO_FILE !== $_FILES['profile-pic']['error'] ) {
+
+					switch ( isset( $_FILES['profile-pic']['error'] ) && $_FILES['profile-pic']['error'] ) {
+						case UPLOAD_ERR_INI_SIZE:
+							ur_add_notice( esc_html__( 'File size exceed, please check your file size.', 'user-registration' ), 'error' );
+							break;
+						default:
+							ur_add_notice( esc_html__( 'Something went wrong while uploading, please contact your site administrator.', 'user-registration' ), 'error' );
+							break;
+					}
+				} elseif ( empty( $_POST['profile-pic-url'] ) ) {
+					$upload_dir  = wp_upload_dir();
+					$profile_url = get_user_meta( $user_id, 'user_registration_profile_pic_url', true );
+
+					// Check if profile already set?
+					if ( $profile_url ) {
+
+						// Then delete file and user meta.
+						$profile_url = $upload_dir['basedir'] . explode( '/uploads', $profile_url )[1];
+
+						if ( ! empty( $profile_url ) && file_exists( $profile_url ) ) {
+							@unlink( $profile_url );
+						}
+						delete_user_meta( $user_id, 'user_registration_profile_pic_url' );
+					}
 				}
 			}
 		}
@@ -132,101 +180,118 @@ class UR_Form_Handler {
 		$profile = user_registration_form_data( $user_id, $form_id );
 
 		foreach ( $profile as $key => $field ) {
-			if ( ! isset( $field['type'] ) ) {
-				$field['type'] = 'text';
-			}
-
-			// Get Value.
-			switch ( $field['type'] ) {
-				case 'checkbox':
-					if ( isset( $_POST[ $key ] ) && is_array( $_POST[ $key ] ) ) {
-						$_POST[ $key ] = $_POST[ $key ];
-					} else {
-						$_POST[ $key ] = (int) isset( $_POST[ $key ] );
-					}
-					break;
-				case 'wysiwyg' :
-					if ( isset( $_POST[ $key ] ) ) {
-						$_POST[ $key ] = sanitize_text_field( htmlentities( $_POST[$key] ) );
-					} else {
-						$_POST[ $key ] = '';
-					}
-					break;
-
-				default:
-					$_POST[ $key ] = isset( $_POST[ $key ] ) ? ur_clean( $_POST[ $key ] ) : '';
-					break;
-			}
-
-			// Hook to allow modification of value.
-			$_POST[ $key ] = apply_filters( 'user_registration_process_myaccount_field_' . $key, $_POST[ $key ] );
-
-			$disabled = false;
-			if ( isset( $field['custom_attributes'] ) && isset( $field['custom_attributes']['readonly'] ) && isset( $field['custom_attributes']['disabled'] ) ) {
-				if ( 'readonly' === $field['custom_attributes']['readonly'] || 'disabled' === $field['custom_attributes']['disabled'] ) {
-					$disabled = true;
+			if ( isset( $field['field_key'] ) ) {
+				if ( ! isset( $field['type'] ) ) {
+					$field['type'] = 'text';
 				}
-			}
 
-			// Validation: Required fields.
-			if ( ! empty( $field['required'] ) && empty( $_POST[ $key ] ) && ! $disabled ) {
-				ur_add_notice( sprintf( __( '%s is a required field.', 'user-registration' ), $field['label'] ), 'error' );
-			}
+				// Get Value.
+				switch ( $field['type'] ) {
+					case 'checkbox':
+						if ( isset( $_POST[ $key ] ) && is_array( $_POST[ $key ] ) ) {
+							$_POST[ $key ] = wp_unslash( $_POST[ $key ] ); // phpcs:ignore
+						} else {
+							$_POST[ $key ] = (int) isset( $_POST[ $key ] );
+						}
+						break;
 
-			if ( 'user_email' === $field['field_key'] ) {
-				do_action( 'user_registration_validate_email_whitelist', $_POST[ $key ], '' );
+					case 'wysiwyg':
+						if ( isset( $_POST[ $key ] ) ) {
+							$_POST[ $key ] = sanitize_text_field( htmlentities( wp_unslash( $_POST[ $key ] ) ) ); // phpcs:ignore
+						} else {
+							$_POST[ $key ] = '';
+						}
+						break;
 
-				// Check if email already exists before updating user details.
-				if ( email_exists( $_POST[ $key ] ) === 1 ) {
-					ur_add_notice( __( 'Email already exists', 'user-registration' ), 'error' );
+					case 'email':
+						if ( isset( $_POST[ $key ] ) ) {
+							$_POST[ $key ] = sanitize_email( wp_unslash( $_POST[ $key ] ) );
+						} else {
+							$user_data = get_userdata( $user_id );
+							$_POST[ $key ] = $user_data->data->user_email;
+						}
+						break;
+
+					default:
+						$_POST[ $key ] = isset( $_POST[ $key ] ) ? wp_unslash( $_POST[ $key ] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+						break;
 				}
-			}
 
-			if ( ! empty( $_POST[ $key ] ) ) {
+				// Hook to allow modification of value.
+				$_POST[ $key ] = apply_filters( 'user_registration_process_myaccount_field_' . $key, wp_unslash( $_POST[ $key ] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
-				// Validation rules.
-				if ( ! empty( $field['validate'] ) && is_array( $field['validate'] ) ) {
-					foreach ( $field['validate'] as $rule ) {
-						switch ( $rule ) {
-							case 'email':
-								$_POST[ $key ] = strtolower( $_POST[ $key ] );
+				$disabled = false;
+				if ( isset( $field['custom_attributes'] ) && isset( $field['custom_attributes']['readonly'] ) && isset( $field['custom_attributes']['disabled'] ) ) {
+					if ( 'readonly' === $field['custom_attributes']['readonly'] || 'disabled' === $field['custom_attributes']['disabled'] ) {
+						$disabled = true;
+					}
+				}
 
-								if ( ! is_email( $_POST[ $key ] ) ) {
-									ur_add_notice( sprintf( __( '%s is not a valid email address.', 'user-registration' ), '<strong>' . $field['label'] . '</strong>' ), 'error' );
-								}
+				// Validation: Required fields.
+				if ( ! empty( $field['required'] ) && empty( $_POST[ $key ] ) && ! $disabled ) {
+					/* translators: %s - Field Label */
+					ur_add_notice( sprintf( esc_html__( '%s is a required field.', 'user-registration' ), $field['label'] ), 'error' );
+				}
 
-								break;
+				if ( 'user_email' === $field['field_key'] ) {
+					do_action( 'user_registration_validate_email_whitelist', sanitize_text_field( wp_unslash( $_POST[ $key ] ) ), '' );
+
+					// Check if email already exists before updating user details.
+					if ( email_exists( sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) ) && email_exists( sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) ) !== $user_id ) {
+						ur_add_notice( esc_html__( 'Email already exists', 'user-registration' ), 'error' );
+					}
+				}
+
+				if ( ! empty( $_POST[ $key ] ) ) {
+
+					// Validation rules.
+					if ( ! empty( $field['validate'] ) && is_array( $field['validate'] ) ) {
+						foreach ( $field['validate'] as $rule ) {
+							switch ( $rule ) {
+								case 'email':
+									$_POST[ $key ] = strtolower( sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) );
+
+									if ( ! is_email( sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) ) ) {
+										/* translators: %s - Field Label */
+										ur_add_notice( wp_kses_post( sprintf( __( '%s is not a valid email address.', 'user-registration' ), '<strong>' . $field['label'] . '</strong>' ), 'error' ) );
+									}
+
+									break;
+							}
 						}
 					}
 				}
-			}
+				// Action to add extra validation to edit profile fields.
+				do_action( 'user_registration_validate_' . $key, wp_unslash( $_POST[ $key ] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
-		}// End foreach().
+			}
+		}
 
 		do_action( 'user_registration_after_save_profile_validation', $user_id, $profile );
 
 		if ( 0 === ur_notice_count( 'error' ) ) {
 			$user_data = array();
 			foreach ( $profile as $key => $field ) {
-				$new_key = str_replace( 'user_registration_', '', $key );
+				if ( isset( $field['field_key'] ) ) {
+					$new_key = str_replace( 'user_registration_', '', $key );
 
-				if ( in_array( $new_key, ur_get_user_table_fields() ) ) {
+					if ( in_array( $new_key, ur_get_user_table_fields() ) ) {
 
-					if ( $new_key === 'display_name' ) {
-						$user_data['display_name'] = $_POST[ $key ];
+						if ( 'display_name' === $new_key ) {
+							$user_data['display_name'] = sanitize_text_field( wp_unslash( $_POST[ $key ] ) );
+						} else {
+							$user_data[ $new_key ] = wp_unslash( $_POST[ $key ] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+						}
 					} else {
-						$user_data[ $new_key ] = $_POST[ $key ];
-					}
-				} else {
-					$update_key = $key;
+						$update_key = $key;
 
-					if ( in_array( $new_key, ur_get_registered_user_meta_fields() ) ) {
-						$update_key = str_replace( 'user_', '', $new_key );
-					}
-					$disabled = isset( $field['custom_attributes']['disabled'] ) ? $field['custom_attributes']['disabled'] : '';
-
-					if ( $disabled !== 'disabled' ) {
-						update_user_meta( $user_id, $update_key, $_POST[ $key ] );
+						if ( in_array( $new_key, ur_get_registered_user_meta_fields() ) ) {
+							$update_key = str_replace( 'user_', '', $new_key );
+						}
+						$disabled = isset( $field['custom_attributes']['disabled'] ) ? $field['custom_attributes']['disabled'] : '';
+						if ( 'disabled' !== $disabled ) {
+							update_user_meta( $user_id, $update_key, wp_unslash( $_POST[ $key ] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+						}
 					}
 				}
 			}
@@ -236,18 +301,20 @@ class UR_Form_Handler {
 				wp_update_user( $user_data );
 			}
 
-			ur_add_notice( __( 'User profile updated successfully.', 'user-registration' ) );
+			ur_add_notice( apply_filters( 'user_registration_profile_update_success_message', __( 'User profile updated successfully.', 'user-registration' ) ) );
 
 			do_action( 'user_registration_save_profile_details', $user_id, $form_id );
 
-			wp_safe_redirect( ur_get_endpoint_url( 'edit-profile', '', ur_get_page_permalink( 'myaccount' ) ) );
+			wp_safe_redirect( home_url( add_query_arg( array(), $wp->request ) ) );
 			exit;
 		}
 	}
 
 	/**
+	 * Save Account Details.
+	 *
 	 * @deprecated 1.4.1
-	 * @param $user_id
+	 * @param int $user_id User ID.
 	 * @return void
 	 */
 	public function save_account_details( $user_id ) {
@@ -258,11 +325,13 @@ class UR_Form_Handler {
 	 * Save the password and redirect back to the my account page.
 	 */
 	public static function save_change_password() {
-		if ( 'POST' !== strtoupper( $_SERVER['REQUEST_METHOD'] ) ) {
+		if ( isset( $_SERVER['REQUEST_METHOD'] ) && 'POST' !== strtoupper( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) ) ) {
 			return;
 		}
 
-		if ( empty( $_POST['action'] ) || 'save_change_password' !== $_POST['action'] || empty( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'save_change_password' ) ) {
+		$action = isset( $_POST['action'] ) ? sanitize_text_field( wp_unslash( $_POST['action'] ) ) : null;  // phpcs:ignore WordPress.Security.NonceVerification
+
+		if ( empty( $action ) || 'save_change_password' !== $_POST['action'] || empty( $_POST['_wpnonce'] ) || ! wp_verify_nonce( $_POST['_wpnonce'], 'save_change_password' ) ) { // phpcs:ignore
 			return;
 		}
 
@@ -276,9 +345,9 @@ class UR_Form_Handler {
 			return;
 		}
 
-		$pass_cur                = ! empty( $_POST['password_current'] ) ? $_POST['password_current'] : '';
-		$pass1                   = ! empty( $_POST['password_1'] ) ? $_POST['password_1'] : '';
-		$pass2                   = ! empty( $_POST['password_2'] ) ? $_POST['password_2'] : '';
+		$pass_cur                = ! empty( $_POST['password_current'] ) ? sanitize_text_field( wp_unslash( $_POST['password_current'] ) ) : '';
+		$pass1                   = ! empty( $_POST['password_1'] ) ? sanitize_text_field( wp_unslash( $_POST['password_1'] ) ) : '';
+		$pass2                   = ! empty( $_POST['password_2'] ) ? sanitize_text_field( wp_unslash( $_POST['password_2'] ) ) : '';
 		$save_pass               = true;
 		$bypass_current_password = apply_filters( 'user_registration_save_account_bypass_current_password', false );
 
@@ -299,6 +368,9 @@ class UR_Form_Handler {
 			$save_pass = false;
 		} elseif ( ! $bypass_current_password && ! wp_check_password( $pass_cur, $current_user->user_pass, $current_user->ID ) ) {
 			ur_add_notice( __( 'Your current password is incorrect.', 'user-registration' ), 'error' );
+			$save_pass = false;
+		} elseif ( wp_check_password( $pass1, $current_user->user_pass, $current_user->ID ) && $current_user ) {
+			ur_add_notice( __( 'New password must not be same as old password', 'user-registration' ), 'error' );
 			$save_pass = false;
 		}
 
@@ -330,47 +402,67 @@ class UR_Form_Handler {
 
 	/**
 	 * Process the login form.
+	 *
+	 * @throws Exception Login errors.
 	 */
 	public static function process_login() {
 
 		// Custom error messages.
 		$messages = array(
-			'username_is_required' => get_option( 'user_registration_message_username_required', __( 'Username is required.', 'user-registration' ) ),
-			'empty_password'       => get_option( 'user_registration_message_empty_password', null ),
-			'invalid_username'     => get_option( 'user_registration_message_invalid_username', null ),
-			'unknown_email'        => get_option( 'user_registration_message_unknown_email', __( 'A user could not be found with this email address.', 'user-registration' ) ),
-			'pending_approval'     => get_option( 'user_registration_message_pending_approval', null ),
-			'denied_access'        => get_option( 'user_registration_message_denied_account', null ),
+			'empty_username'   => get_option( 'user_registration_message_username_required', __( 'Username is required.', 'user-registration' ) ),
+			'empty_password'   => get_option( 'user_registration_message_empty_password', null ),
+			'invalid_username' => get_option( 'user_registration_message_invalid_username', null ),
+			'unknown_email'    => get_option( 'user_registration_message_unknown_email', __( 'A user could not be found with this email address.', 'user-registration' ) ),
+			'pending_approval' => get_option( 'user_registration_message_pending_approval', null ),
+			'denied_access'    => get_option( 'user_registration_message_denied_account', null ),
 		);
 
-		$nonce_value     = isset( $_POST['_wpnonce'] ) ? $_POST['_wpnonce'] : '';
-		$nonce_value     = isset( $_POST['user-registration-login-nonce'] ) ? $_POST['user-registration-login-nonce'] : $nonce_value;
-		$recaptcha_value = isset( $_POST['g-recaptcha-response'] ) ? $_POST['g-recaptcha-response'] : '';
-
-		$recaptcha_enabled = get_option( 'user_registration_login_options_enable_recaptcha', 'no' );
-		$recaptcha_version = get_option( 'user_registration_integration_setting_recaptcha_version' );
-		$secret_key        = 'v3' === $recaptcha_version ? get_option( 'user_registration_integration_setting_recaptcha_site_secret_v3' ) : get_option( 'user_registration_integration_setting_recaptcha_site_secret' );
+		$nonce_value         = isset( $_POST['_wpnonce'] ) ? sanitize_key( $_POST['_wpnonce'] ) : '';
+		$nonce_value         = isset( $_POST['user-registration-login-nonce'] ) ? sanitize_key( $_POST['user-registration-login-nonce'] ) : $nonce_value;
+		$hcaptca_response    = isset( $_POST['h-captcha-response'] ) ? sanitize_text_field( wp_unslash( $_POST['h-captcha-response'] ) ) : '';
+		$recaptcha_value     = isset( $_POST['g-recaptcha-response'] ) ? sanitize_text_field( wp_unslash( $_POST['g-recaptcha-response'] ) ) : $hcaptca_response;
+		$recaptcha_enabled   = get_option( 'user_registration_login_options_enable_recaptcha', 'no' );
+		$recaptcha_type      = get_option( 'user_registration_integration_setting_recaptcha_version', 'v2' );
+		$invisible_recaptcha = get_option( 'user_registration_integration_setting_invisible_recaptcha_v2', 'no' );
 
 		if ( ! empty( $_POST['login'] ) && wp_verify_nonce( $nonce_value, 'user-registration-login' ) ) {
 
 			try {
 				$creds = array(
-					'user_password' => $_POST['password'],
+					'user_password' => isset( $_POST['password'] ) ? sanitize_text_field( wp_unslash( $_POST['password'] ) ) : '',
 					'remember'      => isset( $_POST['rememberme'] ),
 				);
 
-				$username         = trim( $_POST['username'] );
+				$username         = isset( $_POST['username'] ) ? trim( sanitize_user( wp_unslash( $_POST['username'] ) ) ) : '';
 				$validation_error = new WP_Error();
-				$validation_error = apply_filters( 'user_registration_process_login_errors', $validation_error, $_POST['username'], $_POST['password'] );
+				$validation_error = apply_filters( 'user_registration_process_login_errors', $validation_error, sanitize_user( wp_unslash( $_POST['username'] ) ), sanitize_user( wp_unslash( $_POST['password'] ) ) );
 
 				if ( 'yes' == $recaptcha_enabled || '1' == $recaptcha_enabled ) {
 					if ( ! empty( $recaptcha_value ) ) {
+						if ( 'hCaptcha' === $recaptcha_type ) {
+							$secret_key        = get_option( 'user_registration_integration_setting_recaptcha_site_secret_hcaptcha' );
+							$data = wp_remote_get( 'https://hcaptcha.com/siteverify?secret=' . $secret_key . '&response=' . $recaptcha_value );
+							$data = json_decode( wp_remote_retrieve_body( $data ) );
 
-						$data = wp_remote_get( 'https://www.google.com/recaptcha/api/siteverify?secret=' . $secret_key . '&response=' . $recaptcha_value );
-						$data = json_decode( wp_remote_retrieve_body( $data ) );
-
-						if ( empty( $data->success ) || ( isset( $data->score ) && $data->score < apply_filters( 'user_registration_recaptcha_v3_threshold', 0.5 ) ) ) {
-							throw new Exception( '<strong>' . __( 'ERROR:', 'user-registration' ) . '</strong>' . __( 'Error on google reCaptcha. Contact your site administrator.', 'user-registration' ) );
+							if ( empty( $data->success ) || ( isset( $data->score ) && $data->score < apply_filters( 'user_registration_hcaptcha_threshold', 0.5 ) ) ) {
+								throw new Exception( '<strong>' . __( 'ERROR:', 'user-registration' ) . '</strong>' . __( 'Error on hCaptcha. Contact your site administrator.', 'user-registration' ) );
+							}
+						} else {
+							if ( 'v2' === $recaptcha_type && 'no' === $invisible_recaptcha ) {
+								$site_key = get_option( 'user_registration_integration_setting_recaptcha_site_key' );
+								$secret_key = get_option( 'user_registration_integration_setting_recaptcha_site_secret' );
+							} elseif ( 'v2' === $recaptcha_type && 'yes' === $invisible_recaptcha ) {
+								$site_key = get_option( 'user_registration_integration_setting_recaptcha_invisible_site_key' );
+								$secret_key = get_option( 'user_registration_integration_setting_recaptcha_invisible_site_secret' );
+							} elseif ( 'v3' === $recaptcha_type ) {
+								$site_key = get_option( 'user_registration_integration_setting_recaptcha_site_key_v3' );
+								$secret_key = get_option( 'user_registration_integration_setting_recaptcha_site_secret_v3' );
+							}
+							$data = wp_remote_get( 'https://www.google.com/recaptcha/api/siteverify?secret=' . $secret_key . '&response=' . $recaptcha_value );
+							$data = json_decode( wp_remote_retrieve_body( $data ) );
+							if ( empty( $data->success ) || ( isset( $data->score ) && $data->score <= get_option( 'user_registration_integration_setting_recaptcha_threshold_score_v3', apply_filters( 'user_registration_recaptcha_v3_threshold', 0.5 ) ) ) ) {
+								throw new Exception( '<strong>' . __( 'ERROR:', 'user-registration' ) . '</strong>' . __( 'Error on google reCaptcha. Contact your site administrator.', 'user-registration' ) );
+							}
 						}
 					} else {
 						throw new Exception( '<strong>' . __( 'ERROR:', 'user-registration' ) . '</strong>' . get_option( 'user_registration_form_submission_error_message_recaptcha', __( 'Captcha code error, please try again.', 'user-registration' ) ) );
@@ -382,7 +474,7 @@ class UR_Form_Handler {
 				}
 
 				if ( empty( $username ) ) {
-					throw new Exception( '<strong>' . __( 'ERROR:', 'user-registration' ) . '</strong>' . $messages['username_is_required'] );
+					throw new Exception( '<strong>' . __( 'ERROR:', 'user-registration' ) . '</strong>' . $messages['empty_username'] );
 				}
 
 				if ( is_email( $username ) && apply_filters( 'user_registration_get_username_from_email', true ) ) {
@@ -406,11 +498,25 @@ class UR_Form_Handler {
 					}
 				}
 
-				// Perform the login
+				// To check the specific login.
+				if ( 'email' === get_option( 'user_registration_general_setting_login_options_with', array() ) ) {
+					$user_data           = get_user_by( 'email', $username );
+					$creds['user_login'] = isset( $user_data->user_email ) ? $user_data->user_email : is_email( $username );
+				} elseif ( 'username' === get_option( 'user_registration_general_setting_login_options_with', array() ) ) {
+					$user_data           = get_user_by( 'login', $username );
+					$creds['user_login'] = isset( $user_data->user_login ) ? $user_data->user_login : ! is_email( $username );
+				} else {
+					$creds['user_login'] = $username;
+				}
+
+				// Perform the login.
 				$user = wp_signon( apply_filters( 'user_registration_login_credentials', $creds ), is_ssl() );
 
 				if ( is_wp_error( $user ) ) {
 					// Set custom error messages.
+					if ( ! empty( $user->errors['empty_username'] ) && ! empty( $messages['empty_username'] ) ) {
+						$user->errors['empty_username'][0] = sprintf( '<strong>%s:</strong> %s', __( 'ERROR', 'user-registration' ), $messages['empty_username'] );
+					}
 					if ( ! empty( $user->errors['empty_password'] ) && ! empty( $messages['empty_password'] ) ) {
 						$user->errors['empty_password'][0] = sprintf( '<strong>%s:</strong> %s', __( 'ERROR', 'user-registration' ), $messages['empty_password'] );
 					}
@@ -432,7 +538,7 @@ class UR_Form_Handler {
 						$redirect = admin_url();
 					} else {
 						if ( ! empty( $_POST['redirect'] ) ) {
-							$redirect = $_POST['redirect'];
+							$redirect = $_POST['redirect']; //phpcs:ignore
 						} elseif ( wp_get_raw_referer() ) {
 							$redirect = wp_get_raw_referer();
 						} else {
@@ -454,10 +560,10 @@ class UR_Form_Handler {
 	 * Handle lost password form.
 	 */
 	public static function process_lost_password() {
-		if ( isset( $_POST['ur_reset_password'] ) && isset( $_POST['user_login'] ) && isset( $_POST['_wpnonce'] ) && wp_verify_nonce( $_POST['_wpnonce'], 'lost_password' ) ) {
+		if ( isset( $_POST['ur_reset_password'] ) && isset( $_POST['user_login'] ) && isset( $_POST['_wpnonce'] ) && wp_verify_nonce( sanitize_key( $_POST['_wpnonce'] ), 'lost_password' ) ) {
 			$success = UR_Shortcode_My_Account::retrieve_password();
 
-			// If successful, redirect to my account with query arg set
+			// If successful, redirect to my account with query arg set.
 			if ( $success ) {
 				wp_redirect(
 					add_query_arg(
@@ -494,7 +600,7 @@ class UR_Form_Handler {
 			if ( ! isset( $_POST[ $field ] ) ) {
 				return;
 			}
-			$posted_fields[ $field ] = $_POST[ $field ];
+			$posted_fields[ $field ] = $_POST[ $field ]; // phpcs:ignore
 		}
 
 		if ( ! wp_verify_nonce( $posted_fields['_wpnonce'], 'reset_password' ) ) {
@@ -505,13 +611,16 @@ class UR_Form_Handler {
 
 		if ( $user instanceof WP_User ) {
 			if ( empty( $posted_fields['password_1'] ) ) {
-				ur_add_notice( __( 'Please enter your password.', 'user-registration' ), 'error' );
+				ur_add_notice( esc_html__( 'Please enter your password.', 'user-registration' ), 'error' );
 			}
 
 			if ( $posted_fields['password_1'] !== $posted_fields['password_2'] ) {
-				ur_add_notice( __( 'Passwords do not match.', 'user-registration' ), 'error' );
+				ur_add_notice( esc_html__( 'Passwords do not match.', 'user-registration' ), 'error' );
 			}
 
+			if ( wp_check_password( $posted_fields['password_1'], $user->user_pass, $user->ID ) ) {
+				ur_add_notice( esc_html__( 'New password must not be same as old password.', 'user-registration' ), 'error' );
+			}
 			$errors = new WP_Error();
 
 			do_action( 'validate_password_reset', $errors, $user );
@@ -523,7 +632,14 @@ class UR_Form_Handler {
 
 				do_action( 'user_registration_reset_password', $user );
 
-				wp_redirect( add_query_arg( 'password-reset', 'true', ur_get_page_permalink( 'myaccount' ) ) );
+				$ur_account_page_exists = ur_get_page_id( 'myaccount' ) > 0;
+				$ur_login_or_account_page = ur_get_page_permalink( 'myaccount' );
+
+				if ( ! $ur_account_page_exists ) {
+					$ur_login_or_account_page = ur_get_page_permalink( 'login' );
+				}
+
+				wp_redirect( add_query_arg( 'password-reset', 'true', $ur_login_or_account_page ) );
 				exit;
 			}
 		}

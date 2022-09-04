@@ -14,6 +14,7 @@ class TRP_Translation_Render{
     protected $url_converter;
     /* @var TRP_Translation_Manager */
 	protected $translation_manager;
+    protected $common_html_tags;
 
     /**
      * TRP_Translation_Render constructor.
@@ -22,6 +23,8 @@ class TRP_Translation_Render{
      */
     public function __construct( $settings ){
         $this->settings = $settings;
+        // apply_filters only once instead of everytime is_html() is used
+        $this->common_html_tags = implode( '|', apply_filters('trp_common_html_tags', array( 'html', 'body', 'table', 'tbody', 'thead', 'th', 'td', 'tr', 'div', 'p', 'span', 'b', 'a', 'strong', 'center', 'br', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'img' ) ) );
     }
 
     /**
@@ -121,7 +124,7 @@ class TRP_Translation_Render{
 	    $string_groups = $this->translation_manager->string_groups();
 
         $node_type_categories = apply_filters( 'trp_node_type_categories', array(
-            $string_groups['metainformation'] => array( 'meta_desc', 'page_title' ),
+            $string_groups['metainformation'] => array( 'meta_desc', 'page_title', 'meta_desc_img' ),
             $string_groups['images']          => array( 'image_src' )
         ));
 
@@ -147,53 +150,83 @@ class TRP_Translation_Render{
                     'type'          => 'meta_desc',
                     'attribute'     => 'name',
                     'value'         => 'description',
-                    'description'   => __( 'Description', 'translatepress-multilingual' )
+                    'description'   => esc_html__( 'Description', 'translatepress-multilingual' )
                 ),
                 array(
                     'type'          => 'meta_desc',
                     'attribute'     => 'property',
                     'value'         => 'og:title',
-                    'description'   => __( 'OG Title', 'translatepress-multilingual' )
+                    'description'   => esc_html__( 'OG Title', 'translatepress-multilingual' )
                 ),
                 array(
                     'type'          => 'meta_desc',
                     'attribute'     => 'property',
                     'value'         => 'og:site_name',
-                    'description'   => __( 'OG Site Name', 'translatepress-multilingual' )
+                    'description'   => esc_html__( 'OG Site Name', 'translatepress-multilingual' )
                 ),
                 array(
                     'type'          => 'meta_desc',
                     'attribute'     => 'property',
                     'value'         => 'og:description',
-                    'description'   => __( 'OG Description', 'translatepress-multilingual' )
+                    'description'   => esc_html__( 'OG Description', 'translatepress-multilingual' )
                 ),
+	            array(
+		            'type'          => 'meta_desc',
+		            'attribute'     => 'property',
+		            'value'         => 'og:image:alt',
+		            'description'   => esc_html__( 'OG Image Alt', 'translatepress-multilingual' )
+	            ),
                 array(
                     'type'          => 'meta_desc',
                     'attribute'     => 'name',
                     'value'         => 'twitter:title',
-                    'description'   => __( 'Twitter Title', 'translatepress-multilingual' )
+                    'description'   => esc_html__( 'Twitter Title', 'translatepress-multilingual' )
                 ),
                 array(
                     'type'          => 'meta_desc',
                     'attribute'     => 'name',
                     'value'         => 'twitter:description',
-                    'description'   => __( 'Twitter Description', 'translatepress-multilingual' )
+                    'description'   => esc_html__( 'Twitter Description', 'translatepress-multilingual' )
                 ),
+	            array(
+		            'type'          => 'meta_desc',
+		            'attribute'     => 'name',
+		            'value'         => 'twitter:image:alt',
+		            'description'   => esc_html__( 'Twitter Image Alt', 'translatepress-multilingual' )
+	            ),
                 array(
                     'type'          => 'page_title',
-                    'description'   => __( 'Page Title', 'translatepress-multilingual' )
+                    'description'   => esc_html__( 'Page Title', 'translatepress-multilingual' )
                 ),
 	            array(
 		            'type'          => 'meta_desc',
 		            'attribute'     => 'name',
 		            'value'         => 'DC.Title',
-		            'description'   => __( 'Dublin Core Title', 'translatepress-multilingual' )
+		            'description'   => esc_html__( 'Dublin Core Title', 'translatepress-multilingual' )
 	            ),
 	            array(
 		            'type'          => 'meta_desc',
 		            'attribute'     => 'name',
 		            'value'         => 'DC.Description',
-		            'description'   => __( 'Dublin Core Description', 'translatepress-multilingual' )
+		            'description'   => esc_html__( 'Dublin Core Description', 'translatepress-multilingual' )
+	            ),
+	            array(
+		            'type'          => 'meta_desc_img',
+		            'attribute'     => 'property',
+		            'value'         => 'og:image',
+		            'description'   => esc_html__( 'OG Image', 'translatepress-multilingual' )
+	            ),
+	            array(
+		            'type'          => 'meta_desc_img',
+		            'attribute'     => 'property',
+		            'value'         => 'og:image:secure_url',
+		            'description'   => esc_html__( 'OG Image Secure URL', 'translatepress-multilingual' )
+	            ),
+	            array(
+		            'type'          => 'meta_desc_img',
+		            'attribute'     => 'name',
+		            'value'         => 'twitter:image',
+		            'description'   => esc_html__( 'Twitter Image', 'translatepress-multilingual' )
 	            ),
 
             ));
@@ -347,6 +380,9 @@ class TRP_Translation_Render{
     	if ( apply_filters( 'trp_stop_translating_page', false, $output ) ){
     		return $output;
 	    }
+
+        global $TRP_HDOM_QUOTE_DEFAULT;
+        $TRP_HDOM_QUOTE_DEFAULT = apply_filters('trp_hdom_quote_default_double_quotes', '"');
 
     	global $trp_editor_notices;
 
@@ -616,6 +652,18 @@ class TRP_Translation_Render{
 	    }
 
         $no_translate_selectors = apply_filters( 'trp_no_translate_selectors', array( '#wpadminbar' ), $TRP_LANGUAGE );
+        $ignore_cdata = apply_filters('trp_ignore_cdata', true );
+        $translate_encoded_html_as_string = apply_filters('trp_translate_encoded_html_as_string', false );
+        $translate_encoded_html_as_html = apply_filters('trp_translate_encoded_html_as_html', true );
+        // used for skipping minified scripts but can be used for anything
+        $skip_strings_containing_key_terms = apply_filters('trp_skip_strings_containing_key_terms',
+            array(
+                array(
+                    'terms'=> array( 'function', 'return', 'if', '==' ),
+                    'operator' => 'and'
+                )
+            )
+        );
 
         /*
          * process the types of strings we can currently have: no-translate, translation-block, text, input, textarea, etc.
@@ -668,8 +716,38 @@ class TRP_Translation_Render{
                 && !$this->trp_is_numeric($trimmed_string)
                 && !preg_match('/^\d+%$/',$trimmed_string)
                 && !$this->has_ancestor_attribute( $row, $no_translate_attribute )
-                && !$this->has_ancestor_class( $row, 'translation-block') )
+                && !$this->has_ancestor_class( $row, 'translation-block')
+                && ( !$ignore_cdata || ( strpos($trimmed_string, '<![CDATA[') !== 0 && strpos($trimmed_string, '&lt;![CDATA[') !== 0  ) )
+                && (strpos($trimmed_string, 'BEGIN:VCALENDAR') !== 0)
+                && !$this->contains_substrings($trimmed_string, $skip_strings_containing_key_terms ) )
             {
+                if ( !$translate_encoded_html_as_string ){
+                    $is_html = false;
+                    if ( $translate_encoded_html_as_html ){
+                        if ( $this->is_html($trimmed_string) ){
+                            // prevent potential infinite loops. Only call translate_page once recursively
+                            add_filter( 'trp_translate_encoded_html_as_html', '__return_false' );
+
+                            $row->outertext = str_replace( $trimmed_string, $this->translate_page( $trimmed_string ), $row->outertext );
+                            remove_filter( 'trp_translate_encoded_html_as_html', '__return_false' );
+                            $is_html = true;
+                        }else {
+                            $entity_decoded_trimmed_string = html_entity_decode( $trimmed_string );
+                            if ( $this->is_html( $entity_decoded_trimmed_string ) ) {
+                                // prevent potential infinite loops. Only call translate_page once recursively
+                                add_filter( 'trp_translate_encoded_html_as_html', '__return_false' );
+
+                                $row->outertext = str_replace( $trimmed_string, htmlentities( $this->translate_page( $entity_decoded_trimmed_string ) ), $row->outertext );
+                                remove_filter( 'trp_translate_encoded_html_as_html', '__return_false' );
+                                $is_html = true;
+                            }
+                        }
+                    }
+                    if ( $is_html ) {
+                        continue;
+                    }
+                }
+
                 // $translateable_strings array needs to be in sync in $nodes array
                 $string_count = array_push( $translateable_strings, $trimmed_string );
                 $node_type_to_push = ( in_array( $parent->tag, array( 'button', 'option' ) ) ) ? $parent->tag : 'text';
@@ -707,9 +785,25 @@ class TRP_Translation_Render{
 				        && !$this->has_ancestor_attribute( $row, $no_translate_attribute )
 				        && !$this->has_ancestor_attribute( $row, $no_translate_attribute . '-' . $current_node_accessor_selector )
 				        && !$this->has_ancestor_class( $row, 'translation-block')
-				        && $row->tag != 'link' )
+				        && $row->tag != 'link'
+                        && ( !$ignore_cdata || ( strpos($trimmed_string, '<![CDATA[') !== 0 && strpos($trimmed_string, '&lt;![CDATA[') !== 0  ) )
+                        && (strpos($trimmed_string, 'BEGIN:VCALENDAR') !== 0 )
+                        && !$this->contains_substrings($trimmed_string, $skip_strings_containing_key_terms ) )
 				    {
-					    $entity_decoded_trimmed_string = html_entity_decode( $trimmed_string );
+                        $entity_decoded_trimmed_string = html_entity_decode( $trimmed_string );
+                        if ( !$translate_encoded_html_as_string ){
+                            if ( $translate_encoded_html_as_html ){
+                                if ( $this->is_html($entity_decoded_trimmed_string) ){
+                                    // prevent potential infinite loops. Only call translate_page once recursively
+                                    add_filter( 'trp_translate_encoded_html_as_html', '__return_false' );
+
+                                    $row->setAttribute( $current_node_accessor_selector, str_replace( $trimmed_string, esc_attr( htmlentities($this->translate_page( $entity_decoded_trimmed_string )) ), $row->$current_node_accessor_selector ) );
+                                    remove_filter( 'trp_translate_encoded_html_as_html', '__return_false' );
+                                    continue;
+                                }
+                            }
+                        }
+
 					    array_push( $translateable_strings, $entity_decoded_trimmed_string );
 					    array_push( $nodes, array( 'node'=>$row, 'type' => $node_accessor_key ) );
 					    if ( ! apply_filters( 'trp_allow_machine_translation_for_string', true, $entity_decoded_trimmed_string, $current_node_accessor_selector, $node_accessor, $row ) ){
@@ -891,22 +985,22 @@ class TRP_Translation_Render{
         // pass the current language in forms where the action does not contain the language
         // based on this we're filtering wp_redirect to include the proper URL when returning to the current page.
         foreach ( $html->find('form') as $k => $row ){
-            $row->setAttribute( 'data-trp-original-action', $row->action );
-            $row->innertext .= apply_filters( 'trp_form_inputs', '<input type="hidden" name="trp-form-language" value="'. $this->settings['url-slugs'][$TRP_LANGUAGE] .'"/>', $TRP_LANGUAGE, $this->settings['url-slugs'][$TRP_LANGUAGE], $row );
-            $form_action = $row->action;
+            $form_action    = $row->action;
+            $is_admin_link    = $this->is_admin_link( $form_action, $admin_url, $wp_login_url );
+            if(!$is_admin_link) {
+                $row->setAttribute( 'data-trp-original-action', $row->action );
+                $row->innertext .= apply_filters( 'trp_form_inputs', '<input type="hidden" name="trp-form-language" value="' . $this->settings['url-slugs'][ $TRP_LANGUAGE ] . '"/>', $TRP_LANGUAGE, $this->settings['url-slugs'][ $TRP_LANGUAGE ], $row );
 
-            $is_external_link = $this->is_external_link( $form_action, $home_url );
-            $is_admin_link = $this->is_admin_link($form_action, $admin_url, $wp_login_url );
+                $is_external_link = $this->is_external_link( $form_action, $home_url );
 
-            if ( !empty($form_action)
-                && $this->settings['force-language-to-custom-links'] == 'yes'
-                && !$is_external_link
-                && !$is_admin_link
-                && strpos($form_action, '#TRPLINKPROCESSED') === false)
-            {
-                $row->action =  $this->url_converter->get_url_for_language( $TRP_LANGUAGE, $form_action );
+                if ( !empty( $form_action )
+                    && $this->settings['force-language-to-custom-links'] == 'yes'
+                    && !$is_external_link
+                    && strpos( $form_action, '#TRPLINKPROCESSED' ) === false ) {
+                    $row->action = $this->url_converter->get_url_for_language( $TRP_LANGUAGE, $form_action );
+                }
+                $row->action = str_replace( '#TRPLINKPROCESSED', '', $row->action );
             }
-            $row->action = str_replace('#TRPLINKPROCESSED', '', $row->action);
         }
 
         foreach ( $html->find('link') as $link ){
@@ -1270,7 +1364,7 @@ class TRP_Translation_Render{
 	    }
 
         $translated_strings = array();
-	    $machine_translation_available = $this->machine_translator->is_available( array( $this->settings['default-language'], $language_code ));
+	    $machine_translation_available = $this->machine_translator ? $this->machine_translator->is_available( array( $this->settings['default-language'], $language_code )) : false;
 
         if ( ! $this->trp_query ) {
             $trp = TRP_Translate_Press::get_trp_instance();
@@ -1317,7 +1411,7 @@ class TRP_Translation_Render{
                 array_push( $update_strings, array(
                     'id'          => $id,
                     'original_id' => $original_inserts[ $string ]->id,
-                    'original'    => trp_sanitize_string( $string ),
+                    'original'    => trp_sanitize_string( $string, false ),
                     'translated'  => trp_sanitize_string( $machine_strings[ $string ] ),
                     'status'      => $this->trp_query->get_constant_machine_translated() ) );
             }
@@ -1676,6 +1770,7 @@ class TRP_Translation_Render{
             }
 
             $item = $this->url_converter->get_url_for_language( $form_language, $item );
+	        $item  = str_replace('#TRPLINKPROCESSED', '', $item);
         }
     }
 
@@ -1775,6 +1870,51 @@ class TRP_Translation_Render{
     	else {
     		return false;
     	}
+    }
+
+    /**
+     * Whether a text contains html tags.
+     * Match an opening or closing tag among given html tags.
+     * @param $string
+     * @return bool
+     */
+    public function is_html( $string ){
+        $pattern = '/<\/?(' . $this->common_html_tags . ')(\s[^>]*)?(\s?\/)?\>/';
+        return preg_match($pattern, $string, $matches);
+    }
+
+    /**
+     * Matches the conditions set by $key_term_arrays
+     *
+     * See $skip_strings_containing_key_terms for config
+     *
+     * @param $string
+     * @param $key_terms_arrays
+     * @return bool
+     */
+    public function contains_substrings($string, $key_terms_arrays){
+        foreach( $key_terms_arrays as $key_terms ) {
+            if ( !empty( $key_terms['operator'] ) && !empty( $key_terms['terms'] ) && is_array( $key_terms ) ) {
+                if ( $key_terms['operator'] == 'or' ){
+                    foreach ( $key_terms['terms'] as $term ) {
+                        if ( stripos( $string, $term ) !== false ) {
+                            return true;
+                        }
+                    }
+                }
+                if ( $key_terms['operator'] == 'and' ){
+                    foreach ( $key_terms['terms'] as $array_key => $term ) {
+                        if ( stripos( $string, $term ) !== false ) {
+                            unset($key_terms['terms'][$array_key]);
+                            if ( count ($key_terms['terms'] ) == 0 ){
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
 }

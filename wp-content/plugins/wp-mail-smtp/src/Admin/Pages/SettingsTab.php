@@ -51,13 +51,13 @@ class SettingsTab extends PageAbstract {
 	 */
 	public function display() {
 
-		$options = new Options();
+		$options = Options::init();
 		$mailer  = $options->get( 'mail', 'mailer' );
 
-		$disabled_email = in_array( $mailer, [ 'outlook', 'zoho' ], true ) ? 'disabled' : '';
-		$disabled_name  = 'outlook' === $mailer ? 'disabled' : '';
+		$disabled_email = in_array( $mailer, [ 'zoho' ], true ) ? 'disabled' : '';
+		$disabled_name  = in_array( $mailer, [ 'outlook' ], true ) ? 'disabled' : '';
 
-		if ( empty( $mailer ) ) {
+		if ( empty( $mailer ) || ! in_array( $mailer, Options::$mailers, true ) ) {
 			$mailer = 'mail';
 		}
 
@@ -149,7 +149,7 @@ class SettingsTab extends PageAbstract {
 
 						<?php endif; ?>
 
-						<?php if ( ! in_array( $mailer, [ 'gmail', 'outlook', 'zoho' ], true ) ) : ?>
+						<?php if ( ! in_array( $mailer, [ 'gmail', 'zoho' ], true ) ) : ?>
 							<p class="desc">
 								<?php esc_html_e( 'The email address that emails are sent from.', 'wp-mail-smtp' ); ?><br/>
 								<?php esc_html_e( 'If you\'re using an email provider (Yahoo, Outlook.com, etc) this should be your email address for that account.', 'wp-mail-smtp' ); ?>
@@ -298,9 +298,13 @@ class SettingsTab extends PageAbstract {
 					<div class="wp-mail-smtp-suggest-new-mailer">
 						<p class="desc">
 							<?php esc_html_e( 'Don\'t see what you\'re looking for?', 'wp-mail-smtp' ); ?>
-							<a href="https://wpmailsmtp.com/suggest-a-mailer" target="_blank" rel="noopener noreferrer">
-								<?php esc_html_e( 'Suggest a Mailer', 'wp-mail-smtp' ); ?>
-							</a>
+							<?php
+							printf(
+								'<a href="%1$s" target="_blank" rel="noopener noreferrer">%2$s</a>',
+								esc_url( wp_mail_smtp()->get_utm_url( 'https://wpmailsmtp.com/suggest-a-mailer/', 'Suggest a Mailer' ) ),
+								esc_html__( 'Suggest a Mailer', 'wp-mail-smtp' )
+							);
+							?>
 						</p>
 					</div>
 				</div>
@@ -318,7 +322,7 @@ class SettingsTab extends PageAbstract {
 								<?php if ( $provider->is_disabled() ) : ?>
 									<?php $provider->display_options(); ?>
 								<?php else : ?>
-									<h2><?php echo $provider->get_title(); ?></h2>
+									<h2><?php echo esc_html( $provider->get_title() ); ?></h2>
 									<?php
 									$provider_edu_notice = $provider->get_notice( 'educational' );
 									$is_dismissed        = (bool) get_user_meta( get_current_user_id(), "wp_mail_smtp_notice_educational_for_{$provider->get_slug()}_dismissed", true );
@@ -332,12 +336,12 @@ class SettingsTab extends PageAbstract {
 												<span class="dashicons dashicons-dismiss"></span>
 											</a>
 
-											<?php echo $provider_edu_notice; ?>
+											<?php echo wp_kses_post( $provider_edu_notice ); ?>
 										</p>
 									<?php endif; ?>
 
 									<?php if ( ! empty( $provider_desc ) ) : ?>
-										<p class="desc"><?php echo $provider_desc; ?></p>
+										<p class="desc"><?php echo wp_kses_post( $provider_desc ); ?></p>
 									<?php endif; ?>
 								<?php endif; ?>
 							</div>
@@ -352,7 +356,7 @@ class SettingsTab extends PageAbstract {
 
 			<?php
 			$settings_content = apply_filters( 'wp_mail_smtp_admin_settings_tab_display', ob_get_clean() );
-			echo $settings_content; // phpcs:ignore
+			echo $settings_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			?>
 
 			<?php $this->display_save_btn(); ?>
@@ -380,7 +384,7 @@ class SettingsTab extends PageAbstract {
 			<?php
 			printf(
 				wp_kses( /* translators: %s - WPMailSMTP.com upgrade URL. */
-					__( 'To unlock more features consider <strong><a href="%s" target="_blank" rel="noopener noreferrer" class="wp-mail-smtp-upgrade-modal">upgrading to PRO</a></strong>.', 'wp-mail-smtp' ),
+					__( 'To unlock more features, consider <strong><a href="%s" target="_blank" rel="noopener noreferrer" class="wp-mail-smtp-upgrade-modal">upgrading to PRO</a></strong>.', 'wp-mail-smtp' ),
 					array(
 						'a'      => array(
 							'href'   => array(),
@@ -558,7 +562,7 @@ class SettingsTab extends PageAbstract {
 
 		$this->check_admin_referer();
 
-		$options = new Options();
+		$options = Options::init();
 		$old_opt = $options->get_all();
 
 		// When checkbox is unchecked - it's not submitted at all, so we need to define its default false value.
@@ -590,7 +594,7 @@ class SettingsTab extends PageAbstract {
 
 			// Save correct from email address if Zoho or Outlook mailers are already configured.
 			if (
-				in_array( $data['mail']['mailer'], [ 'zoho', 'outlook' ], true ) &&
+				in_array( $data['mail']['mailer'], [ 'zoho' ], true ) &&
 				! empty( $old_opt[ $data['mail']['mailer'] ]['user_details']['email'] )
 			) {
 				$data['mail']['from_email'] = $old_opt[ $data['mail']['mailer'] ]['user_details']['email'];
@@ -640,7 +644,9 @@ class SettingsTab extends PageAbstract {
 		$options->set( $data, false, false );
 
 		if ( $to_redirect ) {
-			wp_redirect( $_POST['_wp_http_referer'] . '#wp-mail-smtp-setting-row-gmail-authorize' );
+
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.NonceVerification.Missing
+			wp_safe_redirect( sanitize_text_field( wp_unslash( $_POST['_wp_http_referer'] ) ) . '#wp-mail-smtp-setting-row-gmail-authorize' );
 			exit;
 		}
 

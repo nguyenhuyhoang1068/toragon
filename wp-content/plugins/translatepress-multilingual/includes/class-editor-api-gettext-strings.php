@@ -139,7 +139,7 @@ class TRP_Editor_Api_Gettext_Strings {
 							if ( isset( $string->id ) && is_numeric( $string->id ) ) {
 								array_push($update_strings[ $language ], array(
 									'id' => (int)$string->id,
-                                    'original' => trp_sanitize_string( $string->original ),
+                                    'original' => trp_sanitize_string( $string->original, false ),
 									'translated' => trp_sanitize_string( $string->translated ),
 									'domain' => sanitize_text_field( $string->domain ),
 									'status' => (int)$string->status
@@ -162,7 +162,7 @@ class TRP_Editor_Api_Gettext_Strings {
                 do_action('trp_save_editor_translations_gettext_strings', $update_strings, $this->settings);
 			}
 		}
-		echo trp_safe_json_encode( array() );//phpcs:ignore
+		echo trp_safe_json_encode( $update_strings );//phpcs:ignore
 		wp_die();
 	}
 }

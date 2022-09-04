@@ -22,6 +22,24 @@ $generated_i18n_strings = array(
 	// Reference: src/plugins/compatibility-plugin.js:34
 	__( 'Return to Plugin Settings', 'wp-mail-smtp' ),
 
+	// Reference: src/modules/settings/store/actions.js:102
+	__( 'It looks like we can\'t load oAuth redirect.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/store/actions.js:11
+	__( 'It looks like we can\'t load existing settings.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/api/index.js:232
+	__( 'It looks like we can\'t load oAuth connected data.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/api/index.js:202
+	__( 'It looks like we can\'t remove oAuth connection.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/store/actions.js:31
+	__( 'It looks like we can\'t retrieve the Amazon SES Identities.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/api/index.js:84
+	__( 'It looks like we can\'t register the Amazon SES Identity.', 'wp-mail-smtp' ),
+
 	// Reference: src/plugins/setup-wizard-helper-plugin.js:106
 	__( 'Error Message:', 'wp-mail-smtp' ),
 
@@ -49,8 +67,39 @@ $generated_i18n_strings = array(
 	// Reference: src/plugins/setup-wizard-helper-plugin.js:91
 	__( 'It looks like something went wrong...', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/setup-wizard/Steps.vue:32
-	__( 'Close and exit the Setup Wizard', 'wp-mail-smtp' ),
+	// Reference: src/modules/settings/api/index.js:113
+	__( 'It looks like we can\'t save the settings.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/api/index.js:119
+	__( 'Network error encountered. Settings not saved.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/api/index.js:139
+	__( 'It looks like we can\'t import the plugin settings.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/api/index.js:145
+	__( 'Network error encountered. SMTP plugin import failed!', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/api/index.js:172
+	__( 'It looks like we can\'t load authentication details.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/api/index.js:21
+	__( 'It looks like we can\'t load the settings.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/api/index.js:234
+	/* Translators: Error status and error text. */
+	__( '%1$s, %2$s', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/api/index.js:238
+	__( 'You appear to be offline.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/api/index.js:51
+	__( 'It looks like we can\'t retrieve Amazon SES Identities.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/api/index.js:57
+	__( 'Can\'t retrieve Amazon SES Identities.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/api/index.js:90
+	__( 'Can\'t register the Amazon SES Identity', 'wp-mail-smtp' ),
 
 	// Reference: src/modules/setup-wizard/Welcome.vue:37
 	__( 'Welcome to the WP Mail SMTP Setup Wizard!', 'wp-mail-smtp' ),
@@ -64,95 +113,20 @@ $generated_i18n_strings = array(
 	// Reference: src/modules/setup-wizard/Welcome.vue:40
 	__( 'Go back to the Dashboard', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepImport.vue:46
-	__( 'Import data from your current plugins', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/Steps.vue:32
+	__( 'Close and exit the Setup Wizard', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepImport.vue:47
-	__( 'We have detected other SMTP plugins installed on your website. Select which plugin\'s data you would like to import to WP Mail SMTP.', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepConfigureMailer.vue:48
+	__( 'Configure Mailer Settings', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepImport.vue:48
-	__( 'Import Data and Continue', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepConfigureMailer.vue:49
+	__( 'Below, we\'ll show you all of the settings required to set up this mailer.', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepLicense.vue:78
-	__( 'Skip this Step', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepHelpImprove.vue:47
+	__( 'Save and Continue', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepLicense.vue:79
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepHelpImprove.vue:49
 	__( 'Previous Step', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepImport.vue:54
-	__( 'Easy WP SMTP', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepImport.vue:61
-	__( 'Post SMTP Mailer', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepImport.vue:68
-	__( 'SMTP Mailer', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepImport.vue:75
-	__( 'WP SMTP', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepConfigurationFailure.vue:31
-	__( 'Whoops, looks like things aren’t configured properly.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepConfigurationFailure.vue:32
-	__( 'We just tried to send a test email, but something prevented that from working. To see more details about the issue we detected, as well as our suggestions to fix it, please start troubleshooting.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepConfigurationFailure.vue:33
-	__( 'Start Troubleshooting', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepConfigurationSuccess.vue:66
-	__( 'Send us Feedback', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepConfigurationSuccess.vue:67
-	__( 'Finish Setup', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Sendinblue.vue:35
-	__( 'API Key', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/SmtpCom.vue:36
-	__( 'Sender Name', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/SmtpCom.vue:38
-	/* Translators: Link to the SMTP.com API settings. */
-	__( '%1$sFollow this link%2$s to get an API Key for SMTP.com.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/SmtpCom.vue:40
-	/* Translators: Link to the SMTP.com Senders/Channel settings. */
-	__( '%1$sFollow this link%2$s to get a Sender Name for SMTP.com.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Sendinblue.vue:41
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Zoho.vue:41
-	__( 'From Name', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Sendinblue.vue:42
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Zoho.vue:42
-	__( 'Force From Name', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Sendinblue.vue:43
-	__( 'From Email', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Sendinblue.vue:44
-	__( 'Force From Email', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Sendinblue.vue:45
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Zoho.vue:43
-	__( 'If enabled, the From Name setting above will be used for all emails, ignoring values set by other plugins.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Sendinblue.vue:46
-	__( 'If enabled, the From Email setting above will be used for all emails, ignoring values set by other plugins.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Sendinblue.vue:47
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Zoho.vue:44
-	__( 'The name that emails are sent from.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Sendinblue.vue:48
-	__( 'The email address that emails are sent from.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/SmtpCom.vue:49
-	__( 'Get Started with SMTP.com', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/SmtpCom.vue:50
-	__( 'Read how to set up SMTP.com', 'wp-mail-smtp' ),
 
 	// Reference: src/modules/setup-wizard/components/steps/WizardStepConfigurationSuccess.vue:106
 	__( 'What could we do to improve?', 'wp-mail-smtp' ),
@@ -202,6 +176,12 @@ $generated_i18n_strings = array(
 	// Reference: src/modules/setup-wizard/components/steps/WizardStepConfigurationSuccess.vue:65
 	__( 'Send a Test Email', 'wp-mail-smtp' ),
 
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepConfigurationSuccess.vue:66
+	__( 'Send us Feedback', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepConfigurationSuccess.vue:67
+	__( 'Finish Setup', 'wp-mail-smtp' ),
+
 	// Reference: src/modules/setup-wizard/components/steps/WizardStepConfigurationSuccess.vue:69
 	/* Translators: Different bold styles and discount value (%5$s). */
 	__( '%1$sBonus:%2$s You can upgrade to the Pro plan and %3$ssave %5$s today%4$s, automatically applied at checkout.', 'wp-mail-smtp' ),
@@ -218,6 +198,64 @@ $generated_i18n_strings = array(
 
 	// Reference: src/modules/setup-wizard/components/steps/WizardStepConfigurationSuccess.vue:93
 	__( 'Rate on WordPress.org', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Sendinblue.vue:35
+	__( 'API Key', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Sendlayer.vue:35
+	/* Translators: Link to the SendLayer API settings. */
+	__( '%1$sFollow this link%2$s to get an API Key for SendLayer.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Gmail.vue:40
+	__( 'From Name', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Gmail.vue:41
+	__( 'Force From Name', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Gmail.vue:42
+	__( 'From Email', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Sendinblue.vue:44
+	__( 'Force From Email', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Gmail.vue:43
+	__( 'If enabled, the From Name setting above will be used for all emails, ignoring values set by other plugins.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Sendinblue.vue:46
+	__( 'If enabled, the From Email setting above will be used for all emails, ignoring values set by other plugins.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Gmail.vue:44
+	__( 'The name that emails are sent from.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Sendinblue.vue:48
+	__( 'The email address that emails are sent from.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Sendlayer.vue:44
+	__( 'Get Started with SendLayer', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Sendlayer.vue:45
+	__( 'Read how to set up SendLayer', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Zoho.vue:35
+	__( 'Region', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Zoho.vue:36
+	__( 'The data center location used by your Zoho account.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Gmail.vue:36
+	__( 'Client ID', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Gmail.vue:37
+	__( 'Client Secret', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Outlook.vue:42
+	__( 'Redirect URI', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Gmail.vue:39
+	__( 'Authorization', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Zoho.vue:45
+	__( 'Read how to set up Zoho Mail', 'wp-mail-smtp' ),
 
 	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Sendinblue.vue:36
 	__( 'Sending Domain', 'wp-mail-smtp' ),
@@ -236,6 +274,60 @@ $generated_i18n_strings = array(
 	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Sendinblue.vue:50
 	__( 'Read how to set up Sendinblue', 'wp-mail-smtp' ),
 
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Sendinblue.vue:51
+	__( 'Transparency and Disclosure', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Sendinblue.vue:53
+	__( 'We believe in full transparency. The Sendinblue links above are tracking links as part of our partnership with Sendinblue. We can recommend just about any SMTP service, but we only recommend products that we believe will add value to our users.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepImport.vue:46
+	__( 'Import data from your current plugins', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepImport.vue:47
+	__( 'We have detected other SMTP plugins installed on your website. Select which plugin\'s data you would like to import to WP Mail SMTP.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepImport.vue:48
+	__( 'Import Data and Continue', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepHelpImprove.vue:48
+	__( 'Skip this Step', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepImport.vue:54
+	__( 'Easy WP SMTP', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepImport.vue:61
+	__( 'FluentSMTP', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepImport.vue:68
+	__( 'Post SMTP Mailer', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepImport.vue:75
+	__( 'SMTP Mailer', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepImport.vue:82
+	__( 'WP SMTP', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepHelpImprove.vue:45
+	__( 'Help Improve WP Mail SMTP + Smart Recommendations', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepHelpImprove.vue:46
+	__( 'Get helpful suggestions from WP Mail SMTP on how to optimize your email deliverability and grow your business.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepHelpImprove.vue:50
+	__( 'Your Email Address', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepHelpImprove.vue:51
+	__( 'Your email is needed, so you can receive recommendations.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepHelpImprove.vue:52
+	__( 'Help make WP Mail SMTP better for everyone', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepHelpImprove.vue:53
+	__( 'Yes, count me in', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepHelpImprove.vue:54
+	__( 'By allowing us to track usage data we can better help you because we know with which WordPress configurations, themes and plugins we should test.', 'wp-mail-smtp' ),
+
 	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Sendgrid.vue:32
 	/* Translators: Link to the Sendgrid API settings. */
 	__( '%1$sFollow this link%2$s to get an API Key for Sendgrid.', 'wp-mail-smtp' ),
@@ -251,26 +343,46 @@ $generated_i18n_strings = array(
 	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Sendgrid.vue:46
 	__( 'Read how to set up Sendgrid', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Zoho.vue:35
-	__( 'Region', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Postmark.vue:29
+	__( 'Server API Token', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Zoho.vue:36
-	__( 'The data center location used by your Zoho account.', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Postmark.vue:30
+	__( 'Message Stream ID', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Zoho.vue:37
-	__( 'Client ID', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Postmark.vue:32
+	/* Translators: Link to the Postmark API settings. */
+	__( '%1$sFollow this link%2$s to get a Server API Token for Postmark.', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Zoho.vue:38
-	__( 'Client Secret', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Postmark.vue:34
+	/* Translators: Link to the Postmark Message Stream ID settings. */
+	__( 'Message Stream ID is <strong>optional</strong>. By default <strong>outbound</strong> (Default Transactional Stream) will be used. More information can be found in our %1$sPostmark documentation%2$s.', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Outlook.vue:30
-	__( 'Redirect URI', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Postmark.vue:43
+	__( 'Read how to set up Postmark', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Outlook.vue:31
-	__( 'Authorization', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/AmazonSES.vue:44
+	__( 'Access Key ID', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Zoho.vue:45
-	__( 'Read how to set up Zoho Mail', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/AmazonSES.vue:45
+	__( 'Secret Access Key', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/AmazonSES.vue:47
+	__( 'SES Identities', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/AmazonSES.vue:48
+	__( 'Please select the Amazon SES API region which is the closest to where your website is hosted. This can help to decrease network latency between your site and Amazon SES, which will speed up email sending.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/AmazonSES.vue:57
+	__( 'Read how to set up Amazon SES', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/AmazonSES.vue:58
+	__( 'Amazon SES requires an SSL certificate, and so is not currently compatible with your site. Please contact your host to request a SSL certificate, or check out ', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Outlook.vue:46
+	__( 'WPBeginner\'s tutorial on how to set up SSL', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Outlook.vue:47
+	__( 'If you\'d prefer not to set up SSL, or need an SMTP solution in the meantime, please go back and select a different mailer option.', 'wp-mail-smtp' ),
 
 	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Smtp.vue:35
 	__( 'SMTP Host', 'wp-mail-smtp' ),
@@ -314,88 +426,47 @@ $generated_i18n_strings = array(
 	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Smtp.vue:67
 	__( 'TLS', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Gmail.vue:38
-	__( 'Authorized Redirect URI', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepPluginFeatures.vue:178
+	__( 'The following plugin will be installed for free: WPForms', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Gmail.vue:45
-	__( 'Select which email address you would like to send your emails from.', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepPluginFeatures.vue:53
+	__( 'Which email features do you want to enable?', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Gmail.vue:46
-	__( 'Read how to set up the Gmail mailer', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepPluginFeatures.vue:54
+	__( 'Make sure you\'re getting the most out of WP Mail SMTP. Just check all of the features you\'d like to use, and we\'ll go ahead and enable those for you.', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/AmazonSES.vue:38
-	__( 'Access Key ID', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepPluginFeatures.vue:57
+	__( 'Improved Email Deliverability', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/AmazonSES.vue:39
-	__( 'Secret Access Key', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepPluginFeatures.vue:58
+	__( 'Ensure your emails are sent successfully and reliably.', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/AmazonSES.vue:41
-	__( 'SES Identities', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepPluginFeatures.vue:59
+	__( 'Email Error Tracking', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/AmazonSES.vue:42
-	__( 'Please select the Amazon SES API region which is the closest to where your website is hosted. This can help to decrease network latency between your site and Amazon SES, which will speed up email sending.', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepPluginFeatures.vue:60
+	__( 'Easily spot errors causing delivery issues.', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/AmazonSES.vue:51
-	__( 'Read how to set up Amazon SES', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepPluginFeatures.vue:61
+	__( 'Smart Contact Form', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/settings/api/index.js:232
-	// Reference: src/modules/settings/store/actions.js:111
-	__( 'It looks like we can\'t load oAuth connected data.', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepPluginFeatures.vue:62
+	__( 'Create beautiful contact forms with just a few clicks.', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/settings/store/actions.js:11
-	__( 'It looks like we can\'t load existing settings.', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepPluginFeatures.vue:64
+	__( 'Keep records of every email that\'s sent out from your website.', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/settings/api/index.js:202
-	// Reference: src/modules/settings/store/actions.js:123
-	__( 'It looks like we can\'t remove oAuth connection.', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepPluginFeatures.vue:65
+	__( 'Weekly Email Summary', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/settings/store/actions.js:31
-	__( 'It looks like we can\'t retrieve the Amazon SES Identities.', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepPluginFeatures.vue:66
+	__( 'Get statistics about emails you\'ve sent.', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/settings/api/index.js:84
-	// Reference: src/modules/settings/store/actions.js:40
-	__( 'It looks like we can\'t register the Amazon SES Identity.', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepPluginFeatures.vue:68
+	__( 'Control which email notifications your WordPress site sends.', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/settings/store/actions.js:102
-	__( 'It looks like we can\'t load oAuth redirect.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepChooseMailer.vue:139
-	__( 'Mailer', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepChooseMailer.vue:149
-	__( 'I Understand, Continue', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepChooseMailer.vue:150
-	__( 'Choose a Different Mailer', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepChooseMailer.vue:194
-	__( 'is a PRO Feature', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepChooseMailer.vue:50
-	__( 'Choose Your SMTP Mailer', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepChooseMailer.vue:52
-	/* Translators: Link to the SMTP Mailer docs page. */
-	__( 'Which mailer would you like to use to send emails? Not sure which mailer to choose? Check out our %1$scomplete mailer guide%2$s for details on each option.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepChooseMailer.vue:53
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepHelpImprove.vue:47
-	__( 'Save and Continue', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepChooseMailer.vue:55
-	__( 'Recommended Mailers', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Outlook.vue:28
-	__( 'Application ID', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Outlook.vue:29
-	__( 'Application Password', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Outlook.vue:32
-	__( 'Read how to set up Outlook', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/TheWizardHeader.vue:18
-	__( 'WP Mail SMTP logo', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepPluginFeatures.vue:70
+	__( 'Save time with powerful WordPress Multisite controls.', 'wp-mail-smtp' ),
 
 	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Mailgun.vue:32
 	__( 'Domain Name', 'wp-mail-smtp' ),
@@ -415,24 +486,98 @@ $generated_i18n_strings = array(
 	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Mailgun.vue:48
 	__( 'Read how to set up Mailgun', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Mailgun.vue:52
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/SparkPost.vue:47
 	__( 'US', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Mailgun.vue:56
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/SparkPost.vue:51
 	__( 'EU', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepChooseMailer.vue:111
+	__( 'Microsoft 365 / Outlook', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepChooseMailer.vue:180
+	__( 'Mailer', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepChooseMailer.vue:190
+	__( 'I Understand, Continue', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepChooseMailer.vue:191
+	__( 'Choose a Different Mailer', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepChooseMailer.vue:235
+	__( 'is a PRO Feature', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepChooseMailer.vue:53
+	__( 'Choose Your SMTP Mailer', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepChooseMailer.vue:55
+	/* Translators: Link to the SMTP Mailer docs page. */
+	__( 'Which mailer would you like to use to send emails? Not sure which mailer to choose? Check out our %1$scomplete mailer guide%2$s for details on each option.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepChooseMailer.vue:58
+	__( 'Recommended Mailers', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepChooseMailer.vue:59
+	__( 'Your mailer is already configured in a WP Mail SMTP constant, so the options below have been disabled. To change your mailer, please edit or remove the <code>WPMS_MAILER</code> constant in your <code>wp-config.php</code> file.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Outlook.vue:40
+	__( 'Application ID', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Outlook.vue:41
+	__( 'Application Password', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Outlook.vue:44
+	__( 'Read how to set up Microsoft Outlook / 365', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Outlook.vue:45
+	__( 'Outlook / 365 requires an SSL certificate, and so is not currently compatible with your site. Please contact your host to request a SSL certificate, or check out ', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/SmtpCom.vue:36
+	__( 'Sender Name', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/SmtpCom.vue:38
+	/* Translators: Link to the SMTP.com API settings. */
+	__( '%1$sFollow this link%2$s to get an API Key for SMTP.com.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/SmtpCom.vue:40
+	/* Translators: Link to the SMTP.com Senders/Channel settings. */
+	__( '%1$sFollow this link%2$s to get a Sender Name for SMTP.com.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/SmtpCom.vue:49
+	__( 'Get Started with SMTP.com', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/SmtpCom.vue:50
+	__( 'Read how to set up SMTP.com', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/SmtpCom.vue:53
+	__( 'We believe in full transparency. The SMTP.com links above are tracking links as part of our partnership with SMTP (j2 Global). We can recommend just about any SMTP service, but we only recommend products that we believe will add value to our users.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/TheWizardHeader.vue:18
+	__( 'WP Mail SMTP logo', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Gmail.vue:38
+	__( 'Authorized Redirect URI', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Gmail.vue:45
+	__( 'Select which email address you would like to send your emails from.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Gmail.vue:46
+	__( 'Read how to set up the Gmail mailer', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/SparkPost.vue:33
+	/* Translators: Link to the SparkPost documentation. */
+	__( 'Select your SparkPost account region. %1$sMore information%2$s on SparkPost.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/SparkPost.vue:42
+	__( 'Read how to set up SparkPost', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/SparkPost.vue:71
+	/* Translators: Link to the SparkPost Account API section. */
+	__( '%1$sFollow this link%2$s to get an API Key for SparkPost.', 'wp-mail-smtp' ),
 
 	// Reference: src/modules/setup-wizard/components/TheWizardStepCounter.vue:16
 	/* Translators: %1$s - the number of current step, %2$s - number of all steps. */
 	__( 'Step %1$s of %2$s', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/settings/components/input/SettingsInputText.vue:57
-	__( 'Copy input value', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/settings/components/input/SettingsInputText.vue:58
-	__( 'Copied!', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/settings/components/input/SettingsInputText.vue:84
-	__( 'The value entered does not match the required format', 'wp-mail-smtp' ),
 
 	// Reference: src/modules/plugins/components/PluginItem.vue:38
 	__( 'Install', 'wp-mail-smtp' ),
@@ -443,47 +588,46 @@ $generated_i18n_strings = array(
 	// Reference: src/modules/plugins/components/PluginItem.vue:45
 	__( 'Activated', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/plugins/api/index.js:25
-	__( 'It looks like the plugin installation failed!', 'wp-mail-smtp' ),
+	// Reference: src/modules/settings/components/input/SettingsInputNumber.vue:79
+	__( 'This setting is already configured with the WP Mail SMTP constant. To change it, please edit or remove the <code></code> constant in your <code>wp-config.php</code> file.', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/plugins/api/index.js:35
-	__( 'It looks like we can\'t install the plugin.', 'wp-mail-smtp' ),
+	// Reference: src/modules/settings/components/input/SettingsInputText.vue:59
+	__( 'Copy input value', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/plugins/api/index.js:41
-	__( 'You appear to be offline. Plugin not installed.', 'wp-mail-smtp' ),
+	// Reference: src/modules/settings/components/input/SettingsInputText.vue:60
+	__( 'Copied!', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/plugins/api/index.js:58
-	__( 'Can\'t fetch plugins information.', 'wp-mail-smtp' ),
+	// Reference: src/modules/settings/components/input/SettingsInputText.vue:86
+	__( 'The value entered does not match the required format', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/plugins/api/index.js:67
-	__( 'It looks like we can\'t fetch plugins information.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/settings/api/index.js:234
-	/* Translators: Error status and error text. */
-	__( '%1$s, %2$s', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/plugins/api/index.js:73
-	__( 'You appear to be offline. Plugin information not retrieved.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/settings/components/input/SettingsOAuthConnection.vue:129
+	// Reference: src/modules/settings/components/input/SettingsOAuthConnection.vue:126
 	__( 'There was an error while processing the authentication request. Please try again.', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/settings/components/input/SettingsOAuthConnection.vue:135
+	// Reference: src/modules/settings/components/input/SettingsOAuthConnection.vue:132
 	__( 'There was an error while processing the authentication request. Please recheck your Client ID and Client Secret and try again.', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/settings/components/input/SettingsOAuthConnection.vue:141
+	// Reference: src/modules/settings/components/input/SettingsOAuthConnection.vue:136
+	__( 'There was an error while processing the authentication request. The nonce is invalid. Please try again.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/components/input/SettingsOAuthConnection.vue:140
+	__( 'There was an error while processing the authentication request. The authorization code is missing. Please try again.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/components/input/SettingsOAuthConnection.vue:143
+	__( 'There was an error while processing the authentication request. Please recheck your Region, Client ID and Client Secret and try again.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/components/input/SettingsOAuthConnection.vue:146
 	__( 'You have successfully linked the current site with your Google API project. Now you can start sending emails through Gmail.', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/settings/components/input/SettingsOAuthConnection.vue:144
+	// Reference: src/modules/settings/components/input/SettingsOAuthConnection.vue:149
 	__( 'You have successfully linked the current site with your Microsoft API project. Now you can start sending emails through Outlook.', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/settings/components/input/SettingsOAuthConnection.vue:147
+	// Reference: src/modules/settings/components/input/SettingsOAuthConnection.vue:152
 	__( 'You have successfully linked the current site with your Zoho Mail API project. Now you can start sending emails through Zoho Mail.', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/settings/components/input/SettingsOAuthConnection.vue:153
+	// Reference: src/modules/settings/components/input/SettingsOAuthConnection.vue:158
 	__( 'Successful Authorization', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/settings/components/input/SettingsOAuthConnection.vue:153
+	// Reference: src/modules/settings/components/input/SettingsOAuthConnection.vue:158
 	__( 'Authorization Error!', 'wp-mail-smtp' ),
 
 	// Reference: src/modules/settings/components/input/SettingsOAuthConnection.vue:46
@@ -507,77 +651,14 @@ $generated_i18n_strings = array(
 	// Reference: src/modules/settings/components/input/SettingsOAuthConnection.vue:53
 	__( 'Connected as', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/settings/components/input/SettingsInputNumber.vue:51
-	/* Translators: Minimum and maximum number that can be used. */
-	__( 'Please enter a value between %1$s and %2$s', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepConfigurationFailure.vue:31
+	__( 'Whoops, looks like things aren’t configured properly.', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/settings/components/input/SettingsInputNumber.vue:52
-	__( 'Value has to be a round number', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepConfigurationFailure.vue:32
+	__( 'We just tried to send a test email, but something prevented that from working. To see more details about the issue we detected, as well as our suggestions to fix it, please start troubleshooting.', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/setup-wizard/api/index.js:16
-	__( 'It looks like we can\'t perform the mailer configuration check.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/api/index.js:37
-	__( 'It looks like we can\'t send the feedback.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/settings/api/index.js:238
-	__( 'You appear to be offline.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:103
-	/* Translators: Email address. */
-	__( 'Please check the inbox of <b>%s</b> for a confirmation email.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:109
-	__( 'Verify Email', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:114
-	__( 'No registered domains or emails.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:115
-	__( 'You will not be able to send emails until you verify at least one domain or email address for the selected Amazon SES Region.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:116
-	__( 'View DNS', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:117
-	__( 'Resend', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:118
-	__( 'Here are the domains and email addresses that have been verified and can be used as the From Email.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:119
-	__( 'Verify SES Identity', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:120
-	__( 'Add New SES Identity', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:121
-	__( 'Name', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:122
-	__( 'Value', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:124
-	/* Translators: Link to Amazon SES documentation. */
-	__( 'Please add this TXT record to your domain\'s DNS settings. For information on how to add TXT DNS records, please refer to the %1$sAmazon SES documentation%2$s.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:129
-	__( 'Verify Domain', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:133
-	__( 'Verify Email Address', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:93
-	__( 'Please enter a domain', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:94
-	__( 'Please enter a valid email address', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:98
-	__( 'Enter the domain name to verify it on Amazon SES and generate the required DNS TXT record.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:99
-	__( 'Enter a valid email address. A verification email will be sent to the email address you entered.', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepConfigurationFailure.vue:33
+	__( 'Start Troubleshooting', 'wp-mail-smtp' ),
 
 	// Reference: src/modules/setup-wizard/components/steps/WizardStepCheckConfiguration.vue:22
 	__( 'Checking Mailer Configuration', 'wp-mail-smtp' ),
@@ -587,69 +668,6 @@ $generated_i18n_strings = array(
 
 	// Reference: src/modules/setup-wizard/components/steps/WizardStepCheckConfiguration.vue:24
 	__( 'Checking mailer configuration image', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepHelpImprove.vue:45
-	__( 'Help Improve WP Mail SMTP + Smart Recommendations', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepHelpImprove.vue:46
-	__( 'Get helpful suggestions from WP Mail SMTP on how to optimize your email deliverability and grow your business.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepHelpImprove.vue:50
-	__( 'Your Email Address', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepHelpImprove.vue:51
-	__( 'Your email is needed, so you can receive recommendations.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepHelpImprove.vue:52
-	__( 'Help make WP Mail SMTP better for everyone', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepHelpImprove.vue:53
-	__( 'Yes, count me in', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepHelpImprove.vue:54
-	__( 'By allowing us to track usage data we can better help you because we know with which WordPress configurations, themes and plugins we should test.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepPluginFeatures.vue:177
-	__( 'The following plugin will be installed for free: WPForms', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepPluginFeatures.vue:52
-	__( 'Which email features do you want to enable?', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepPluginFeatures.vue:53
-	__( 'Make sure you\'re getting the most out of WP Mail SMTP. Just check all of the features you\'d like to use, and we\'ll go ahead and enable those for you.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepPluginFeatures.vue:56
-	__( 'Improved Email Deliverability', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepPluginFeatures.vue:57
-	__( 'Ensure your emails are sent successfully and reliably.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepPluginFeatures.vue:58
-	__( 'Email Error Tracking', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepPluginFeatures.vue:59
-	__( 'Easily spot errors causing delivery issues.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepPluginFeatures.vue:60
-	__( 'Smart Contact Form', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepPluginFeatures.vue:61
-	__( 'Create beautiful contact forms with just a few clicks.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepLicense.vue:92
-	__( 'Keep records of every email that\'s sent out from your website.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepLicense.vue:93
-	__( 'Control which email notifications your WordPress site sends.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepLicense.vue:94
-	__( 'Save time with powerful WordPress Multisite controls.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepConfigureMailer.vue:48
-	__( 'Configure Mailer Settings', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepConfigureMailer.vue:49
-	__( 'Below, we\'ll show you all of the settings required to set up this mailer.', 'wp-mail-smtp' ),
 
 	// Reference: src/modules/setup-wizard/components/steps/WizardStepLicense.vue:133
 	__( 'Successful Verification!', 'wp-mail-smtp' ),
@@ -689,6 +707,9 @@ $generated_i18n_strings = array(
 	/* Translators: Link to the WPMailSMTP.com pricing page. */
 	__( 'To unlock selected features, %1$sUpgrade to Pro%2$s and enter your license key below.', 'wp-mail-smtp' ),
 
+	// Reference: src/modules/setup-wizard/components/steps/WizardStepLicense.vue:85
+	__( 'Enhanced Weekly Email Summary', 'wp-mail-smtp' ),
+
 	// Reference: src/modules/setup-wizard/components/steps/WizardStepLicense.vue:87
 	/* Translators: bold HTML tags. */
 	__( 'Already purchased? Enter your license key below to connect with %1$sWP Mail SMTP Pro%2$s!', 'wp-mail-smtp' ),
@@ -717,61 +738,94 @@ $generated_i18n_strings = array(
 	// Reference: src/modules/setup-wizard/components/steps/WizardStepLicense.vue:97
 	__( 'Paste your license key here', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/settings/api/index.js:113
-	__( 'It looks like we can\'t save the settings.', 'wp-mail-smtp' ),
+	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:107
+	__( 'Please enter a domain', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/settings/api/index.js:119
-	__( 'Network error encountered. Settings not saved.', 'wp-mail-smtp' ),
+	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:108
+	__( 'Please enter a valid email address', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/settings/api/index.js:139
-	__( 'It looks like we can\'t import the plugin settings.', 'wp-mail-smtp' ),
+	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:112
+	__( 'Enter the domain name to verify it on Amazon SES and generate the required DNS CNAME records.', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/settings/api/index.js:145
-	__( 'Network error encountered. SMTP plugin import failed!', 'wp-mail-smtp' ),
+	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:113
+	__( 'Enter a valid email address. A verification email will be sent to the email address you entered.', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/settings/api/index.js:172
-	__( 'It looks like we can\'t load authentication details.', 'wp-mail-smtp' ),
+	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:117
+	/* Translators: Email address. */
+	__( 'Please check the inbox of <b>%s</b> for a confirmation email.', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/settings/api/index.js:21
-	__( 'It looks like we can\'t load the settings.', 'wp-mail-smtp' ),
+	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:120
+	__( 'Verify Email', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/settings/api/index.js:51
-	__( 'It looks like we can\'t retrieve Amazon SES Identities.', 'wp-mail-smtp' ),
+	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:125
+	__( 'No registered domains or emails.', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/settings/api/index.js:57
-	__( 'Can\'t retrieve Amazon SES Identities.', 'wp-mail-smtp' ),
+	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:126
+	__( 'You will not be able to send emails until you verify at least one domain or email address for the selected Amazon SES Region.', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/settings/api/index.js:90
-	__( 'Can\'t register the Amazon SES Identity', 'wp-mail-smtp' ),
+	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:127
+	__( 'View DNS', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:128
+	__( 'Resend', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:129
+	__( 'Here are the domains and email addresses that have been verified and can be used as the From Email.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:130
+	__( 'Verify SES Identity', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:131
+	__( 'Add New SES Identity', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:132
+	__( 'Name', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:133
+	__( 'Value', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:135
+	/* Translators: Link to Amazon SES documentation. */
+	__( 'Please add these CNAME records to your domain\'s DNS settings. For information on how to add CNAME DNS records, please refer to the %1$sAmazon SES documentation%2$s.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:140
+	__( 'Verify Domain', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/components/input/SettingsAmazonSESIdentities.vue:144
+	__( 'Verify Email Address', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/components/input/SettingsInputNumber.vue:53
+	/* Translators: Minimum and maximum number that can be used. */
+	__( 'Please enter a value between %1$s and %2$s', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/settings/components/input/SettingsInputNumber.vue:54
+	__( 'Value has to be a round number', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/plugins/api/index.js:25
+	__( 'It looks like the plugin installation failed!', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/plugins/api/index.js:35
+	__( 'It looks like we can\'t install the plugin.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/plugins/api/index.js:41
+	__( 'You appear to be offline. Plugin not installed.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/plugins/api/index.js:58
+	__( 'Can\'t fetch plugins information.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/plugins/api/index.js:67
+	__( 'It looks like we can\'t fetch plugins information.', 'wp-mail-smtp' ),
+
+	// Reference: src/modules/plugins/api/index.js:73
+	__( 'You appear to be offline. Plugin information not retrieved.', 'wp-mail-smtp' ),
 
 	// Reference: src/modules/settings/components/misc/Loader.vue:23
 	__( 'Loading', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/settings/components/input/SettingsOAuthConnection.vue:138
-	__( 'There was an error while processing the authentication request. Please recheck your Region, Client ID and Client Secret and try again.', 'wp-mail-smtp' ),
+	// Reference: src/modules/setup-wizard/api/index.js:16
+	__( 'It looks like we can\'t perform the mailer configuration check.', 'wp-mail-smtp' ),
 
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Outlook.vue:32
-	__( 'Read how to set up Outlook / 365', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Outlook.vue:32
-	__( 'Read how to set up Microsoft Outlook / 365', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepPluginFeatures.vue:64
-	__( 'Weekly Email Summary', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepPluginFeatures.vue:65
-	__( 'Get statistics about emails you\'ve sent.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/WizardStepLicense.vue:85
-	__( 'Enhanced Weekly Email Summary', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Sendinblue.vue:51
-	__( 'Transparency and Disclosure', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/SmtpCom.vue:53
-	__( 'We believe in full transparency. The SMTP.com links above are tracking links as part of our partnership with SMTP (j2 Global). We can recommend just about any SMTP service, but we only recommend products that we believe will add value to our users.', 'wp-mail-smtp' ),
-
-	// Reference: src/modules/setup-wizard/components/steps/configure-mailer/Sendinblue.vue:53
-	__( 'We believe in full transparency. The Sendinblue links above are tracking links as part of our partnership with Sendinblue. We can recommend just about any SMTP service, but we only recommend products that we believe will add value to our users.', 'wp-mail-smtp' )
+	// Reference: src/modules/setup-wizard/api/index.js:37
+	__( 'It looks like we can\'t send the feedback.', 'wp-mail-smtp' )
 );
 /* THIS IS THE END OF THE GENERATED FILE */

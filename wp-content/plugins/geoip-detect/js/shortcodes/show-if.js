@@ -1,5 +1,5 @@
 import { get_options } from './helpers';
-import _ from '../lodash.custom'; // we might use lodash-es in the future
+import _intersect from 'just-intersect';
 
 
 export function do_shortcode_show_if(el, record) {
@@ -7,9 +7,13 @@ export function do_shortcode_show_if(el, record) {
     const evaluated = geoip_detect2_shortcode_evaluate_conditions(opt.parsed, opt, record);
 
     if (!evaluated) {
-        el.style.display = "none !important";
+        el.style.display = "none";
+        el.classList.add('geoip-hidden');
+        el.classList.remove('geoip-shown');
     } else {
         el.style.display = '';
+        el.classList.remove('geoip-hidden');
+        el.classList.add('geoip-shown');
     }
 }
 
@@ -77,8 +81,13 @@ function geoip_detect2_shortcode_check_subcondition(expectedValues, actualValues
     actualValues = actualValues.map(x => String(x).toLowerCase())
 
     expectedValues = expectedValues.split(',');
+    if (expectedValues.indexOf('') !== -1) {
+        if (actualValues.length === 0) {
+            return true;
+        }
+    }
 
-    const intersect = _.intersection(expectedValues, actualValues);
+    const intersect = _intersect(expectedValues, actualValues);
 
     return intersect.length > 0;
 }

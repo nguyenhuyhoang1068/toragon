@@ -32,12 +32,14 @@ class UR_Preview {
 			if ( isset( $_GET['ur_preview'] ) ) {
 				add_filter( 'edit_post_link', array( $this, 'edit_form_link' ) );
 				add_action( 'pre_get_posts', array( $this, 'pre_get_posts' ) );
-				add_filter( 'template_include', array( $this, 'template_include' ) );
+				add_filter( 'home_template_hierarchy', array( $this, 'template_include' ) );
+				add_filter( 'frontpage_template_hierarchy', array( $this, 'template_include' ) );
 				add_action( 'template_redirect', array( $this, 'handle_preview' ) );
 			} elseif ( isset( $_GET['ur_login_preview'] ) ) {
 				add_action( 'pre_get_posts', array( $this, 'pre_get_posts' ) );
-				add_filter( 'template_include', array( $this, 'template_include' ) );
 				add_action( 'template_redirect', array( $this, 'handle_login_preview' ) );
+				add_filter( 'home_template_hierarchy', array( $this, 'template_include' ) );
+				add_filter( 'frontpage_template_hierarchy', array( $this, 'template_include' ) );
 			}
 		}
 	}
@@ -48,7 +50,7 @@ class UR_Preview {
 	 * @param string $link Link.
 	 */
 	public function edit_form_link( $link ) {
-		$form_id       = absint( $_GET['form_id'] );
+		$form_id       = isset( $_GET['form_id'] ) ? absint( $_GET['form_id'] ) : 0;
 		$edit_form_url = add_query_arg(
 			array(
 				'page'              => 'add-new-registration',
@@ -57,7 +59,7 @@ class UR_Preview {
 			admin_url( 'admin.php' )
 		);
 
-		$link = '<a class="post-edit-link" href="' . $edit_form_url . '">' . __( 'Edit Form', 'user-registration' ) . '</a>';
+		$link = '<a class="post-edit-link" href="' . esc_url( $edit_form_url ) . '">' . __( 'Edit Form', 'user-registration' ) . '</a>';
 		return $link;
 	}
 
@@ -74,12 +76,12 @@ class UR_Preview {
 	}
 
 	/**
-	 * Limit page templates to singular pages only.
+	 * A list of template candidates.
 	 *
-	 * @return string
+	 * @param array $templates A list of template candidates, in descending order of priority.
 	 */
-	public function template_include() {
-		return locate_template( array( 'page.php', 'single.php', 'index.php' ) );
+	public function template_include( $templates ) {
+		return array( 'page.php', 'single.php', 'index.php' );
 	}
 
 	/**
@@ -105,7 +107,7 @@ class UR_Preview {
 	 * @return string
 	 */
 	public static function form_preview_title( $title ) {
-		$form_id   = absint( $_GET['form_id'] ); // @codingStandardsIgnoreLine
+		$form_id   = isset( $_GET['form_id'] ) ? absint( $_GET['form_id'] ) : 0 ; // @codingStandardsIgnoreLine
 
 		if ( $form_id && in_the_loop() ) {
 			$form_data = UR()->form->get_form( $form_id );
@@ -176,7 +178,7 @@ class UR_Preview {
 
 		wp_enqueue_script( 'ur-my-account' );
 		$recaptcha_enabled = get_option( 'user_registration_login_options_enable_recaptcha', 'no' );
-		$recaptcha_node    = ur_get_recaptcha_node( $recaptcha_enabled, 'login' );
+		$recaptcha_node    = ur_get_recaptcha_node( 'login', $recaptcha_enabled );
 
 		ob_start();
 		echo '<div id="user-registration">';

@@ -94,9 +94,7 @@ class Image_Meta
             }
 
             wp_raise_memory_limit( 'image' );
-            $image = ( new Image_Manager( [
-                $this->data[ 'width' ], $this->data[ 'height' ]
-            ] ) )->make( $webpPath );
+            $image = ( new Image_Manager())->make( $webpPath );
 
             $this->data[ '_trimmed_width' ]  = $image->getWidth();
             $this->data[ '_trimmed_height' ] = $image->getHeight();
@@ -358,12 +356,11 @@ class Image_Meta
 
     }
 
-    public function markSizesRegenerated()
+    public function markSizesRegenerated($processed_at)
     {
-        $processedAt = time();
-        $this->setMetaItem( '_processed_at', $processedAt );
+        $this->setMetaItem( '_processed_at', $processed_at );
         $this->setMetaItem( '_processed_by', WP_SIR_VERSION );
-        update_post_meta( $this->id, '_processed_at', $processedAt );
+        update_post_meta( $this->id, '_processed_at', $processed_at );
         update_post_meta( $this->id, '_processed_by', WP_SIR_VERSION );
     }
 

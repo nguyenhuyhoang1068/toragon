@@ -3,8 +3,8 @@ Contributors: wpclever
 Donate link: https://wpclever.net
 Tags: woocommerce, woo, wpc, smart, wishlist, wish list
 Requires at least: 4.0
-Tested up to: 5.8.1
-Stable tag: 2.8.6
+Tested up to: 6.0
+Stable tag: 4.3.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,7 +16,7 @@ WPC Smart Wishlist is a simple but powerful tool that can help your customer sav
 
 = Live demo =
 
-Visit our [live demo](https://demo.wpclever.net/woosw/ "live demo") here to see how this plugin works.
+Visit our [live demo 01](https://demo.wpclever.net/woosw/ "live demo 01") or [live demo 02](https://demo.wpclever.net/wpcplant/ "live demo 02") to see how this plugin works.
 
 = Features =
 
@@ -39,8 +39,8 @@ Visit our [live demo](https://demo.wpclever.net/woosw/ "live demo") here to see 
 - Edit the destination link for the Continue Shopping button
 - Choose a menu to add the wishlist menu
 - Choose an action triggered by the wishlist menu
-- WPML integration for building multilingual sites
-- RTL support
+- RTL support for better displaying right-to-left languages
+- Premium: Enable multiple wishlists per user
 - Premium: Add note for each product
 - Premium: Lifetime update and dedicated support
 - Premium: Customization to match with your theme/site design
@@ -105,6 +105,92 @@ Example:
 `echo do_shortcode('[woosw id="99"]');`
 
 == Changelog ==
+
+= 4.3.0 =
+* Added: Filter hook 'woosw_fragments'
+
+= 4.2.3 =
+* Fixed: Notice on settings page
+
+= 4.2.2 =
+* Fixed: Can't change button position
+
+= 4.2.1 =
+* Fixed: Stock status of item product
+* Added: Filter hook 'woosw_item_stock' & 'woosw_item_add_to_cart'
+
+= 4.2.0 =
+* Fixed: Minor JS/CSS issues
+
+= 4.1.0 =
+* Added: Position left/right for the popup
+
+= 4.0.0 =
+* Added: New message interface
+* Updated: Optimized the code
+
+= 3.0.6 =
+* Updated: Backward compatibility with WPC themes
+
+= 3.0.5 =
+* Updated: Optimized the code
+
+= 3.0.4 =
+* Fixed: Minor security issue
+
+= 3.0.3 =
+* Fixed: Security issues
+
+= 3.0.2 =
+* Fixed: Minor JS/CSS issues
+
+= 3.0.1 =
+* Updated: Optimized the code
+
+= 3.0.0 =
+* Added: Multiple wishlist (Premium Version)
+* Updated: Optimized the code
+
+= 2.9.9 =
+* Fixed: Minor security issues
+
+= 2.9.8 =
+* Added: Add to wishlist endpoint /add-to-wishlist={product_id}
+
+= 2.9.7 =
+* Updated: Filter hook 'woosw_button_html'
+
+= 2.9.6 =
+* Updated: Optimized the code
+
+= 2.9.5 =
+* Added: Filter hook 'woosw_button_positions_archive', 'woosw_button_positions_single'
+
+= 2.9.4 =
+* Fixed: Security issue
+
+= 2.9.3 =
+* Fixed: Change the button for variable product
+
+= 2.9.2 =
+* Updated: Optimized the code
+
+= 2.9.1 =
+* Updated: Settings page
+
+= 2.9.0 =
+* Updated: Optimized the code
+
+= 2.8.9 =
+* Fixed: Minor JS/CSS issue
+
+= 2.8.8 =
+* Added: Action hooks 'woosw_before_items', 'woosw_after_items'
+
+= 2.8.7 =
+* Added: Option to enable/disable perfect-scrollbar
+* Added: Remove all products button
+* Updated: Optimized the code
 
 = 2.8.6 =
 * Added: Filter hook 'woosw_menu_item_class', 'woosw_menu_item'
@@ -184,7 +270,7 @@ Fixed: Add to cart button on wishlist
 * Updated: Compatible with WordPress 5.7.0 & WooCommerce 5.0.0
 
 = 2.3.3 =
-* Added: RTL support
+* Added: RTL support for better displaying right-to-left languages
 
 = 2.3.2 =
 * Updated: Optimized the code
@@ -369,7 +455,7 @@ Fixed: Add to cart button on wishlist
 
 = 1.1.2 =
 * Added: Button text for "added" state
-* Added: WPML integration
+* Added: WPML compatible
 * Fixed: Fix the height of popup to prevent blur
 
 = 1.1.1 =

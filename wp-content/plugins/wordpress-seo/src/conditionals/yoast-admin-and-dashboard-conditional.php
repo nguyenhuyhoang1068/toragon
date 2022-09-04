@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore Yoast.Files.FileName.InvalidClassFileName -- Reason: this explicitly concerns the Yoast admin and dashboard.
 
 namespace Yoast\WP\SEO\Conditionals;
 
@@ -10,7 +10,7 @@ class Yoast_Admin_And_Dashboard_Conditional implements Conditional {
 	/**
 	 * Returns `true` when on the admin dashboard, update or Yoast SEO pages.
 	 *
-	 * @returns bool `true` when on the admin dashboard, update or Yoast SEO pages.
+	 * @return bool `true` when on the admin dashboard, update or Yoast SEO pages.
 	 */
 	public function is_met() {
 		global $pagenow;

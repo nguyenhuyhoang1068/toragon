@@ -10,8 +10,7 @@ define( 'WOOMULTI_CURRENCY_F_WIDGETS', WOOMULTI_CURRENCY_F_FRONTEND . "widgets" 
 define( 'WOOMULTI_CURRENCY_F_LANGUAGES', WOOMULTI_CURRENCY_F_DIR . "languages" . DIRECTORY_SEPARATOR );
 define( 'WOOMULTI_CURRENCY_F_INCLUDES', WOOMULTI_CURRENCY_F_DIR . "includes" . DIRECTORY_SEPARATOR );
 define( 'WOOMULTI_CURRENCY_F_PLUGINS', WOOMULTI_CURRENCY_F_DIR . "plugins" . DIRECTORY_SEPARATOR );
-$plugin_url = plugins_url( 'woo-multi-currency' );
-//$plugin_url = plugins_url( '',__FILE__ );
+$plugin_url = plugins_url( '', __FILE__ );
 $plugin_url = str_replace( '/includes', '', $plugin_url );
 define( 'WOOMULTI_CURRENCY_F_CSS', $plugin_url . "/css/" );
 define( 'WOOMULTI_CURRENCY_F_CSS_DIR', WOOMULTI_CURRENCY_F_DIR . "css" . DIRECTORY_SEPARATOR );
@@ -44,17 +43,16 @@ vi_include_folder( WOOMULTI_CURRENCY_F_FRONTEND, 'WOOMULTI_CURRENCY_F_Frontend_'
 vi_include_folder( WOOMULTI_CURRENCY_F_PLUGINS, 'WOOMULTI_CURRENCY_F_Plugin_' );
 
 if ( class_exists( 'VillaTheme_Support' ) ) {
-	new VillaTheme_Support(
-		array(
-			'support'   => 'https://wordpress.org/support/plugin/woo-multi-currency/',
-			'docs'      => 'http://docs.villatheme.com/?item=woocommerce-multi-currency',
-			'review'    => 'https://wordpress.org/support/plugin/woo-multi-currency/reviews/?rate=5#rate-response',
-			'pro_url'   => 'https://1.envato.market/jABDP',
-			'css'       => WOOMULTI_CURRENCY_F_CSS,
-			'image'     => WOOMULTI_CURRENCY_F_IMAGES,
-			'slug'      => 'woo-multi-currency',
-			'menu_slug' => 'woo-multi-currency',
-			'version'   => WOOMULTI_CURRENCY_F_VERSION
-		)
-	);
+	new VillaTheme_Support( array(
+		'support'    => 'https://wordpress.org/support/plugin/woo-multi-currency/',
+		'docs'       => 'http://docs.villatheme.com/?item=woocommerce-multi-currency',
+		'review'     => 'https://wordpress.org/support/plugin/woo-multi-currency/reviews/?rate=5#rate-response',
+		'pro_url'    => 'https://1.envato.market/jABDP',
+		'css'        => WOOMULTI_CURRENCY_F_CSS,
+		'image'      => WOOMULTI_CURRENCY_F_IMAGES,
+		'slug'       => 'woo-multi-currency',
+		'menu_slug'  => 'woo-multi-currency',
+		'version'    => WOOMULTI_CURRENCY_F_VERSION,
+		'survey_url' => 'https://script.google.com/macros/s/AKfycby-nWUoi0eU47YTX5r-XXDvjoF2VyufbYMNrMJdXs_bW2grg91qeYhVTC0dqworloqS/exec'
+	) );
 }

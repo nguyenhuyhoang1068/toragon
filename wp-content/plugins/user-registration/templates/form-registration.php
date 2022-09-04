@@ -13,19 +13,20 @@
  * the readme will list any important changes.
  *
  * @see     https://docs.wpeverest.com/user-registration/template-structure/
- * @author  WPEverest
  * @package UserRegistration/Templates
  * @version 1.0.0
  */
 
 /**
+ * Template for Registration Form.
+ *
  * @var $form_data_array array
  * @var $form_id         int
  * @var $is_field_exists boolean
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+	exit; // Exit if accessed directly.
 }
 
 $frontend       = UR_Frontend::instance();
@@ -49,15 +50,20 @@ if ( 'Bordered' === $form_template ) {
 
 $custom_class = apply_filters( 'user_registration_form_custom_class', $custom_class, $form_id );
 
+include_once UR()->plugin_path() . '/includes/functions-ur-notice.php';
+$notices = apply_filters( 'user_registration_before_registration_form_notice', ur_print_notices() );
+echo esc_html( $notices );
 /**
+ * Hook for Before registration form
+ *
  * @since 1.5.1
  */
 do_action( 'user_registration_before_registration_form', $form_id );
 
 ?>
-	<div class='user-registration ur-frontend-form <?php echo $template_class . ' ' . $custom_class; ?>' id='user-registration-form-<?php echo absint( $form_id ); ?>'>
+	<div class='user-registration ur-frontend-form <?php echo esc_attr( $template_class ) . ' ' . esc_attr( $custom_class ); ?>' id='user-registration-form-<?php echo absint( $form_id ); ?>'>
 		<form method='post' class='register' data-form-id="<?php echo absint( $form_id ); ?>"
-			  data-enable-strength-password="<?php echo $enable_strong_password; ?>" data-minimum-password-strength="<?php echo $minimum_password_strength; ?>" <?php echo apply_filters( 'user_registration_form_params', '' ); ?>>
+			  data-enable-strength-password="<?php echo esc_attr( $enable_strong_password ); ?>" data-minimum-password-strength="<?php echo esc_attr( $minimum_password_strength ); ?>" <?php echo apply_filters( 'user_registration_form_params', '' );  //phpcs:ignore ?> data-captcha-enabled="<?php echo esc_attr( $recaptcha_enabled ); ?>">
 
 			<?php
 			do_action( 'user_registration_before_form_fields', $form_data_array, $form_id );
@@ -73,7 +79,7 @@ do_action( 'user_registration_before_registration_form', $form_id );
 						foreach ( $data as $grid_key => $grid_data ) {
 							?>
 										<div class="ur-form-grid ur-grid-<?php echo esc_attr( $grid_key + 1 ); ?>"
-											 style="width:<?php echo $width; ?>%">
+											 style="width:<?php echo esc_attr( $width ); ?>%">
 									<?php
 										$grid_data = apply_filters( 'user_registration_handle_form_fields', $grid_data, $form_id );
 									foreach ( $grid_data as $grid_data_key => $single_item ) {
@@ -85,7 +91,7 @@ do_action( 'user_registration_before_registration_form', $form_id );
 											// If the conditional logic addon is installed.
 											if ( class_exists( 'UserRegistrationConditionalLogic' ) ) {
 												// Migrate the conditional logic to logic_map schema.
-												$single_item = class_exists( 'URCL_Field_Settings' ) && method_exists( URCL_Field_Settings::class, 'migrate_to_logic_map_schema' ) ? URCL_Field_Settings::migrate_to_logic_map_schema( $single_item ) : $single_item;
+												$single_item = class_exists( 'URCL_Field_Settings' ) && method_exists( URCL_Field_Settings::class, 'migrate_to_logic_map_schema' ) ? URCL_Field_Settings::migrate_to_logic_map_schema( $single_item ) : $single_item; //phpcs:ignore
 
 												$enabled_status = isset( $single_item->advance_setting->enable_conditional_logic ) ? $single_item->advance_setting->enable_conditional_logic : '';
 												$cl_enabled     = '1' === $enabled_status || 'on' === $enabled_status ? 'yes' : 'no';
@@ -98,7 +104,7 @@ do_action( 'user_registration_before_registration_form', $form_id );
 												}
 											}
 											?>
-															<div <?php echo $cl_props; ?> data-field-id="<?php echo $field_id; ?>" class="ur-field-item field-<?php echo esc_attr( $single_item->field_key ); ?> <?php echo esc_attr( ! empty( $single_item->advance_setting->custom_class ) ? $single_item->advance_setting->custom_class : '' ); ?>">
+															<div <?php echo $cl_props; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> data-field-id="<?php echo esc_attr( $field_id ); ?>" class="ur-field-item field-<?php echo esc_attr( $single_item->field_key ); ?> <?php echo esc_attr( ! empty( $single_item->advance_setting->custom_class ) ? $single_item->advance_setting->custom_class : '' ); ?>">
 													<?php
 														$frontend->user_registration_frontend_form( $single_item, $form_id );
 														$is_field_exists = true;
@@ -122,7 +128,7 @@ do_action( 'user_registration_before_registration_form', $form_id );
 				?>
 					<?php
 					if ( ! empty( $recaptcha_node ) ) {
-						echo '<div id="ur-recaptcha-node" style="width:100px;max-width: 100px;"> ' . $recaptcha_node . '</div>';
+						echo '<div id="ur-recaptcha-node"> ' . $recaptcha_node . '</div>'; //phpcs:ignore
 					}
 
 					$btn_container_class = apply_filters( 'user_registration_form_btn_container_class', array(), $form_id );
@@ -134,30 +140,33 @@ do_action( 'user_registration_before_registration_form', $form_id );
 						$submit_btn_class = apply_filters( 'user_registration_form_submit_btn_class', array(), $form_id );
 						$submit_btn_class = array_merge( $submit_btn_class, (array) ur_get_form_setting_by_key( $form_id, 'user_registration_form_setting_form_submit_class' ) );
 						?>
-
 						<button type="submit" class="btn button ur-submit-button <?php echo esc_attr( implode( ' ', $submit_btn_class ) ); ?>">
 							<span></span>
 							<?php
 							$submit = ur_get_form_setting_by_key( $form_id, 'user_registration_form_setting_form_submit_label' );
-								echo ur_string_translation( $form_id, 'user_registration_form_setting_form_submit_label', $submit );
+								echo esc_html( ur_string_translation( $form_id, 'user_registration_form_setting_form_submit_label', $submit ) );
 							?>
 						</button>
-
 						<?php do_action( 'user_registration_after_form_buttons', $form_id ); ?>
+						<?php do_action( 'user_registration_after_submit_buttons', $form_id ); ?>
 					</div>
 					<?php
 			}
 
 			if ( count( $form_data_array ) == 0 ) {
 				?>
-						<h2><?php echo esc_html__( 'Form not found, form id :' . $form_id, 'user-registration' ); ?></h2>
+						<h2><?php echo esc_html__( 'Form not found, form id :' . $form_id, 'user-registration' ); //phpcs:ignore ?></h2>
 					<?php
 			}
+			$enable_field_icon   = ur_get_single_post_meta( $form_id, 'user_registration_enable_field_icon' );
 			?>
 
 			<div style="clear:both"></div>
+			<?php if ( '1' === $enable_field_icon ) { ?>
+			<input type="hidden" id="ur-form-field-icon" name="ur-field-icon" value="<?php echo esc_attr( $enable_field_icon ); ?>"/>
+			<?php } ?>
 			<input type="hidden" name="ur-user-form-id" value="<?php echo absint( $form_id ); ?>"/>
-			<input type="hidden" name="ur-redirect-url" value="<?php echo $redirect_url; ?>"/>
+			<input type="hidden" name="ur-redirect-url" value="<?php echo esc_attr( ur_string_translation( $form_id, 'user_registration_form_setting_redirect_options', $redirect_url ) ); ?>"/>
 			<?php wp_nonce_field( 'ur_frontend_form_id-' . $form_id, 'ur_frontend_form_nonce', false ); ?>
 
 			<?php do_action( 'user_registration_form_registration_end', $form_id ); ?>

@@ -5,8 +5,6 @@
  * @class    UR_Shortcodes
  * @version  1.4.0
  * @package  UserRegistration/Classes
- * @category Class
- * @author   WPEverest
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -18,18 +16,19 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class UR_Shortcodes {
 
-	public static $parts = false;
+	public static $parts = false; // phpcs:ignore
 
 	/**
 	 * Init Shortcodes.
 	 */
 	public static function init() {
 		$shortcodes = array(
-			'user_registration_form'       => __CLASS__ . '::form', // change it to user_registration_form ;)
-			'user_registration_my_account' => __CLASS__ . '::my_account',
-			'user_registration_login'      => __class__ . '::login',
+			'user_registration_form'         => __CLASS__ . '::form', // change it to user_registration_form.
+			'user_registration_my_account'   => __CLASS__ . '::my_account',
+			'user_registration_login'        => __class__ . '::login',
+			'user_registration_edit_profile' => __class__ . '::edit_profile',
 		);
-		add_filter( 'pre_do_shortcode_tag', array( UR_Shortcode_My_Account::class, 'pre_do_shortcode_tag' ), 10, 4 );
+		add_filter( 'pre_do_shortcode_tag', array( UR_Shortcode_My_Account::class, 'pre_do_shortcode_tag' ), 10, 4 ); // phpcs:ignore
 
 		foreach ( $shortcodes as $shortcode => $function ) {
 			add_shortcode( apply_filters( "{$shortcode}_shortcode_tag", $shortcode ), $function );
@@ -39,9 +38,9 @@ class UR_Shortcodes {
 	/**
 	 * Shortcode Wrapper.
 	 *
-	 * @param string[] $function
-	 * @param array    $atts (default: array())
-	 * @param array    $wrapper
+	 * @param string[] $function Callback function.
+	 * @param array    $atts (default: array()) Extra attributes.
+	 * @param array    $wrapper Shortcode wrapper.
 	 *
 	 * @return string
 	 */
@@ -56,9 +55,11 @@ class UR_Shortcodes {
 	) {
 		ob_start();
 
-		echo empty( $wrapper['before'] ) ? '<div id="user-registration" class="' . esc_attr( $wrapper['class'] ) . '">' : $wrapper['before'];
+		$wrap_before = empty( $wrapper['before'] ) ? '<div id="user-registration" class="' . esc_attr( $wrapper['class'] ) . '">' : $wrapper['before'];
+		echo wp_kses_post( $wrap_before );
 		call_user_func( $function, $atts );
-		echo empty( $wrapper['after'] ) ? '</div>' : $wrapper['after'];
+		$wrap_after = empty( $wrapper['after'] ) ? '</div>' : $wrapper['after'];
+		echo wp_kses_post( $wrap_after );
 
 		return ob_get_clean();
 	}
@@ -66,11 +67,14 @@ class UR_Shortcodes {
 	/**
 	 * My account page shortcode.
 	 *
-	 * @param mixed $atts
+	 * @param mixed $atts Extra attributes.
 	 *
 	 * @return string
 	 */
 	public static function my_account( $atts ) {
+		do_action( 'user_registration_my_account_enqueue_scripts', array(), 0 );
+		wp_enqueue_script( 'ur-login' );
+
 		return self::shortcode_wrapper(
 			array( 'UR_Shortcode_My_Account', 'output' ),
 			$atts,
@@ -88,12 +92,13 @@ class UR_Shortcodes {
 	/**
 	 * My account page shortcode.
 	 *
-	 * @param mixed $atts
+	 * @param mixed $atts Extra attributes.
 	 *
 	 * @return string
 	 */
 	public static function login( $atts ) {
 		do_action( 'user_registration_my_account_enqueue_scripts', array(), 0 );
+		wp_enqueue_script( 'ur-login' );
 
 		return self::shortcode_wrapper(
 			array( 'UR_Shortcode_Login', 'output' ),
@@ -110,9 +115,53 @@ class UR_Shortcodes {
 	}
 
 	/**
+	 * User Registration Edit profile form shortcode.
+	 *
+	 * @param mixed $atts Extra attributes.
+	 */
+	public static function edit_profile( $atts ) {
+		return self::shortcode_wrapper( array( __CLASS__, 'render_edit_profile' ), $atts );
+	}
+
+	/**
+	 * Output for Edit-profile form .
+	 */
+	private static function render_edit_profile() {
+			$user_id = get_current_user_id();
+			$form_id = get_user_meta( $user_id, 'ur_form_id', true );
+			do_action( 'user_registration_my_account_enqueue_scripts', array(), $form_id );
+			$has_date = ur_has_date_field( $form_id );
+
+		if ( true === $has_date ) {
+			wp_enqueue_style( 'flatpickr' );
+			wp_enqueue_script( 'flatpickr' );
+		}
+		if ( ! is_user_logged_in() ) {
+			$myaccount_page = get_post( get_option( 'user_registration_myaccount_page_id' ) );
+			$matched        = 0;
+
+			if ( ! empty( $myaccount_page ) ) {
+				$matched = preg_match( '/\[user_registration_my_account(\s\S+){0,3}\]|\[user_registration_login(\s\S+){0,3}\]/', $myaccount_page->post_content );
+				if ( 1 > absint( $matched ) ) {
+					$matched = preg_match( '/\[woocommerce_my_account(\s\S+){0,3}\]/', $myaccount_page->post_content );
+				}
+				if ( 1 === $matched ) {
+					$page_id = $myaccount_page->ID;
+				}
+			}
+
+			/* translators: %s - Link to login form. */
+			echo wp_kses_post( apply_filters( 'user_registration_logged_in_message', sprintf( __( 'Please Login to edit profile. <a href="%s">Login Here?</a>', 'user-registration' ), isset( $page_id ) ? get_permalink( $page_id ) : wp_login_url() ) ) );
+		} else {
+			include_once 'shortcodes/class-ur-shortcode-my-account.php';
+			UR_Shortcode_My_Account::edit_profile();
+		}
+	}
+
+	/**
 	 * User Registration form shortcode.
 	 *
-	 * @param mixed $atts
+	 * @param mixed $atts Extra attributes.
 	 */
 	public static function form( $atts ) {
 
@@ -138,6 +187,7 @@ class UR_Shortcodes {
 				$current_url  = home_url( add_query_arg( array(), $wp->request ) );
 				$display_name = ! empty( $user->data->display_name ) ? $user->data->display_name : $user->data->user_email;
 
+				/* translators: 1: Link and username of user 2: Logout url */
 				return apply_filters( 'ur_register_pre_form_message', '<p class="alert" id="ur_register_pre_form_message">' . sprintf( __( 'You are currently logged in as %1$1s. %2$2s', 'user-registration' ), '<a href="#" title="' . $display_name . '">' . $display_name . '</a>', '<a href="' . wp_logout_url( $current_url ) . '" title="' . __( 'Log out of this account.', 'user-registration' ) . '">' . __( 'Logout', 'user-registration' ) . '  &raquo;</a>' ) . '</p>', $user_ID );
 
 			}
@@ -162,6 +212,7 @@ class UR_Shortcodes {
 	/**
 	 * Output for registration form .
 	 *
+	 * @param int $form_id Form ID.
 	 * @since 1.0.1 Recaptcha only
 	 */
 	private static function render_form( $form_id ) {
@@ -196,11 +247,10 @@ class UR_Shortcodes {
 
 		if ( 'yes' === $enable_strong_password || '1' === $enable_strong_password ) {
 			wp_enqueue_script( 'ur-password-strength-meter' );
-			wp_localize_script( 'ur-password-strength-meter', 'enable_strong_password', $enable_strong_password );
 		}
 
-		$recaptcha_enabled = ur_get_form_setting_by_key( $form_id, 'user_registration_form_setting_enable_recaptcha_support' );
-		$recaptcha_node    = ur_get_recaptcha_node( $recaptcha_enabled, 'register' );
+		$recaptcha_enabled = ur_get_form_setting_by_key( $form_id, 'user_registration_form_setting_enable_recaptcha_support', 'no' );
+		$recaptcha_node    = ur_get_recaptcha_node( 'register', $recaptcha_enabled );
 
 		$form_data_array = apply_filters( 'user_registration_before_registration_form_template', $form_data_array, $form_id );
 
@@ -218,6 +268,7 @@ class UR_Shortcodes {
 				'recaptcha_node'            => $recaptcha_node,
 				'parts'                     => self::$parts,
 				'row_ids'                   => $form_row_ids_array,
+				'recaptcha_enabled'         => $recaptcha_enabled,
 			)
 		);
 	}

@@ -29,7 +29,7 @@ function berocket_apl_et_builder_ready() {
             function get_fields() {
                 $fields = array(
                     'image' => array(
-                        'label'             => esc_html__( 'Display image', 'brands-for-woocommerce' ),
+                        "label"             => esc_html__( 'Display image', 'brands-for-woocommerce' ),
                         'type'              => 'yes_no_button',
                         'options'           => array(
                             'off' => esc_html__( "No", 'et_builder' ),
@@ -37,15 +37,15 @@ function berocket_apl_et_builder_ready() {
                         ),
                     ),
                     'imgh' => array(
-                        'label'             => esc_html__( 'Maximum image height', 'brands-for-woocommerce' ),
+                        "label"             => esc_html__( 'Maximum image height', 'brands-for-woocommerce' ),
                         'type'              => 'text',
                     ),
                     'imgw' => array(
-                        'label'             => esc_html__( 'Maximum image width', 'brands-for-woocommerce' ),
+                        "label"             => esc_html__( 'Maximum image width', 'brands-for-woocommerce' ),
                         'type'              => 'text',
                     ),
                     'text' => array(
-                        'label'             => esc_html__( 'Display name', 'brands-for-woocommerce' ),
+                        "label"             => esc_html__( 'Display name', 'brands-for-woocommerce' ),
                         'type'              => 'yes_no_button',
                         'options'           => array(
                             'off' => esc_html__( "No", 'et_builder' ),
@@ -53,11 +53,11 @@ function berocket_apl_et_builder_ready() {
                         ),
                     ),
                     'column' => array(
-                        'label'             => esc_html__( 'Columns', 'brands-for-woocommerce' ),
+                        "label"             => esc_html__( 'Columns', 'brands-for-woocommerce' ),
                         'type'              => 'number',
                     ),
                     'position' => array(
-                        'label'           => esc_html__( 'Position', 'brands-for-woocommerce' ),
+                        "label"           => esc_html__( 'Position', 'brands-for-woocommerce' ),
                         'type'            => 'select',
                         'options'         => array(
                             '1' => esc_html__( 'Name after image', 'brands-for-woocommerce' ),
@@ -67,7 +67,7 @@ function berocket_apl_et_builder_ready() {
                         ),
                     ),
                     'style' => array(
-                        'label'           => esc_html__( 'Style', 'brands-for-woocommerce' ),
+                        "label"           => esc_html__( 'Style', 'brands-for-woocommerce' ),
                         'type'            => 'select',
                         'options'         => array(
                             'vertical' => esc_html__( 'Vertical', 'brands-for-woocommerce' ),
@@ -75,7 +75,7 @@ function berocket_apl_et_builder_ready() {
                         ),
                     ),
                     'color' => array(
-                        'label'           => esc_html__( 'Color', 'brands-for-woocommerce' ),
+                        "label"           => esc_html__( 'Color', 'brands-for-woocommerce' ),
                         'type'            => 'color',
                         'options'         => array(
                             'vertical' => esc_html__( 'Vertical', 'brands-for-woocommerce' ),
@@ -93,7 +93,7 @@ function berocket_apl_et_builder_ready() {
 
                 $BeRocket_product_brand = BeRocket_product_brand::getInstance();
 
-                return $BeRocket_product_brand->brands_by_name_shortcode($atts);
+                return $BeRocket_product_brand->brands_catalog_shortcode($atts);
             }
 
             protected function _add_additional_border_fields() {
@@ -146,11 +146,11 @@ function berocket_apl_et_builder_ready() {
             function get_fields() {
                 $fields = array(
                     'title' => array(
-                        'label'             => esc_html__( 'Title', 'brands-for-woocommerce' ),
+                        "label"             => esc_html__( 'Title', 'brands-for-woocommerce' ),
                         'type'              => 'text',
                     ),
                     'use_image' => array(
-                        'label'             => esc_html__( 'Display image', 'brands-for-woocommerce' ),
+                        "label"             => esc_html__( 'Display image', 'brands-for-woocommerce' ),
                         'type'              => 'yes_no_button',
                         'options'           => array(
                             'off' => esc_html__( "No", 'et_builder' ),
@@ -158,11 +158,11 @@ function berocket_apl_et_builder_ready() {
                         ),
                     ),
                     'imgh' => array(
-                        'label'             => esc_html__( 'Image height', 'brands-for-woocommerce' ),
+                        "label"             => esc_html__( 'Image height', 'brands-for-woocommerce' ),
                         'type'              => 'text',
                     ),
                     'use_name' => array(
-                        'label'             => esc_html__( 'Display name', 'brands-for-woocommerce' ),
+                        "label"             => esc_html__( 'Display name', 'brands-for-woocommerce' ),
                         'type'              => 'yes_no_button',
                         'options'           => array(
                             'off' => esc_html__( "No", 'et_builder' ),
@@ -170,7 +170,7 @@ function berocket_apl_et_builder_ready() {
                         ),
                     ),
                     'hide_empty' => array(
-                        'label'             => esc_html__( 'Hide brands without products', 'brands-for-woocommerce' ),
+                        "label"             => esc_html__( 'Hide brands without products', 'brands-for-woocommerce' ),
                         'type'              => 'yes_no_button',
                         'options'           => array(
                             'off' => esc_html__( "No", 'et_builder' ),
@@ -178,7 +178,7 @@ function berocket_apl_et_builder_ready() {
                         ),
                     ),
                     'slider' => array(
-                        'label'             => esc_html__( 'Display as slider', 'brands-for-woocommerce' ),
+                        "label"             => esc_html__( 'Display as slider', 'brands-for-woocommerce' ),
                         'type'              => 'yes_no_button',
                         'options'           => array(
                             'off' => esc_html__( "No", 'et_builder' ),
@@ -186,15 +186,15 @@ function berocket_apl_et_builder_ready() {
                         ),
                     ),
                     'per_row' => array(
-                        'label'             => esc_html__( 'Brands per row', 'brands-for-woocommerce' ),
+                        "label"             => esc_html__( 'Brands per row', 'brands-for-woocommerce' ),
                         'type'              => 'number',
                     ),
                     'count' => array(
-                        'label'             => esc_html__( 'Number of brands', 'brands-for-woocommerce' ),
+                        "label"             => esc_html__( 'Number of brands', 'brands-for-woocommerce' ),
                         'type'              => 'number',
                     ),
                     'orderby' => array(
-                        'label'           => esc_html__( 'Order By', 'brands-for-woocommerce' ),
+                        "label"           => esc_html__( 'Order By', 'brands-for-woocommerce' ),
                         'type'            => 'select',
                         'options'         => array(
                             'name' => esc_html__( 'Brand name', 'brands-for-woocommerce' ),
@@ -202,15 +202,15 @@ function berocket_apl_et_builder_ready() {
                         ),
                     ),
                     'padding' => array(
-                        'label'             => esc_html__( 'Padding around brands', 'brands-for-woocommerce' ),
+                        "label"             => esc_html__( 'Padding around brands', 'brands-for-woocommerce' ),
                         'type'              => 'text',
                     ),
                     'border_color' => array(
-                        'label'           => esc_html__( 'Border color', 'brands-for-woocommerce' ),
+                        "label"           => esc_html__( 'Border color', 'brands-for-woocommerce' ),
                         'type'            => 'color',
                     ),
                     'border_width' => array(
-                        'label'             => esc_html__( 'Border width', 'brands-for-woocommerce' ),
+                        "label"             => esc_html__( 'Border width', 'brands-for-woocommerce' ),
                         'type'              => 'text',
                     ),
                 );
@@ -258,19 +258,19 @@ function berocket_apl_et_builder_ready() {
             function get_fields() {
                 $fields = array(
                     'brand_id' => array(
-                        'label'             => esc_html__( 'brand ID(s)', 'brands-for-woocommerce' ),
+                        "label"             => esc_html__( 'brand ID(s)', 'brands-for-woocommerce' ),
                         'type'              => 'text',
                     ),
                     'brand_slug' => array(
-                        'label'             => esc_html__( 'brand slug(s)', 'brands-for-woocommerce' ),
+                        "label"             => esc_html__( 'brand slug(s)', 'brands-for-woocommerce' ),
                         'type'              => 'text',
                     ),
                     'columns' => array(
-                        'label'             => esc_html__( 'count of columns for product list', 'brands-for-woocommerce' ),
+                        "label"             => esc_html__( 'count of columns for product list', 'brands-for-woocommerce' ),
                         'type'              => 'number',
                     ),
                     'orderby' => array(
-                        'label'           => esc_html__( 'Order By', 'brands-for-woocommerce' ),
+                        "label"           => esc_html__( 'Order By', 'brands-for-woocommerce' ),
                         'type'            => 'select',
                         'options'         => array(
                             'title' => esc_html__( 'Order by title', 'brands-for-woocommerce' ),
@@ -281,7 +281,7 @@ function berocket_apl_et_builder_ready() {
                         ),
                     ),
                     'order' => array(
-                        'label'           => esc_html__( 'Order Type', 'brands-for-woocommerce' ),
+                        "label"           => esc_html__( 'Order Type', 'brands-for-woocommerce' ),
                         'type'            => 'select',
                         'options'         => array(
                             'asc' => esc_html__( 'ascending', 'brands-for-woocommerce' ),
@@ -323,11 +323,11 @@ function berocket_apl_et_builder_ready() {
             function get_fields() {
                 $fields = array(
                     'type' => array(
-                        'label'             => esc_html__( 'Data type', 'brands-for-woocommerce' ),
+                        "label"             => esc_html__( 'Data type', 'brands-for-woocommerce' ),
                         'type'              => 'text',
                     ),
                     'product_id' => array(
-                        'label'             => esc_html__( 'Product ID', 'brands-for-woocommerce' ),
+                        "label"             => esc_html__( 'Product ID', 'brands-for-woocommerce' ),
                         'type'              => 'number',
                     ),
                 );
@@ -364,11 +364,11 @@ function berocket_apl_et_builder_ready() {
             function get_fields() {
                 $fields = array(
                     'type' => array(
-                        'label'             => esc_html__( 'Data type', 'brands-for-woocommerce' ),
+                        "label"             => esc_html__( 'Data type', 'brands-for-woocommerce' ),
                         'type'              => 'text',
                     ),
                     'id' => array(
-                        'label'             => esc_html__( 'Brand ID', 'brands-for-woocommerce' ),
+                        "label"             => esc_html__( 'Brand ID', 'brands-for-woocommerce' ),
                         'type'              => 'number',
                     ),
                 );
@@ -410,19 +410,19 @@ function berocket_apl_et_builder_ready() {
             function get_fields() {
                 $fields = array(
                     'post_id' => array(
-                        'label'             => esc_html__( 'Product ID', 'brands-for-woocommerce' ),
+                        "label"             => esc_html__( 'Product ID', 'brands-for-woocommerce' ),
                         'type'              => 'number',
                     ),
                     'width' => array(
-                        'label'             => esc_html__( 'Data type', 'brands-for-woocommerce' ),
+                        "label"             => esc_html__( 'Data type', 'brands-for-woocommerce' ),
                         'type'              => 'text',
                     ),
                     'height' => array(
-                        'label'             => esc_html__( 'Data type', 'brands-for-woocommerce' ),
+                        "label"             => esc_html__( 'Data type', 'brands-for-woocommerce' ),
                         'type'              => 'text',
                     ),
                     'position' => array(
-                        'label'           => esc_html__( 'Position', 'brands-for-woocommerce' ),
+                        "label"           => esc_html__( 'Position', 'brands-for-woocommerce' ),
                         'type'            => 'select',
                         'options'         => array(
                             'none' => esc_html__( 'none', 'brands-for-woocommerce' ),
@@ -447,4 +447,5 @@ function berocket_apl_et_builder_ready() {
         new ET_Builder_Module_brands_product_thumbnail;
     }
 }
-add_action('et_builder_modules_load', 'berocket_apl_et_builder_ready');
+
+add_action('et_builder_modules_loaded', 'berocket_apl_et_builder_ready');

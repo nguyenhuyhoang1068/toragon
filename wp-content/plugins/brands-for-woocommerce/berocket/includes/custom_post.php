@@ -131,11 +131,11 @@ if ( ! class_exists('BeRocket_custom_post_class') ) {
         }
 
         public function admin_enqueue_scripts() {
-        //     global $post;
-        //     if ( ! empty( $post ) and $post->post_type == $this->post_name ) {
-        //         wp_register_style( 'font-awesome', plugins_url( '../assets/css/font-awesome.min.css', __FILE__ ) );
-				// add_action('admin_footer', array($this, 'wp_footer_remove_notice'));
-        //     }
+            global $post;
+            if ( ! empty( $post ) and $post->post_type == $this->post_name ) {
+                wp_register_style( 'font-awesome', plugins_url( '../assets/css/font-awesome.min.css', __FILE__ ) );
+				add_action('admin_footer', array($this, 'wp_footer_remove_notice'));
+            }
         }
 		public function wp_footer_remove_notice() {
 			echo '<style>.notice:not(.berocket_admin_notice){display:none!important;}</style>';
@@ -327,7 +327,8 @@ if ( ! class_exists('BeRocket_custom_post_class') ) {
         public function wc_save_product_without_check( $post_id, $post ) {
             do_action( 'berocket_custom_post_'.$this->post_name.'_wc_save_product_without_check_before', $post_id, $post, $this->post_type_parameters);
             if ( isset( $_POST[$this->post_name] ) ) {
-                $post_data = berocket_sanitize_array($_POST[$this->post_name]);
+                $previous_options = $this->get_option($post_id);
+                $post_data = berocket_sanitize_array($_POST[$this->post_name], array($this->post_name), $previous_options);
 
                 if( is_array($post_data) ) {
                     $settings = BeRocket_Framework::recursive_array_set($this->default_settings, $post_data);

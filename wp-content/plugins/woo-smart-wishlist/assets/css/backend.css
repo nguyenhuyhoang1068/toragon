@@ -60,6 +60,10 @@
     display: inline-block;
 }
 
+.wpc-premium, .wpc-premium a {
+    color: #c9356e;
+}
+
 /* WPC Dialog */
 
 .ui-dialog.wpc-dialog {

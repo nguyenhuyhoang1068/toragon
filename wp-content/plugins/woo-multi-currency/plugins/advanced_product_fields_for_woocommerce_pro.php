@@ -15,7 +15,7 @@ class WOOMULTI_CURRENCY_F_Plugin_Advanced_Product_Fields_For_Woocommerce_Pro {
 //
 //			add_filter( 'wapf/html/product_totals/data', array( $this, 'add_raw_price' ), 10, 2 );
 //
-			//add_filter( 'wapf/pricing/product_base_price', array( $this, 'convert_back' ), 10, 3 );
+			add_filter( 'wapf/pricing/cart_item_base', array( $this, 'convert_back' ), 10, 3 );
 //
 //			add_action( 'wp_footer', array( $this, 'add_footer_script' ), 100 );
 //
@@ -57,7 +57,7 @@ class WOOMULTI_CURRENCY_F_Plugin_Advanced_Product_Fields_For_Woocommerce_Pro {
 		}
 		?>
         <script>
-            var wapf_wmc_rate = <?php echo $this->get_current_currency_rate(); ?>;
+            var wapf_wmc_rate = <?php echo esc_html( $this->get_current_currency_rate() ); ?>;
 
             jQuery(document).on('wapf/pricing', function (e, productTotal, optionsTotal, total, $parent) {
                 var rawBase = jQuery('.wapf-product-totals').data('wmc-price') * WAPF.Util.selectedQuantity($parent);
@@ -127,7 +127,7 @@ class WOOMULTI_CURRENCY_F_Plugin_Advanced_Product_Fields_For_Woocommerce_Pro {
 		$current_currency = $this->settings->get_current_currency();
 		$product_price    = wmc_adjust_fixed_price( json_decode( get_post_meta( $product->get_id(), '_regular_price_wmcp', true ), true ) );
 		$sale_price       = wmc_adjust_fixed_price( json_decode( get_post_meta( $product->get_id(), '_sale_price_wmcp', true ), true ) );
-		if ( isset( $product_price[ $current_currency ] ) && ! WOOMULTI_CURRENCY_Frontend_Price::is_on_sale( $product ) ) {
+		if ( isset( $product_price[ $current_currency ] ) && ! WOOMULTI_CURRENCY_F_Frontend_Price::is_on_sale( $product ) ) {
 			if ( $product_price[ $current_currency ] > 0 ) {
 				return true;
 			}

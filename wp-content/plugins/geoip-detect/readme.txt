@@ -2,7 +2,7 @@
 Contributors: benjaminpick
 Tags: geolocation, locator, geoip, maxmind, ipstack
 Requires at least: 5.0
-Tested up to: 5.7
+Tested up to: 6.0
 Requires PHP: 7.2
 Stable tag: trunk
 License: GPLv3 or later
@@ -15,12 +15,6 @@ Provides geographic information detected by an IP adress. This can be used in th
 
 = Features: =
 
-* Provides these 5 functions (see [API Documentation](https://github.com/yellowtree/geoip-detect/wiki/API:-PHP)):
-  * `geoip_detect2_get_info_from_ip($ip, $locales = array('en'), $options = array())`: Lookup Geo-Information of the specified IP
-  * `geoip_detect2_get_info_from_current_ip($locales = array('en'), $options = array())`: Lookup Geo-Information of the current website user
-  * `geoip_detect2_get_current_source_description(...)`: Return a human-readable label of the currently chosen source.
-  * `geoip_detect2_get_external_ip_adress()`: Fetch the internet adress of the webserver
-  * `geoip_detect2_get_client_ip()`: Get client IP (even if it is behind a reverse proxy)
 * You can use one of these data sources (see [comparison](https://github.com/yellowtree/geoip-detect/wiki/FAQ#which-data-source-should-i-choose)):
   * Free (default source): [HostIP.info](http://www.hostip.info/) (IPv4 only)
   * Free with registration: [Maxmind GeoIP2 Lite City](http://dev.maxmind.com/geoip/geoip2/geolite2/), automatically updated weekly
@@ -28,15 +22,23 @@ Provides geographic information detected by an IP adress. This can be used in th
   * Commercial Web-API: [Maxmind GeoIP2 Precision](https://www.maxmind.com/en/geoip2-precision-services) (City, Country or Insights)
   * Hosting-Provider dependent: [Cloudflare](https://support.cloudflare.com/hc/en-us/articles/200168236-What-does-CloudFlare-IP-Geolocation-do-) or [Amazon AWS CloudFront](https://aws.amazon.com/blogs/aws/enhanced-cloudfront-customization/) (Country)
   * Free or Commercial Web-API: [Ipstack](https://ipstack.com)
+* Provides these 5 functions (see [API Documentation](https://github.com/yellowtree/geoip-detect/wiki/API:-PHP)):
+  * `geoip_detect2_get_info_from_ip($ip, $locales = array('en'), $options = array())`: Lookup Geo-Information of the specified IP
+  * `geoip_detect2_get_info_from_current_ip($locales = array('en'), $options = array())`: Lookup Geo-Information of the current website user
+  * `geoip_detect2_get_current_source_description(...)`: Return a human-readable label of the currently chosen source.
+  * `geoip_detect2_get_external_ip_adress()`: Fetch the internet adress of the webserver
+  * `geoip_detect2_get_client_ip()`: Get client IP (even if it is behind a reverse proxy)
 * For the property names, see the results of a specific IP in the wordpress backend (under *Tools > Geolocation IP Detection*).
 * You can include these properties into your posts and pages by using the shortcode `[geoip_detect2 property="country.name" default="(country could not be detected)" lang="en"]` (where 'country.name' can be one of the other property names as well, and 'default' and 'lang' are optional).
 * You can show or hide content by using a shortcode `[geoip_detect2_show_if country="FR, DE" not_city="Berlin"]TEXT[/geoip_detect2_show_if]`. See [Shortcode Documentation](https://github.com/yellowtree/geoip-detect/wiki/API:-Shortcodes#show-or-hide-content-depending-on-the-location).
 * When enabled on the options page, it adds CSS classes to the body tag such as `geoip-province-HE`, `geoip-country-DE` and `geoip-continent-EU`.
+* If you are using a page cache, it is recommended to use the AJAX mode (see [AJAX](https://github.com/yellowtree/geoip-detect/wiki/API:-AJAX))
 * When enabled on the options page, the client IP respects a reverse proxy of the server.
 * If you are using [Contact Form 7](https://wordpress.org/plugins/contact-form-7/), you can use these shortcodes:
   * A select input with all countries, the detected country being selected by default: `[geoip_detect2_countries mycountry]`
   * A text input that is pre-filled with the detected city (or other property): `[geoip_detect2_text_input city property:city lang:fr id:id class:class default:Paris]`
   * Geolocation information for the email text: `[geoip_detect2_user_info]`
+* Together with [SVG Flags](https://wordpress.org/plugins/svg-flags-lite/) you can show the flag of the detected country: `[geoip_detect2_current_flag]` (see [documentation](https://github.com/yellowtree/geoip-detect/wiki/API:-Shortcodes#add-a-flag-of-the-visitors-country))
 
 See [Documentation](https://github.com/yellowtree/geoip-detect/wiki) for more info.
 
@@ -117,6 +119,10 @@ See [Documentation](https://github.com/yellowtree/geoip-detect/wiki) for more in
 
 == Upgrade Notice ==
 
+= 5.0.0 =
+
+If you are using AJAX mode, please read the changelog.
+
 = 4.0.1 =
 
 Hotfix - avoid fatal erros if another plugin also has the Maxmind library included
@@ -163,9 +169,51 @@ If you use Maxmind "Automatic download" then you need to upgrade to this plugin 
 
 == Changelog ==
 
+= 5.0.0 =
+In this release, there a small breaking changes marked by [!].
+
+AJAX mode:
+* FIX [!]: Empty attribute values such as `[geoip_detect2_show_if country=""]Country was not detected[/geoip_detect2_show_if]` are now working (they were ignored before)
+* FIX [!]: Shortcodes that have an invalid value for the property `ajax` (e.g. `[geoip_detect2_text_input ajax="invalid"]`) are now using the AJAX option instead of always disabling AJAX
+* FIX: In CF7, the country selector can now be used in AJAX mode
+* FIX: In AJAX mode, the shortcode `[geoip_detect2_show_if]` renders as a `<div>` if it detects that the containing content has HTML block level elements
+* NEW (Beta): In AJAX mode, the new property `autosave` saves the user input as local override for this browser. `[geoip_detect2_countries mycountry autosave]` and `[geoip_detect2_text_input city property:city autosave]`. (Please give feedback if this works as expected!)
+* FIX: In AJAX mode, calling the method `set_override(record, duration_in_days)` now refreshes the AJAX shortcodes and CSS body classes.
+-> Thus, it is now possible to quickly implement different content for different countries with an autodetected default country, see https://github.com/yellowtree/geoip-detect/wiki/API-Usage-Examples#country-selector-that-can-be-overridden-by-the-user
+
+Other changes:
+* NEW: Drastically improving performance if the lookup is performed for the current IP more than once (e.g. because of shortcodes without AJAX mode)
+* UI: Showing the time for the subsequent lookup on the Test Lookup page
+* FIX: Maxmind Datasource: Check if the database file is really a file, not a directory
+* NEW: Header Datasource: Now a custom HTTP header can be used via the wordpress filter `geoip_detect2_source_header_http_key`
+
+Other minor changes:
+* Update the list of available APIs for getting the external IP (as whatismyip went down)
+* Minimum Wordpress version is 5.4 now. 
+* Update some internal libraries & dev tools
+* Checked compatibility with PHP 8.1
+
+= 4.2.3 =
+* FIX: Further improve the Maxmind admin notice UI
+* Update some smaller libraries
+
+= 4.2.2 =
+* FIX: Show Maxmind admin notice only on GeoIP pages to make it less intrusive
+
+= 4.2.1 =
+* FIX: Do not disable lookup automatically when potentially incompatible Maxmind libraries are found.
+
+= 4.2.0 =
+* NEW: Show a warning on the options page when there are incompatibilities with other plugins that also use the Maxmind libraries.
+* FIX: Remove an incompatibility of the libraries with Toolset or other Laravel-based plugins
+* NEW: In CF7, you can now add any property to the mail body with a special syntax, e.g. `[geoip_detect2_property_country__iso_code]`
+* FIX (JS): Replace the internally used library 'lodash' with 'just' to reduce the JS file size
+* FIX (JS): Improve error handling in AJAX mode
+* FIX: Port numbers in reverse proxies are ignored now (removes incompatibility with Azure reverse proxies)
+* FIX: Prevent Cloudflare APO from caching when using AJAX mode or page caching is disabled in the plugin options
 
 = 4.1.0 =
-* NEW: An `else` shortcode for `geoip_detect2_show_if` and `geoip_detect2_hide_if`: `[geoip_detect2_show_if city="Berlin"]Hallo Berlin![else]Not in Berlin[/geoip_detect2_show_if]`
+* NEW: An `else` shortcode for `geoip_detect2_show_if` and `geoip_detect2_hide_if`: `[geoip_detect2_show_if city="Berlin"]You are in Berlin[else]You are not in Berlin[/geoip_detect2_show_if]`
 * FIX: The JS for AJAX wasn't working for Safari browsers
 * FIX: Improving some edge cases of `Record.get_with_locales()` and other methods of `Record` to be consistent with non-AJAX mode
 * FIX: Revert more Maxmind libraries to fix incompatibility with WooCommerce

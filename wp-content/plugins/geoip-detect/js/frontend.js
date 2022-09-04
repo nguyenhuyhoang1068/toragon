@@ -1,15 +1,10 @@
-import { get_info, options, remove_override, set_override } from './lookup';
-import { do_shortcodes } from './shortcodes/index';
-import { add_body_classes } from './body_classes';
+import { get_info } from './lookup/get_info';
+import { remove_override, set_override } from './lookup/override';
+import { main } from './main';
 
+// Evaluate shortcodes, body classes, etc.
+main();
 
-
-if (options.do_body_classes) {
-    add_body_classes();
-}
-if (options.do_shortcodes) {
-    do_shortcodes();
-}
 
 // Extend window object 
 window.geoip_detect.get_info = get_info;

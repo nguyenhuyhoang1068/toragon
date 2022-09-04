@@ -13,10 +13,10 @@
  * @package           Raise_Prices_With_Time_For_Woocommmerce
  *
  * @wordpress-plugin
- * Plugin Name:       Change Prices with Time for WooCommerce fix
+ * Plugin Name:       Change Prices with Time for WooCommerce
  * Plugin URI:        https://wordpress.org/plugins/change-prices-with-time-for-woocommerce/
  * Description:       Increase the Product Price with Time and build scarcity
- * Version:           1.7.1
+ * Version:           1.8.2
  * Author:            Igor Benić
  * Author URI:        https://www.ibenic.com/change-prices-with-time-for-woocommerce
  * License:           GPL-2.0+
@@ -24,7 +24,7 @@
  * Text Domain:       rpt-wc
  * Domain Path:       /languages
  * WC tested up to:   4.8.0
- * Tested up to:      5.6.0
+ * Tested up to:      5.9.3
  * 
  */
 // If this file is called directly, abort.
@@ -62,9 +62,9 @@ if ( !function_exists( 'cpwtfw_fs' ) ) {
     }
     
     // Init Freemius.
-    //cpwtfw_fs();
+    cpwtfw_fs();
     // Signal that SDK was initiated.
-    //do_action( 'cpwtfw_fs_loaded' );
+    do_action( 'cpwtfw_fs_loaded' );
 }
 
 
@@ -103,8 +103,8 @@ if ( !function_exists( 'deactivate_raise_prices_with_time_for_woocommmerce' ) ) 
  */
 require plugin_dir_path( __FILE__ ) . 'includes/class-raise-prices-with-time-for-woocommmerce.php';
 
-//if ( !function_exists( 'rptwc_add_action_links' ) ) {
-    //add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'rptwc_add_action_links' );
+if ( !function_exists( 'rptwc_add_action_links' ) ) {
+    add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'rptwc_add_action_links' );
     /**
      * Adding Link for Documentation
      *
@@ -112,16 +112,16 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-raise-prices-with-time-for
      *
      * @return array
      */
-    // function rptwc_add_action_links( $links )
-    // {
-    //     $mylinks = array( '<a target="_blank" href="https://www.ibenic.com/change-prices-with-time-for-woocommerce">' . __( 'Documentation', 'rpt-wc' ) . '</a>' );
-    //     if ( !defined( 'RPT_PREMIUM' ) || !RPT_PREMIUM || cpwtfw_fs()->is_not_paying() ) {
-    //         $mylinks[] = '<a target="_blank" href="' . cpwtfw_fs()->get_upgrade_url() . '">' . __( 'Upgrade', 'rpt-wc' ) . '</a>';
-    //     }
-    //     return array_merge( $links, $mylinks );
-    // }
+    function rptwc_add_action_links( $links )
+    {
+        $mylinks = array( '<a target="_blank" href="https://www.ibenic.com/change-prices-with-time-for-woocommerce">' . __( 'Documentation', 'rpt-wc' ) . '</a>' );
+        if ( !defined( 'RPT_PREMIUM' ) || !RPT_PREMIUM || cpwtfw_fs()->is_not_paying() ) {
+            $mylinks[] = '<a target="_blank" href="' . cpwtfw_fs()->get_upgrade_url() . '">' . __( 'Upgrade', 'rpt-wc' ) . '</a>';
+        }
+        return array_merge( $links, $mylinks );
+    }
 
-//}
+}
 
 
 if ( !function_exists( 'run_raise_prices_with_time_for_woocommmerce' ) ) {

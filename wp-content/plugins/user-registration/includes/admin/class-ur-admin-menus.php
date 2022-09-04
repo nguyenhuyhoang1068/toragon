@@ -5,8 +5,6 @@
  * @class    UR_Admin_Menus
  * @version  1.0.0
  * @package  UserRegistration/Admin
- * @category Admin
- * @author   WPEverest
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -26,7 +24,6 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 		public function __construct() {
 
 			// Add menus.
-			add_action( 'admin_init', array( $this, 'actions' ) );
 			add_action( 'admin_menu', array( $this, 'admin_menu' ), 9 );
 			add_action( 'admin_menu', array( $this, 'settings_menu' ), 60 );
 			add_action( 'admin_menu', array( $this, 'status_menu' ), 61 );
@@ -36,7 +33,7 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 				add_action( 'admin_menu', array( $this, 'addons_menu' ), 70 );
 			}
 
-			// Set screens
+			// Set screens.
 			add_filter( 'set-screen-option', array( $this, 'set_screen_option' ), 10, 3 );
 
 			// Add endpoints custom URLs in Appearance > Menus > Pages.
@@ -47,6 +44,9 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 			add_action( 'user_registration_extra_fields', array( $this, 'add_upgradable_extra_fields' ) );
 		}
 
+		/**
+		 * Add Upgradable other fields.
+		 */
 		public function add_upgradable_other_fields() {
 			$fields = array(
 				array(
@@ -79,6 +79,9 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 			}
 		}
 
+		/**
+		 * Add Upgradable extra fields.
+		 */
 		public function add_upgradable_extra_fields() {
 			$field_sections = array(
 				array(
@@ -267,6 +270,16 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 							'label' => 'Single Item',
 							'icon'  => 'ur-icon ur-icon-file-dollar',
 						),
+						array(
+							'id'    => 'user_registration_stripe_gateway',
+							'label' => 'Stripe Gateway',
+							'icon'  => 'ur-icon ur-icon-credit-card',
+						),
+						array(
+							'id'    => 'user_registration_multiple_choice',
+							'label' => 'Multiple Choice',
+							'icon'  => 'ur-icon ur-icon-multichoice',
+						),
 					),
 				),
 			);
@@ -275,15 +288,16 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 				$class_to_check = $section['fields_parent_class'];
 
 				if ( ! class_exists( $class_to_check ) ) {
-					$fields = $section['fields'];
-					$plan   = isset( $section['plan'] ) ? $section['plan'] : '';
+					$fields       = $section['fields'];
+					$plan         = isset( $section['plan'] ) ? $section['plan'] : '';
+					$fields_count = count( $fields );
 
 					// Set the same plan for all the section's fields.
-					for ( $i = 0; $i < count( $fields ); $i++ ) {
+					for ( $i = 0; $i < $fields_count; $i++ ) {
 						$fields[ $i ]['plan'] = $plan;
 					}
 
-					echo '<h2 class="ur-toggle-heading">' . __( $section['section_title'], 'user-registration' ) . '</h2><hr/>';
+					echo '<h2 class="ur-toggle-heading">' . esc_html( $section['section_title'] ) . '</h2><hr/>';
 					echo '<ul id = "ur-upgradables" class="ur-registered-list" > ';
 					$this->render_upgradable_fields( $fields );
 					echo '</ul >';
@@ -293,6 +307,8 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 
 		/**
 		 * Render multiple upgradable fields.
+		 *
+		 * @param array $fields Field.
 		 */
 		public function render_upgradable_fields( $fields ) {
 			foreach ( $fields as $field ) {
@@ -302,6 +318,8 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 
 		/**
 		 * Render an upgradable field.
+		 *
+		 * @param array $args Args Data.
 		 */
 		public function render_upgradable_field( $args ) {
 			$id    = $args['id'];
@@ -309,237 +327,7 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 			$label = $args['label'];
 			$plan  = isset( $args['plan'] ) ? $args['plan'] : '';
 
-			echo '<li id="' . $id . '_list " class="ur-registered-item ur-upgradable-field ui-draggable-disabled" data-field-id="' . $id . '" data-plan="' . $plan . '"><span class="' . $icon . '"></span>' . $label . '</li>';
-		}
-
-		/**
-		 * Registration forms admin actions.
-		 */
-		public function actions() {
-
-			if ( isset( $_GET['page'] ) && 'user-registration' === $_GET['page'] ) {
-
-				// Bulk actions
-				if ( isset( $_REQUEST['action'] ) && isset( $_REQUEST['registration'] ) ) {
-					$this->bulk_actions();
-				}
-
-				// Empty trash
-				if ( isset( $_GET['empty_trash'] ) ) {
-					$this->empty_trash();
-				}
-
-				$action  = isset( $_GET['action'] ) ? sanitize_text_field( $_GET['action'] ) : '';
-				$nonce   = isset( $_GET['nonce'] ) ? sanitize_text_field( $_GET['nonce'] ) : '';
-				$form_id = isset( $_GET['form'] ) && is_numeric( $_GET['form'] ) ? $_GET['form'] : '';
-
-				if ( ! empty( $action ) && ! empty( $nonce ) && ! empty( $form_id ) ) {
-					$flag = wp_verify_nonce( $nonce, 'user_registration_form_duplicate' . $form_id );
-
-					if ( $flag == true && ! is_wp_error( $flag ) ) {
-
-						if ( 'duplicate' === $action ) {
-							$this->duplicate( $form_id );
-						}
-					}
-				}
-			}
-		}
-
-		/**
-		 * Bulk trash/delete.
-		 *
-		 * @param array $registrations
-		 * @param bool  $delete
-		 */
-		private function bulk_trash( $registrations, $delete = false ) {
-			foreach ( $registrations as $registration_id ) {
-				if ( $delete ) {
-					wp_delete_post( $registration_id, true );
-				} else {
-					wp_trash_post( $registration_id );
-				}
-			}
-
-			$type   = ! EMPTY_TRASH_DAYS || $delete ? 'deleted' : 'trashed';
-			$qty    = count( $registrations );
-			$status = isset( $_GET['status'] ) ? '&status=' . sanitize_text_field( $_GET['status'] ) : '';
-
-			// Redirect to registrations page
-			wp_redirect( admin_url( 'admin.php?page=user-registration' . $status . '&' . $type . '=' . $qty ) );
-			exit();
-		}
-
-		/**
-		 * Bulk untrash.
-		 *
-		 * @param array $registrations
-		 */
-		private function bulk_untrash( $registrations ) {
-			foreach ( $registrations as $registration_id ) {
-				wp_untrash_post( $registration_id );
-			}
-
-			$qty = count( $registrations );
-
-			// Redirect to registrations page
-			wp_redirect( admin_url( 'admin.php?page=user-registration&status=trash&untrashed=' . $qty ) );
-			exit();
-		}
-
-		/**
-		 * Duplicate form
-		 */
-		private function duplicate( $form_id ) {
-			$post            = get_post( $form_id );
-			$current_user    = wp_get_current_user();
-			$new_post_author = $current_user->ID;
-
-			/*
-			 * if post data exists, create the post duplicate
-			 */
-			if ( isset( $post ) && $post != null ) {
-
-				if ( 'publish' !== $post->post_status ) {
-
-					return false;
-				}
-
-				$post->post_content = str_replace( '\\', '\\\\', $post->post_content );
-
-				/*
-				 * new post data array
-				 */
-				$args = array(
-					'comment_status' => $post->comment_status,
-					'ping_status'    => $post->ping_status,
-					'post_author'    => $new_post_author,
-					'post_content'   => $post->post_content,
-					'post_excerpt'   => $post->post_excerpt,
-					'post_name'      => $post->post_name,
-					'post_parent'    => $post->post_parent,
-					'post_password'  => $post->post_password,
-					'post_status'    => $post->post_status,
-					'post_title'     => __( 'Copy of ', 'user-registration' ) . $post->post_title,
-					'post_type'      => $post->post_type,
-					'to_ping'        => $post->to_ping,
-					'menu_order'     => $post->menu_order,
-				);
-
-				/*
-				 * insert the post by wp_insert_post() function
-				 */
-				$new_post_id = wp_insert_post( $args );
-
-				/*
-				 * duplicate all post meta just in two SQL queries
-				 */
-				global $wpdb;
-				$post_meta_infos = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->postmeta} WHERE post_id = %d", $form_id ) );
-
-				if ( count( $post_meta_infos ) != 0 ) {
-					$sql_query = "INSERT INTO $wpdb->postmeta (post_id, meta_key, meta_value) ";
-					foreach ( $post_meta_infos as $meta_info ) {
-						$meta_key = $meta_info->meta_key;
-						if ( $meta_key == '_wp_old_slug' ) {
-							continue;
-						}
-						$meta_value      = addslashes( $meta_info->meta_value );
-						$sql_query_sel[] = "SELECT $new_post_id, '$meta_key', '$meta_value'";
-					}
-					$sql_query .= implode( ' UNION ALL ', $sql_query_sel );
-					$wpdb->query( $sql_query );
-				}
-
-				/*
-				 * duplicate all post meta just in two SQL queries
-				 */
-				global $wpdb;
-				$post_meta_infos = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->postmeta} WHERE post_id = %d", $form_id ) );
-
-				if ( count( $post_meta_infos ) != 0 ) {
-					$sql_query = "INSERT INTO $wpdb->postmeta (post_id, meta_key, meta_value) ";
-					foreach ( $post_meta_infos as $meta_info ) {
-						$meta_key = $meta_info->meta_key;
-						if ( $meta_key == '_wp_old_slug' ) {
-							continue;
-						}
-						$meta_value      = addslashes( $meta_info->meta_value );
-						$sql_query_sel[] = "SELECT $new_post_id, '$meta_key', '$meta_value'";
-					}
-					$sql_query .= implode( ' UNION ALL ', $sql_query_sel );
-					$wpdb->query( $sql_query );
-				}
-
-				/*
-				 * finally, redirect to the edit post screen for the new draft
-				 */
-				wp_redirect( admin_url( 'admin.php?page=add-new-registration&edit-registration=' . $new_post_id ) );
-				exit;
-			}
-		}
-
-		/**
-		 * Bulk actions.
-		 */
-		private function bulk_actions() {
-			if ( ! current_user_can( 'edit_user_registrations' ) ) {
-				wp_die( __( 'You do not have permissions to edit forms!', 'user-registration' ) );
-			}
-
-			$registrations = array_map( 'absint', (array) $_REQUEST['registration'] );
-			$action        = $_REQUEST['action'];
-
-			if( -1 == $_REQUEST['action'] ) {
-				$action = $_REQUEST['action2'];
-			}
-
-			switch ( $action ) {
-				case 'trash':
-					$this->bulk_trash( $registrations );
-					break;
-				case 'untrash':
-					$this->bulk_untrash( $registrations );
-					break;
-				case 'delete':
-					$this->bulk_trash( $registrations, true );
-					break;
-				default:
-					break;
-			}
-		}
-
-		/**
-		 * Empty Trash.
-		 */
-		private function empty_trash() {
-			if ( empty( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'empty_trash' ) ) {
-				wp_die( __( 'Action failed. Please refresh the page and retry.', 'user-registration' ) );
-			}
-
-			if ( ! current_user_can( 'delete_user_registrations' ) ) {
-				wp_die( __( 'You do not have permissions to delete forms!', 'user-registration' ) );
-			}
-
-			$registration = get_posts(
-				array(
-					'post_type'           => 'user_registration',
-					'ignore_sticky_posts' => true,
-					'nopaging'            => true,
-					'post_status'         => 'trash',
-					'fields'              => 'ids',
-				)
-			);
-
-			foreach ( $registration as $webhook_id ) {
-				wp_delete_post( $webhook_id, true );
-			}
-
-			$qty = count( $registration );
-
-			// Redirect to registrations page
-			wp_redirect( admin_url( 'admin.php?page=user-registration&deleted=' . $qty ) );
-			exit();
+			echo '<li id="' . esc_attr( $id ) . '_list " class="ur-registered-item ur-upgradable-field ui-draggable-disabled" data-field-id="' . esc_attr( $id ) . '" data-plan="' . esc_attr( $plan ) . '"><span class="' . esc_attr( $icon ) . '"></span>' . esc_html( $label ) . '</li>';
 		}
 
 		/**
@@ -562,19 +350,32 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 		 * Add menu items.
 		 */
 		public function admin_menu() {
-			$registration_page = add_menu_page( __( 'User Registration', 'user-registration' ), __( 'User Registration', 'user-registration' ), 'manage_user_registration', 'user-registration', array( $this, 'registration_page' ), $this->get_icon_svg(), '55.8' );
 
-			add_action( 'load-' . $registration_page, array( $this, 'registration_page_init' ) );
+				$registration_page = add_menu_page( 'User Registration', 'User Registration', 'manage_user_registration', 'user-registration', array( $this, 'registration_page' ), $this->get_icon_svg(), '55.8' );
+
+				add_action( 'load-' . $registration_page, array( $this, 'registration_page_init' ) );
+				add_submenu_page(
+					'user-registration',
+					__( 'All Forms', 'user-registration' ),
+					__( 'All Forms', 'user-registration' ),
+					'manage_user_registration',
+					'user-registration',
+					array(
+						$this,
+						'registration_page',
+					)
+				);
 		}
 
 		/**
 		 * Loads screen options into memory.
 		 */
 		public function registration_page_init() {
-			global $registration_table_list;
+				global $registration_table_list;
 
-			if ( ! isset( $_GET['add-new-registration'] ) ) { // WPCS: input var okay, CSRF ok.
+			if ( ! isset( $_GET['add-new-registration'] ) ) {  //phpcs:ignore WordPress.Security.NonceVerification
 				$registration_table_list = new UR_Admin_Registrations_Table_List();
+				$registration_table_list->process_actions();
 
 				// Add screen option.
 				add_screen_option(
@@ -585,6 +386,7 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 					)
 				);
 			}
+
 		}
 
 		/**
@@ -645,7 +447,10 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 			add_submenu_page(
 				'user-registration',
 				__( 'User Registration extensions', 'user-registration' ),
-				__( 'Extensions', 'user-registration' ),
+				__(
+					'<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 2 30 30" style="fill: rgb(158, 240, 26);transform: ;msFilter:;vertical-align:middle;"><path d="M11.8,15.24l1.71-1,.57-.33a2.14,2.14,0,0,0,1-1.85V6.76a2,2,0,0,0-.28-1,2.08,2.08,0,0,0-.76-.77l-.56-.33-1.73-1L9.56,2.29a2,2,0,0,0-1-.29,2,2,0,0,0-1,.29L5.26,3.59,3.42,4.68,3,4.94a2.08,2.08,0,0,0-.76.77,2.13,2.13,0,0,0-.27,1v5.3a2,2,0,0,0,.27,1.06,2.13,2.13,0,0,0,.76.79l.45.26,1.84,1.07,2.23,1.3a2,2,0,0,0,1,.28,2.22,2.22,0,0,0,1-.26Z"/><path d="M29.78,5.71A2.16,2.16,0,0,0,29,4.94l-.56-.33-1.74-1L24.5,2.29a2,2,0,0,0-1-.29,2,2,0,0,0-1,.29l-2.23,1.3L18.37,4.68l-.45.26a2.08,2.08,0,0,0-.76.77,2.13,2.13,0,0,0-.27,1v5.3a1.89,1.89,0,0,0,.27,1.06,2.13,2.13,0,0,0,.76.79l.45.26,1.84,1.07,2.23,1.3a2,2,0,0,0,1,.28,2.16,2.16,0,0,0,1-.26l2.25-1.32,1.71-1,.57-.33a2.3,2.3,0,0,0,.76-.79,2.2,2.2,0,0,0,.27-1.06V6.76A2,2,0,0,0,29.78,5.71Z"/><path d="M21.64,18.12l-.56-.33-1.74-1-2.22-1.3a2,2,0,0,0-1-.29,2,2,0,0,0-1,.29l-2.23,1.3L11,17.85l-.45.27a2.08,2.08,0,0,0-.76.77,2.14,2.14,0,0,0-.28,1.05v5.3a1.93,1.93,0,0,0,.28,1.05,2.06,2.06,0,0,0,.76.79l.45.27,1.84,1.07,2.23,1.29a2,2,0,0,0,1,.29,2.28,2.28,0,0,0,1-.26l2.25-1.32,1.71-1,.57-.34a2.21,2.21,0,0,0,.76-.79,2.13,2.13,0,0,0,.27-1.05v-5.3a2,2,0,0,0-.28-1.05A2.16,2.16,0,0,0,21.64,18.12Z"/></svg><span style="margin-left:5px;">Extensions</span>',
+					'user-registration'
+				),
 				'manage_user_registration',
 				'user-registration-addons',
 				array(
@@ -657,6 +462,10 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 
 		/**
 		 * Validate screen options on update.
+		 *
+		 * @param mixed $status Status.
+		 * @param mixed $option Option.
+		 * @param mixed $value Value.
 		 */
 		public function set_screen_option( $status, $option, $value ) {
 			if ( in_array( $option, array( 'user_registration_per_page' ), true ) ) {
@@ -671,32 +480,14 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 		 */
 		public function registration_page() {
 			global $registration_table_list;
-
-			$registration_table_list->prepare_items();
-			?>
-			<div class="wrap">
-				<h1 class="wp-heading-inline"><?php esc_html_e( 'User Registration', 'user-registration' ); ?></h1>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=add-new-registration' ) ); ?>" class="page-title-action"><?php esc_html_e( 'Add New', 'user-registration' ); ?></a>
-				<hr class="wp-header-end">
-				<form id="registration-list" method="post">
-					<input type="hidden" name="page" value="user-registration" />
-					<?php
-						$registration_table_list->views();
-						$registration_table_list->search_box( __( 'Search Registration', 'user-registration' ), 'registration' );
-						$registration_table_list->display();
-
-						wp_nonce_field( 'save', 'user_registration_nonce' );
-					?>
-				</form>
-			</div>
-			<?php
+			$registration_table_list->display_page();
 		}
 
 		/**
 		 * Init the add registration page.
 		 */
 		public function add_registration_page() {
-			$form_id   = isset( $_GET['edit-registration'] ) ? absint( $_GET['edit-registration'] ) : 0;
+			$form_id   = isset( $_GET['edit-registration'] ) ? absint( $_GET['edit-registration'] ) : 0; //phpcs:ignore WordPress.Security.NonceVerification
 			$form_data = ( $form_id ) ? UR()->form->get_form( $form_id ) : array();
 
 			$save_label = __( 'Create Form', 'user-registration' );
@@ -711,7 +502,7 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 				);
 			}
 
-			// Forms view
+			// Forms view.
 			include_once dirname( __FILE__ ) . '/views/html-admin-page-forms.php';
 		}
 
@@ -784,19 +575,19 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 							<li>
 								<label class="menu-item-title">
 									<input type="checkbox" class="menu-item-checkbox"
-										   name="menu-item[<?php echo esc_attr( $i ); ?>][menu-item-object-id]"
-										   value="<?php echo esc_attr( $i ); ?>"/> <?php echo esc_html( $value ); ?>
+										name="menu-item[<?php echo esc_attr( $i ); ?>][menu-item-object-id]"
+										value="<?php echo esc_attr( $i ); ?>"/> <?php echo esc_html( $value ); ?>
 								</label>
 								<input type="hidden" class="menu-item-type"
-									   name="menu-item[<?php echo esc_attr( $i ); ?>][menu-item-type]" value="custom"/>
+									name="menu-item[<?php echo esc_attr( $i ); ?>][menu-item-type]" value="custom"/>
 								<input type="hidden" class="menu-item-title"
-									   name="menu-item[<?php echo esc_attr( $i ); ?>][menu-item-title]"
-									   value="<?php echo esc_html( $value ); ?>"/>
+									name="menu-item[<?php echo esc_attr( $i ); ?>][menu-item-title]"
+									value="<?php echo esc_html( $value ); ?>"/>
 								<input type="hidden" class="menu-item-url"
-									   name="menu-item[<?php echo esc_attr( $i ); ?>][menu-item-url]"
-									   value="<?php echo esc_url( ur_get_account_endpoint_url( $key ) ); ?>"/>
+									name="menu-item[<?php echo esc_attr( $i ); ?>][menu-item-url]"
+									value="<?php echo esc_url( ur_get_account_endpoint_url( $key ) ); ?>"/>
 								<input type="hidden" class="menu-item-classes"
-									   name="menu-item[<?php echo esc_attr( $i ); ?>][menu-item-classes]"/>
+									name="menu-item[<?php echo esc_attr( $i ); ?>][menu-item-classes]"/>
 							</li>
 							<?php
 							$i --;
@@ -806,20 +597,27 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 				</div>
 				<p class="button-controls">
 					<span class="list-controls">
-					<a href="<?php echo admin_url( 'nav-menus.php?page-tab=all&selectall=1#posttype-user-registration-endpoints' ); ?>"
-					   class="select-all"><?php _e( 'Select all', 'user-registration' ); ?></a>
+					<a href="<?php echo esc_url( admin_url( 'nav-menus.php?page-tab=all&selectall=1#posttype-user-registration-endpoints' ) ); ?>"
+					class="select-all"><?php esc_html_e( 'Select all', 'user-registration' ); ?></a>
 					</span>
 					<span class="add-to-menu">
 					<input type="submit" class="button-secondary submit-add-to-menu right"
-						   value="<?php esc_attr_e( 'Add to menu', 'user-registration' ); ?>"
-						   name="add-post-type-menu-item" id="submit-posttype-user-registration-endpoints">
+						value="<?php esc_attr_e( 'Add to menu', 'user-registration' ); ?>"
+						name="add-post-type-menu-item" id="submit-posttype-user-registration-endpoints">
 					<span class="spinner"></span>
 					</span>
 				</p>
 			</div>
-			<?php
+				<?php
 		}
 
+			/**
+			 * Get Edit Form Field.
+			 *
+			 * @param object $form_data Form Data.
+			 *
+			 * @throws Exception Throws exception if error in json.
+			 */
 		private function get_edit_form_field( $form_data ) {
 
 			if ( ! empty( $form_data ) ) {
@@ -856,9 +654,9 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 			?>
 			<div class="ur-builder-header">
 				<div class="user-registration-editable-title ur-form-name-wrapper ur-my-4">
-					<?php
-					$form_title = isset( $form_data->post_title ) ? trim( $form_data->post_title ) : __( 'Untitled', 'user-registration' );
-					?>
+				<?php
+				$form_title = isset( $form_data->post_title ) ? trim( $form_data->post_title ) : __( 'Untitled', 'user-registration' );
+				?>
 					<input name="ur-form-name" id="ur-form-name" type="text" class="user-registration-editable-title__input ur-form-name regular-text menu-item-textbox" value="<?php echo esc_html( $form_title ); ?>" data-editing="false">
 					<span id="ur-form-name-edit-button" class="user-registration-editable-title__icon ur-edit-form-name dashicons dashicons-edit"></span>
 				</div>
@@ -866,34 +664,52 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 					<?php do_action( 'user_registration_builder_header_extra', $form_data->ID, $form_data_array ); ?>
 				</div>
 			</div>
-			<?php
-			echo '<div class="ur-input-grids">';
+				<?php
+				echo '<div class="ur-input-grids">';
 
-			$row_id  = 0;
-			$last_id = 0;
+				$row_id  = 0;
+				$last_id = 0;
 
-			foreach ( $form_data_array as $index => $rows ) {
-				$row_id  = ( ! empty( $form_row_ids ) ) ? $form_row_ids_array[ $index ] : $index;
-				$last_id = ( absint( $row_id ) > $last_id ) ? absint( $row_id ) : $last_id;
+				foreach ( $form_data_array as $index => $rows ) {
+					$row_id  = ( ! empty( $form_row_ids ) ) ? $form_row_ids_array[ $index ] : $index;
+					$last_id = ( absint( $row_id ) > $last_id ) ? absint( $row_id ) : $last_id;
 
-				$grid_count = count( $rows );
+					$grid_count = count( $rows );
 
-				$grid_one   = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M28,6V26H4V6H28m2-2H2V28H30V4Z"/></svg>';
-				$grid_two   = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M17,4H2V28H30V4ZM4,26V6H15V26Zm24,0H17V6H28Z"/></svg>';
-				$grid_three = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M22,4H2V28H30V4ZM4,26V6h6V26Zm8,0V6h8V26Zm16,0H22V6h6Z"/></svg>';
+					$grid_one   = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M28,6V26H4V6H28m2-2H2V28H30V4Z"/></svg>';
+					$grid_two   = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M17,4H2V28H30V4ZM4,26V6H15V26Zm24,0H17V6H28Z"/></svg>';
+					$grid_three = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M22,4H2V28H30V4ZM4,26V6h6V26Zm8,0V6h8V26Zm16,0H22V6h6Z"/></svg>';
 
-				echo '<div class="ur-single-row"  data-row-id="' . absint( $row_id ) . '">';
-				?>
+					$svg_args = array(
+						'svg'   => array(
+							'class'           => true,
+							'aria-hidden'     => true,
+							'aria-labelledby' => true,
+							'role'            => true,
+							'xmlns'           => true,
+							'width'           => true,
+							'height'          => true,
+							'viewbox'         => true, // <= Must be lower case!
+						),
+						'g'     => array( 'fill' => true ),
+						'title' => array( 'title' => true ),
+						'path'  => array(
+							'd'    => true,
+							'fill' => true,
+						),
+					);
+					echo '<div class="ur-single-row"  data-row-id="' . esc_attr( absint( $row_id ) ) . '">';
+					?>
 
 				<div class="ur-grids">
 					<button type="button" class="ur-edit-grid">
 						<?php
 						if ( 1 === $grid_count ) {
-							echo $grid_one; // phpcs:ignore WordPress.Security.EscapeOutput
+							echo wp_kses( $grid_one, $svg_args );
 						} elseif ( 2 === $grid_count ) {
-							echo $grid_two; // phpcs:ignore WordPress.Security.EscapeOutput
+							echo wp_kses( $grid_two, $svg_args );
 						} elseif ( 3 === $grid_count ) {
-							echo $grid_three; // phpcs:ignore WordPress.Security.EscapeOutput
+							echo wp_kses( $grid_three, $svg_args );
 						}
 						?>
 					</button>
@@ -901,63 +717,75 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 					<div class="ur-toggle-grid-content" style="display:none">
 						<small>Select the grid column.</small>
 						<div class="ur-grid-selector" data-grid = "1">
-							<?php echo $grid_one; // phpcs:ignore WordPress.Security.EscapeOutput ?>
+							<?php
+
+							echo wp_kses( $grid_one, $svg_args );
+							?>
 						</div>
 						<div class="ur-grid-selector" data-grid = "2">
-							<?php echo $grid_two; // phpcs:ignore WordPress.Security.EscapeOutput ?>
+							<?php echo wp_kses( $grid_two, $svg_args ); ?>
 						</div>
 						<div class="ur-grid-selector" data-grid = "3">
-							<?php echo $grid_three; // phpcs:ignore WordPress.Security.EscapeOutput ?>
+							<?php echo wp_kses( $grid_three, $svg_args ); ?>
 						</div>
 					</div>
 				</div>
 
-				<?php
-				echo '<div class="ur-grid-lists">';
+					<?php
+					echo '<div class="ur-grid-lists">';
 
-				$grid_id = 0;
+					$grid_id = 0;
 
-				foreach ( $rows as $grid_lists ) {
+					foreach ( $rows as $grid_lists ) {
 
-					$grid_id ++;
+						$grid_id ++;
 
-					echo '<div ur-grid-id="' . $grid_id . '" class="ur-grid-list-item ui-sortable" style="width: 48%; min-height: 70px;">';
+						echo '<div ur-grid-id="' . esc_attr( $grid_id ) . '" class="ur-grid-list-item ui-sortable" style="width: 48%; min-height: 70px;">';
 
-					foreach ( $grid_lists as $single_field ) {
+						foreach ( $grid_lists as $single_field ) {
 
-						if ( isset( $single_field->field_key ) ) {
-							$admin_field = $this->get_admin_field( $single_field );
-							echo '<div class="ur-selected-item">';
-							echo '<div class="ur-action-buttons"><span title="Clone" class="dashicons dashicons-admin-page ur-clone"></span><span title="Trash" class="dashicons dashicons-trash ur-trash"></span></div>';
-							$template = isset( $admin_field['template'] ) ? $admin_field['template'] : '' ; // @codingStandardsIgnoreLine
-							echo $template;
-							echo '</div>';
+							if ( isset( $single_field->field_key ) ) {
+								// Hook for fields backward compatibility.
+								apply_filters( 'user_registration_form_builder_field_before', $single_field );
+
+								$admin_field = $this->get_admin_field( $single_field );
+								echo '<div class="ur-selected-item">';
+								echo '<div class="ur-action-buttons"><span title="Clone" class="dashicons dashicons-admin-page ur-clone"></span><span title="Trash" class="dashicons dashicons-trash ur-trash"></span></div>';
+								$template = isset( $admin_field['template'] ) ? $admin_field['template'] : '' ; // @codingStandardsIgnoreLine
+								echo $template; // phpcs:ignore
+								echo '</div>';
+							}
 						}
-					}
 
-					if ( count( $grid_lists ) == 0 ) {
-						echo '<div class="user-registration-dragged-me">
-						<div class="user-registration-dragged-me-text"><p>' . esc_html( 'Drag your first form item here.', 'user-registration' ) . '</p></div>
+						if ( count( $grid_lists ) == 0 ) {
+							echo '<div class="user-registration-dragged-me">
+						<div class="user-registration-dragged-me-text"><p>' . esc_html__( 'Drag your first form item here.', 'user-registration' ) . '</p></div>
 						</div>';
+						}
+
+						echo '</div>';
 					}
 
 					echo '</div>';
+					echo '</div>';
+
 				}
-
+				echo '<button type="button" class="button button-primary dashicons dashicons-plus-alt ur-add-new-row" data-total-rows="' . esc_attr( $last_id ) . '">' . esc_html__( 'Add New', 'user-registration' ) . '</button>';
 				echo '</div>';
 				echo '</div>';
-
-			}// End foreach().
-			echo '<button type="button" class="button button-primary dashicons dashicons-plus-alt ur-add-new-row" data-total-rows="' . $last_id . '">' . esc_html( 'Add New', 'user-registration' ) . '</button>';
-			echo '</div>';
-			echo '</div>';
-			echo '</div>';
+				echo '</div>';
 		}
 
+			/**
+			 * Get admin field.
+			 *
+			 * @param object $single_field Single field.
+			 * @throws Exception Throw exception if empty form data.
+			 */
 		public static function get_admin_field( $single_field ) {
 
 			if ( empty( $single_field->field_key ) ) {
-				throw new Exception( __( 'Empty form data', 'user-registration' ) );
+				throw new Exception( esc_html__( 'Empty form data', 'user-registration' ) );
 			}
 
 			$class_name = 'UR_Form_Field_' . ucwords( $single_field->field_key );
@@ -974,6 +802,9 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 			/* Backward compat end */
 		}
 
+			/**
+			 * Get registered user form fields.
+			 */
 		private function get_registered_user_form_fields() {
 
 			$registered_form_fields = ur_get_user_field_only();
@@ -987,6 +818,9 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 			echo ' </ul > ';
 		}
 
+			/**
+			 * Get Registered other form field.
+			 */
 		private function get_registered_other_form_fields() {
 
 			$registered_form_fields = ur_get_other_form_fields();
@@ -1002,12 +836,17 @@ if ( ! class_exists( 'UR_Admin_Menus', false ) ) :
 			echo ' </ul > ';
 		}
 
+			/**
+			 * Get Admin field List.
+			 *
+			 * @param mixed $field Fields.
+			 */
 		public function ur_get_list( $field ) {
 
 			$class_name = ur_load_form_field_class( $field );
 
-			if ( $class_name !== null ) {
-				echo $class_name::get_instance()->get_registered_admin_fields();
+			if ( null !== $class_name ) {
+				echo wp_kses_post( $class_name::get_instance()->get_registered_admin_fields() );
 			}
 
 		}

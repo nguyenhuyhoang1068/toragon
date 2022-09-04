@@ -24,7 +24,10 @@ class WOOMULTI_CURRENCY_F_Admin_Reports {
 		$this->is_dashboard = false;
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 		add_filter( 'woocommerce_reports_get_order_report_data_args', array( $this, 'report_by_currency' ) );
-		add_filter( 'woocommerce_reports_get_order_report_data', array( $this, 'woocommerce_reports_get_order_report_data_for_dashboard' ), 10, 2 );
+		add_filter( 'woocommerce_reports_get_order_report_data', array(
+			$this,
+			'woocommerce_reports_get_order_report_data_for_dashboard'
+		), 10, 2 );
 		add_filter( 'woocommerce_currency', array( $this, 'woocommerce_currency' ), 99 );
 		add_filter( 'wc_get_price_decimals', array( $this, 'wc_get_price_decimals' ), 99 );
 		$this->default_currency = $this->settings->get_default_currency();
@@ -55,10 +58,10 @@ class WOOMULTI_CURRENCY_F_Admin_Reports {
 		$screen    = get_current_screen();
 		$screen_id = $screen ? $screen->id : '';
 		if ( 'woocommerce_page_wc-reports' == $screen_id ) {
-			$tab          = isset( $_REQUEST['tab'] ) ? wp_unslash( $_REQUEST['tab'] ) : 'orders';
-			$report       = isset( $_REQUEST['report'] ) ? wp_unslash( $_REQUEST['report'] ) : '';
-			$currency     = isset( $_REQUEST['wmc-currency'] ) ? strtoupper( wp_unslash( $_REQUEST['wmc-currency'] ) ) : '';
-			$view_default = isset( $_REQUEST['wmc-view-default-currency'] ) ? wp_unslash( $_REQUEST['wmc-view-default-currency'] ) : '';
+			$tab          = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'orders';
+			$report       = isset( $_GET['report'] ) ? sanitize_text_field( wp_unslash( $_GET['report'] ) ) : '';
+			$currency     = isset( $_GET['wmc-currency'] ) ? strtoupper( sanitize_text_field( wp_unslash( $_GET['wmc-currency'] ) ) ) : '';
+			$view_default = isset( $_GET['wmc-view-default-currency'] ) ? sanitize_text_field( wp_unslash( $_GET['wmc-view-default-currency'] ) ) : '';
 			if ( ( $tab === 'orders' && $report !== 'coupon_usage' ) || ( $tab === 'customers' && $report === 'customers' ) ) {
 				wp_enqueue_style( 'woocommerce-multi-currency-admin-reports', WOOMULTI_CURRENCY_F_CSS . 'reports.css', '', WOOMULTI_CURRENCY_F_VERSION );
 				wp_enqueue_script( 'woocommerce-multi-currency-admin-reports', WOOMULTI_CURRENCY_F_JS . 'reports.js', array( 'jquery' ), WOOMULTI_CURRENCY_F_VERSION );
@@ -132,7 +135,7 @@ class WOOMULTI_CURRENCY_F_Admin_Reports {
 							'woocommerce_reports_get_order_report_data'
 						), 10, 2 );
 						$this->total_sales = array_sum( $results );
-					} elseif ( $report === 'sales_by_category' && ! empty( $_REQUEST['show_categories'] ) ) {
+					} elseif ( $report === 'sales_by_category' && ! empty( $_GET['show_categories'] ) ) {
 						include_once( WC()->plugin_path() . '/includes/admin/reports/class-wc-admin-report.php' );
 						include_once( WC()->plugin_path() . '/includes/admin/reports/class-wc-report-sales-by-category.php' );
 						$current_range = $this->get_current_range();
@@ -301,7 +304,7 @@ class WOOMULTI_CURRENCY_F_Admin_Reports {
 						), 10, 2 );
 						$this->total_sales = self::convert_to_default_currency( $total_sales, $this->currencies[ $this->currency ]['rate'] );
 					}
-				} elseif ( $report === 'sales_by_category' && ! empty( $_REQUEST['show_categories'] ) ) {
+				} elseif ( $report === 'sales_by_category' && ! empty( $_GET['show_categories'] ) ) {
 					$this->currency = $currency;
 					if ( isset( $this->currencies[ $this->currency ] ) ) {
 						include_once( WC()->plugin_path() . '/includes/admin/reports/class-wc-admin-report.php' );
@@ -376,9 +379,10 @@ class WOOMULTI_CURRENCY_F_Admin_Reports {
 	 *
 	 */
 	public function admin_footer() {
-		$currency          = isset( $_REQUEST['wmc-currency'] ) ? strtoupper( wp_unslash( $_REQUEST['wmc-currency'] ) ) : '';
-		$view_default      = isset( $_REQUEST['wmc-view-default-currency'] ) ? wp_unslash( $_REQUEST['wmc-view-default-currency'] ) : '';
-		$view_default_link = $view_default === 'yes' ? remove_query_arg( 'wmc-view-default-currency', $_SERVER['REQUEST_URI'] ) : add_query_arg( array( 'wmc-view-default-currency' => 'yes' ), $_SERVER['REQUEST_URI'] );
+		$currency          = isset( $_GET['wmc-currency'] ) ? strtoupper( sanitize_text_field( wp_unslash( $_GET['wmc-currency'] ) ) ) : '';
+		$view_default      = isset( $_GET['wmc-view-default-currency'] ) ? sanitize_text_field( wp_unslash( $_GET['wmc-view-default-currency'] ) ) : '';
+		$request_uri       = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+		$view_default_link = $view_default === 'yes' ? remove_query_arg( 'wmc-view-default-currency', $request_uri ) : add_query_arg( array( 'wmc-view-default-currency' => 'yes' ), $request_uri );
 		$links             = $this->settings->get_links();
 		$currency_name     = get_woocommerce_currencies();
 		?>
@@ -387,7 +391,7 @@ class WOOMULTI_CURRENCY_F_Admin_Reports {
                 <div class="wmc-currency">
                     <select class="wmc-nav"
                             onchange="this.options[this.selectedIndex].value && (window.location = this.options[this.selectedIndex].value);">
-                        <option value="<?php echo remove_query_arg( 'wmc-currency', $_SERVER['REQUEST_URI'] ) ?>"><?php esc_html_e( 'All currencies', 'woo-multi-currency' ) ?></option>
+                        <option value="<?php echo esc_url( remove_query_arg( 'wmc-currency', $request_uri ) ) ?>"><?php esc_html_e( 'All currencies', 'woo-multi-currency' ) ?></option>
 						<?php
 						foreach ( $links as $code => $link ) {
 							?>
@@ -406,7 +410,7 @@ class WOOMULTI_CURRENCY_F_Admin_Reports {
             <li class="wmc-view-default-currency-container">
                 <input id="wmc-view-default-currency" type="checkbox"
                        value="yes" <?php checked( $view_default, 'yes' ) ?>
-                       data-report_link="<?php esc_attr_e( $view_default_link ) ?>"><label
+                       data-report_link="<?php echo esc_url( $view_default_link ) ?>"><label
                         for="wmc-view-default-currency"><?php esc_html_e( 'View in default currency', 'woo-multi-currency' ) ?></label>
             </li>
 			<?php
@@ -641,9 +645,9 @@ class WOOMULTI_CURRENCY_F_Admin_Reports {
 	 * @return int
 	 */
 	public function wc_get_price_decimals( $decimal ) {
-		$view_default = isset( $_REQUEST['wmc-view-default-currency'] ) ? wp_unslash( $_REQUEST['wmc-view-default-currency'] ) : '';
-		if ( is_admin() && ! empty( $_REQUEST['wmc-currency'] ) && $view_default !== 'yes' ) {
-			$currency = strtoupper( wp_unslash( $_REQUEST['wmc-currency'] ) );
+		$view_default = isset( $_GET['wmc-view-default-currency'] ) ? sanitize_text_field( wp_unslash( $_GET['wmc-view-default-currency'] ) ) : '';
+		if ( is_admin() && ! empty( $_GET['wmc-currency'] ) && $view_default !== 'yes' ) {
+			$currency = strtoupper( sanitize_text_field( wp_unslash( $_GET['wmc-currency'] ) ) );
 			if ( $currency !== $this->default_currency ) {
 				$decimal = isset( $this->currencies[ $currency ]['decimals'] ) ? $this->currencies[ $currency ]['decimals'] : 0;
 			}
@@ -659,9 +663,9 @@ class WOOMULTI_CURRENCY_F_Admin_Reports {
 	 * @return string
 	 */
 	public function woocommerce_currency( $woocommerce_currency ) {
-		$view_default = isset( $_REQUEST['wmc-view-default-currency'] ) ? wp_unslash( $_REQUEST['wmc-view-default-currency'] ) : '';
-		$currency     = isset( $_REQUEST['wmc-currency'] ) ? strtoupper( wp_unslash( $_REQUEST['wmc-currency'] ) ) : '';
-		if ( is_admin() && ! empty( $_REQUEST['wmc-currency'] ) && $view_default !== 'yes' ) {
+		$view_default = isset( $_GET['wmc-view-default-currency'] ) ? sanitize_text_field( wp_unslash( $_GET['wmc-view-default-currency'] ) ) : '';
+		$currency     = isset( $_GET['wmc-currency'] ) ? strtoupper( sanitize_text_field( wp_unslash( $_GET['wmc-currency'] ) ) ) : '';
+		if ( is_admin() && ! empty( $_GET['wmc-currency'] ) && $view_default !== 'yes' ) {
 			if ( $currency !== $this->default_currency ) {
 				$woocommerce_currency = $currency;
 			}
@@ -693,9 +697,9 @@ class WOOMULTI_CURRENCY_F_Admin_Reports {
 				$this->is_dashboard = true;
 			}
 		} else {
-			$report   = isset( $_REQUEST['report'] ) ? wp_unslash( $_REQUEST['report'] ) : '';
-			$tab      = isset( $_REQUEST['tab'] ) ? wp_unslash( $_REQUEST['tab'] ) : 'orders';
-			$currency = isset( $_REQUEST['wmc-currency'] ) ? strtoupper( wp_unslash( $_REQUEST['wmc-currency'] ) ) : '';
+			$report   = isset( $_GET['report'] ) ? sanitize_text_field( wp_unslash( $_GET['report'] ) ) : '';
+			$tab      = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'orders';
+			$currency = isset( $_GET['wmc-currency'] ) ? strtoupper( sanitize_text_field( wp_unslash( $_GET['wmc-currency'] ) ) ) : '';
 			if ( $currency ) {
 				if ( $currency !== $this->default_currency ) {
 					$args['nocache'] = true;

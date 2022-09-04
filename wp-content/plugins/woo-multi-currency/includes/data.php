@@ -5,6 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class WOOMULTI_CURRENCY_F_Data {
 	protected static $instance = null;
+	protected static $allow_html = null;
 	private $params;
 
 	/**
@@ -15,9 +16,10 @@ class WOOMULTI_CURRENCY_F_Data {
 		global $wmc_settings;
 
 		if ( ! $wmc_settings ) {
-			$wmc_settings                  = get_option( 'woo_multi_currency_params', array() );
-			$wmc_settings['currency_core'] = get_option( 'woocommerce_currency' );
-			$wmc_settings['decimals_core'] = get_option( 'woocommerce_price_num_decimals' );
+			$wmc_settings                      = get_option( 'woo_multi_currency_params', array() );
+			$wmc_settings['currency_core']     = get_option( 'woocommerce_currency' );
+			$wmc_settings['decimals_core']     = get_option( 'woocommerce_price_num_decimals' );
+			$wmc_settings['currency_pos_core'] = get_option( 'woocommerce_currency_pos' );
 		}
 		$this->params = $wmc_settings;
 		$args         = array(
@@ -32,8 +34,8 @@ class WOOMULTI_CURRENCY_F_Data {
 			'currency_rate_fee'          => array( 0 ),
 			'currency_hidden'            => array( 0 ),
 			'currency_decimals'          => array( $wmc_settings['decimals_core'] ),
-			'currency_custom'            => array(),
-			'currency_pos'               => array(),
+			'currency_custom'            => array( '' ),
+			'currency_pos'               => array( $wmc_settings['currency_pos_core'] ),
 			'auto_detect'                => 0,
 			'enable_currency_by_country' => 0,
 
@@ -64,10 +66,11 @@ class WOOMULTI_CURRENCY_F_Data {
 			'is_cart'                    => 0,
 			'conditional_tags'           => '',
 			'custom_css'                 => '',
-			'rate_decimals'              => 2,
+			'rate_decimals'              => 5,
 			'checkout_currency'          => $wmc_settings['currency_core'],
 			'checkout_currency_args'     => array(),
 			'geo_api'                    => 0,
+			'rel_nofollow'               => 0,
 		);
 		$this->params = apply_filters( 'wmc_settings_args', wp_parse_args( $this->params, $args ) );
 	}
@@ -149,6 +152,7 @@ class WOOMULTI_CURRENCY_F_Data {
 
 	/**237 countries.
 	 * Two-letter country code (ISO 3166-1 alpha-2) => Three-letter currency code (ISO 4217).
+	 *
 	 * @param $country_code
 	 *
 	 * @return bool|mixed
@@ -401,6 +405,7 @@ class WOOMULTI_CURRENCY_F_Data {
 	}
 
 	/**Get country code by currency
+	 *
 	 * @param $currency_code
 	 *
 	 * @return array
@@ -567,6 +572,9 @@ class WOOMULTI_CURRENCY_F_Data {
 			'ZMW' => 'ZM',
 			'ZWD' => 'ZW',
 			'BTC' => 'XBT',
+			'ETH' => 'ETH',
+			'MOP' => 'MO',
+			'ZWL' => 'ZW',
 		);
 		$country_names = WC()->countries->countries;
 		$data          = array();
@@ -718,7 +726,7 @@ class WOOMULTI_CURRENCY_F_Data {
 	 */
 	public function getcookie( $name ) {
 
-		return isset( $_COOKIE[ $name ] ) ? $_COOKIE[ $name ] : false;
+		return isset( $_COOKIE[ $name ] ) ? sanitize_text_field( wp_unslash( $_COOKIE[ $name ] ) ) : false;
 	}
 
 	/**
@@ -739,6 +747,7 @@ class WOOMULTI_CURRENCY_F_Data {
 				'layout9'          => esc_html__( 'Horizontal Currency Slide', 'woo-multi-currency' ),
 				'layout7'          => esc_html__( 'Vertical Currency Symbols', 'woo-multi-currency' ),
 				'layout8'          => esc_html__( 'Vertical Currency Symbols (circle)', 'woo-multi-currency' ),
+				'layout10'         => esc_html__( 'Flag + Country + Currency + Symbol', 'woo-multi-currency' ),
 			)
 		);
 	}
@@ -1027,6 +1036,7 @@ class WOOMULTI_CURRENCY_F_Data {
 	}
 
 	/**Set currency in Cookie
+	 *
 	 * @param $currency_code
 	 * @param bool $checkout
 	 */
@@ -1062,6 +1072,7 @@ class WOOMULTI_CURRENCY_F_Data {
 	}
 
 	/**Get currency by country with WPML.org
+	 *
 	 * @param $language_slug
 	 *
 	 * @return array|mixed
@@ -1082,6 +1093,7 @@ class WOOMULTI_CURRENCY_F_Data {
 	}
 
 	/**Get currency by language
+	 *
 	 * @param $language_slug
 	 *
 	 * @return array|mixed
@@ -1102,6 +1114,7 @@ class WOOMULTI_CURRENCY_F_Data {
 	}
 
 	/**Get currency by country
+	 *
 	 * @param $currency_code
 	 *
 	 * @return array|mixed
@@ -1122,6 +1135,7 @@ class WOOMULTI_CURRENCY_F_Data {
 	}
 
 	/**Get payments available by currency code.
+	 *
 	 * @param $currency_code
 	 *
 	 * @return array|mixed
@@ -1180,6 +1194,7 @@ class WOOMULTI_CURRENCY_F_Data {
 	public function get_param( $param ) {
 		return isset( $this->params[ $param ] ) ? $this->params[ $param ] : '';
 	}
+
 	public static function is_request_to_rest_api() {
 		if ( empty( $_SERVER['REQUEST_URI'] ) ) {
 			return false;
@@ -1191,6 +1206,172 @@ class WOOMULTI_CURRENCY_F_Data {
 		return false !== strpos( $request_uri, $rest_prefix );
 	}
 
-}
+	public static function get_rel_nofollow() {
+		$instance = self::get_ins();
 
-WOOMULTI_CURRENCY_F_Data::get_ins();
+		return $instance->get_param( 'rel_nofollow' ) ? 'rel=nofollow' : '';
+	}
+
+	public function get_params( $name = "", $language = '' ) {
+		if ( ! $name ) {
+			return $this->params;
+		} elseif ( isset( $this->params[ $name ] ) ) {
+			if ( $language ) {
+				$name_language = $name . '_' . $language;
+				if ( isset( $this->params[ $name_language ] ) ) {
+					return apply_filters( 'woo_multi_currency_params-' . $name_language, $this->params[ $name_language ] );
+				} else {
+					return apply_filters( 'woo_multi_currency_params-' . $name_language, $this->params[ $name ] );
+				}
+			} else {
+				return apply_filters( 'woo_multi_currency_params-' . $name, $this->params[ $name ] );
+			}
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * @param $price
+	 * @param array $args
+	 *
+	 * @return float
+	 */
+	public static function convert_price_to_float( $price, $args = array() ) {
+		$args           = apply_filters(
+			'wc_price_args',
+			wp_parse_args(
+				$args,
+				array(
+					'ex_tax_label'       => false,
+					'currency'           => '',
+					'decimal_separator'  => wc_get_price_decimal_separator(),
+					'thousand_separator' => wc_get_price_thousand_separator(),
+					'decimals'           => wc_get_price_decimals(),
+					'price_format'       => get_woocommerce_price_format(),
+				)
+			)
+		);
+		$original_price = $price;
+		$negative       = $price < 0;
+		$price          = apply_filters( 'raw_woocommerce_price', floatval( $negative ? $price * - 1 : $price ), $original_price );
+		$price          = apply_filters( 'formatted_woocommerce_price', number_format( $price, $args['decimals'], $args['decimal_separator'], $args['thousand_separator'] ), $price, $args['decimals'], $args['decimal_separator'], $args['thousand_separator'] );
+
+		return floatval( str_replace( array( $args['thousand_separator'], $args['decimal_separator'] ), array(
+			'',
+			'.'
+		), $price ) );
+	}
+
+	public function set_fallback_currency() {
+		$default_currency = $this->get_default_currency();
+		$list_currencies  = $this->get_list_currencies();
+		if ( $list_currencies[ $default_currency ]['hide'] !== '1' ) {
+			$this->set_current_currency( $default_currency );
+		} else {
+			$need_set_default = true;
+			foreach ( $list_currencies as $currency_code => $currency_data ) {
+				if ( $currency_data['hide'] !== '1' ) {
+					$this->set_current_currency( $currency_code );
+					$need_set_default = false;
+					break;
+				}
+			}
+			if ( $need_set_default ) {
+				$this->set_current_currency( $default_currency );
+			}
+		}
+	}
+
+	public static function wp_kses_post( $content ) {
+		if ( self::$allow_html === null ) {
+			self::$allow_html = wp_kses_allowed_html( 'post' );
+			self::$allow_html = array_merge_recursive( self::$allow_html, array(
+					'input'  => array(
+						'type'         => 1,
+						'id'           => 1,
+						'name'         => 1,
+						'class'        => 1,
+						'placeholder'  => 1,
+						'autocomplete' => 1,
+						'style'        => 1,
+						'value'        => 1,
+						'size'         => 1,
+						'checked'      => 1,
+						'disabled'     => 1,
+						'readonly'     => 1,
+						'data-*'       => 1,
+					),
+					'form'   => array(
+						'method' => 1,
+						'id'     => 1,
+						'class'  => 1,
+						'action' => 1,
+						'data-*' => 1,
+					),
+					'select' => array(
+						'id'       => 1,
+						'name'     => 1,
+						'class'    => 1,
+						'multiple' => 1,
+						'onchange' => 1,
+						'data-*'   => 1,
+					),
+					'option' => array(
+						'value'    => 1,
+						'selected' => 1,
+						'data-*'   => 1,
+					),
+				)
+			);
+			foreach ( self::$allow_html as $key => $value ) {
+				if ( $key === 'input' ) {
+					self::$allow_html[ $key ]['data-*']   = 1;
+					self::$allow_html[ $key ]['checked']  = 1;
+					self::$allow_html[ $key ]['disabled'] = 1;
+					self::$allow_html[ $key ]['readonly'] = 1;
+				} elseif ( in_array( $key, array( 'div', 'span', 'a', 'form', 'select', 'option', 'tr', 'td' ) ) ) {
+					self::$allow_html[ $key ]['data-*'] = 1;
+				}
+			}
+		}
+		add_filter( 'safe_style_css', array( __CLASS__, 'safe_style_css' ) );
+		add_filter( 'safecss_filter_attr_allow_css', array( __CLASS__, 'safecss_filter_attr_allow_css' ), 10, 2 );
+		$content = wp_kses( $content, self::$allow_html );
+		remove_filter( 'safe_style_css', array( __CLASS__, 'safe_style_css' ) );
+		remove_filter( 'safecss_filter_attr_allow_css', array( __CLASS__, 'safecss_filter_attr_allow_css' ) );
+
+		return $content;
+	}
+
+	/**
+	 * Allow transform
+	 *
+	 * @param $allow_css
+	 * @param $css_test_string
+	 *
+	 * @return bool
+	 */
+	public static function safecss_filter_attr_allow_css( $allow_css, $css_test_string ) {
+		if ( $css_test_string ) {
+			if ( explode( ':', $css_test_string )[0] === 'transform' ) {
+				$allow_css = true;
+			}
+		}
+
+		return $allow_css;
+	}
+
+	/**
+	 * Support transform
+	 *
+	 * @param $css
+	 *
+	 * @return array
+	 */
+	public static function safe_style_css( $css ) {
+		$css[] = 'transform';
+
+		return $css;
+	}
+}

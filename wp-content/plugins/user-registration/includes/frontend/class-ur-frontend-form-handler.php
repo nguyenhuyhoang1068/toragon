@@ -56,17 +56,16 @@ class UR_Frontend_Form_Handler {
 		$form_field_data = self::get_form_field_data( $post_content_array );
 
 		self::match_email( $form_field_data, $form_data );
-
 		self::add_hook( $form_field_data, $form_data );
-		$activated_form_list = get_option( 'user_registration_auto_password_activated_forms', array() );
+		$enable_auto_password_generation   = ur_get_single_post_meta( $form_id, 'user_registration_pro_auto_password_activate' );
 
-		if ( in_array( $form_id, $activated_form_list ) ) {
-			do_action( 'user_registration_auto_generate_password' );
+		if ( 'yes' === $enable_auto_password_generation || '1' === $enable_auto_password_generation ) {
+			do_action( 'user_registration_auto_generate_password', $form_id );
 			$user_pass = wp_slash( apply_filters( 'user_registration_auto_generated_password', 'user_pass' ) );
-			self::validate_form_data( $form_field_data, $form_data, $form_id );
+			self::validate_form_data( $form_id, $form_field_data, $form_data );
 		} else {
 			self::match_password( $form_field_data, $form_data );
-			self::validate_form_data( $form_field_data, $form_data, $form_id );
+			self::validate_form_data( $form_id, $form_field_data, $form_data );
 			self::validate_password_data( $form_field_data, $form_data );
 			$user_pass = wp_slash( self::$valid_form_data['user_pass']->value );
 		}
@@ -101,23 +100,39 @@ class UR_Frontend_Form_Handler {
 			self::ur_update_user_meta( $user_id, self::$valid_form_data, $form_id ); // Insert user data in usermeta table.
 
 			if ( $user_id > 0 ) {
+				do_action( 'user_registration_after_user_meta_update', self::$valid_form_data, $form_id, $user_id );
 				$login_option   = ur_get_single_post_meta( $form_id, 'user_registration_form_setting_login_options', get_option( 'user_registration_general_setting_login_options', 'default' ) );
 				$success_params = array(
 					'username' => isset( self::$valid_form_data['user_login'] ) ? self::$valid_form_data['user_login']->value : '',
 				);
 
-				if ( 'auto_login' === $login_option ) {
-					wp_clear_auth_cookie();
-					wp_set_auth_cookie( $user_id );
-					$success_params['auto_login'] = true;
+				if ( isset( $_POST['ur_stripe_payment_method'] ) && 'ideal' === sanitize_text_field( wp_unslash( $_POST['ur_stripe_payment_method'] ) ) ) { //phpcs:ignore WordPress.Security.NonceVerification
+
+					if ( 'auto_login' === $login_option ) {
+						$success_params['auto_login'] = true;
+					}
+				} elseif ( '1' === ur_get_single_post_meta( $form_id, 'user_registration_enable_paypal_standard', 'no' ) ) {
+					if ( 'auto_login' === $login_option ) {
+						$success_params['auto_login'] = false;
+					}
+				} else {
+
+					if ( 'auto_login' === $login_option ) {
+						wp_clear_auth_cookie();
+						wp_set_auth_cookie( $user_id );
+						$success_params['auto_login'] = true;
+					}
 				}
-
 				$success_params['success_message_positon'] = ur_get_single_post_meta( $form_id, 'user_registration_form_setting_success_message_position', '1' );
-				$success_params['form_login_option'] = $login_option;
-				$success_params                      = apply_filters( 'user_registration_success_params', $success_params, self::$valid_form_data, $form_id, $user_id );
+				$success_params['form_login_option']       = $login_option;
+				$success_params                            = apply_filters( 'user_registration_success_params', $success_params, self::$valid_form_data, $form_id, $user_id );
 
-				do_action( 'user_registration_after_register_user_action', self::$valid_form_data, $form_id, $user_id );
-				wp_send_json_success( $success_params );
+				if ( isset( $_POST['ur_stripe_payment_method'] ) && 'ideal' === sanitize_text_field( wp_unslash( $_POST['ur_stripe_payment_method'] ) ) ) { //phpcs:ignore WordPress.Security.NonceVerification
+					wp_send_json_success( $success_params );
+				} else {
+					do_action( 'user_registration_after_register_user_action', self::$valid_form_data, $form_id, $user_id );
+					wp_send_json_success( $success_params );
+				}
 			}
 			wp_send_json_error(
 				array(
@@ -157,10 +172,11 @@ class UR_Frontend_Form_Handler {
 	 * Validation from each field's class validation() method.
 	 * Sanitization from get_sanitize_value().
 	 *
+	 * @param int   $form_id Form ID.
 	 * @param  array $form_field_data Form Field Data.
 	 * @param  array $form_data  Form data to validate.
 	 */
-	private static function validate_form_data( $form_field_data = array(), $form_data = array(), $form_id ) {
+	private static function validate_form_data( $form_id, $form_field_data = array(), $form_data = array() ) {
 		$form_data_field     = wp_list_pluck( $form_data, 'field_name' );
 		$form_field_data     = apply_filters( 'user_registration_add_form_field_data', $form_field_data, $form_id );
 		$form_key_list       = wp_list_pluck( wp_list_pluck( $form_field_data, 'general_setting' ), 'field_name' );
@@ -182,7 +198,7 @@ class UR_Frontend_Form_Handler {
 
 			foreach ( $missing_item as $key => $value ) {
 
-				$ignorable_field = array( 'user_pass', 'user_confirm_password', 'user_confirm_email', 'invite_code', 'credit_card' );
+				$ignorable_field = array( 'user_pass', 'user_confirm_password', 'user_confirm_email', 'invite_code', 'stripe_gateway' );
 
 				// Ignoring confirm password and confirm email field, since they are handled separately.
 				if ( ! in_array( $value, $ignorable_field, true ) ) {
@@ -334,9 +350,9 @@ class UR_Frontend_Form_Handler {
 					$field_name = 'user_registration_' . $field_name;
 				}
 
-				if ( isset( $data->extra_params['field_key'] ) && ( $data->extra_params['field_key'] === 'checkbox' || $data->extra_params['field_key'] === 'learndash_course' ) ) {
+				if ( isset( $data->extra_params['field_key'] ) && ( 'checkbox' === $data->extra_params['field_key'] || 'learndash_course' === $data->extra_params['field_key'] ) ) {
 					$data->value = ( json_decode( $data->value ) !== null ) ? json_decode( $data->value ) : $data->value;
-				} else if( isset( $data->extra_params['field_key'] ) && ( $data->extra_params['field_key'] === 'wysiwyg' ) ) {
+				} elseif ( isset( $data->extra_params['field_key'] ) && ( 'wysiwyg' === $data->extra_params['field_key'] ) ) {
 					$data->value = sanitize_text_field( htmlentities( $data->value ) );
 				}
 				update_user_meta( $user_id, $field_name, $data->value );
@@ -414,6 +430,7 @@ class UR_Frontend_Form_Handler {
 		}
 
 		foreach ( $form_data as $index => $single_data ) {
+
 			if ( 'user_confirm_email' == $single_data->field_name ) {
 				$confirm_email_value = $single_data->value;
 				$has_confirm_email   = true;
@@ -453,7 +470,8 @@ class UR_Frontend_Form_Handler {
 					return;
 				} else {
 					$field_label = $form_field_data[ $key ]->general_setting->label;
-					$response    = sprintf( __( '%s is a required field.', 'user-registration' ), $field_label );
+					/* translators: %s - Field Label */
+					$response = sprintf( __( '%s is a required field.', 'user-registration' ), $field_label );
 					array_push( self::$response_array, $response );
 				}
 			}
@@ -491,5 +509,4 @@ class UR_Frontend_Form_Handler {
 		}
 	}
 }
-
 return new UR_Frontend_Form_Handler();

@@ -28,14 +28,14 @@ if ( ! class_exists( 'WMC_Widget_Rates' ) ) {
 		 */
 		public function widget( $args, $instance ) {
 			if ( $this->settings->get_enable() ) {
-				echo $args['before_widget'];
+				echo WOOMULTI_CURRENCY_F_Data::wp_kses_post( $args['before_widget'] );
 				if ( ! empty( $instance['title'] ) ) {
-					echo $args['before_title'] . apply_filters( 'widget_title', $instance['title'] ) . $args['after_title'];
+					echo WOOMULTI_CURRENCY_F_Data::wp_kses_post( $args['before_title'] . apply_filters( 'widget_title', $instance['title'] ) . $args['after_title'] );
 				}
 
-				echo do_shortcode( apply_filters( 'wmc_shortcode', "[woo_multi_currency_rates]", $instance ) );
+				echo WOOMULTI_CURRENCY_F_Data::wp_kses_post( do_shortcode( apply_filters( 'wmc_shortcode', "[woo_multi_currency_rates]", $instance ) ) );
 
-				echo $args['after_widget'];
+				echo WOOMULTI_CURRENCY_F_Data::wp_kses_post( $args['after_widget'] );
 			}
 		}
 
@@ -45,15 +45,14 @@ if ( ! class_exists( 'WMC_Widget_Rates' ) ) {
 		 * @param $instance
 		 */
 		public function form( $instance ) {
-			$setting = WOOMULTI_CURRENCY_F_Data::get_ins();
-			$title   = ! empty( $instance['title'] ) ? $instance['title'] : '';
+			$title = ! empty( $instance['title'] ) ? $instance['title'] : '';
 
 			?>
             <p>
-                <label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php esc_html_e( 'Title:', 'woo-multi-currency' ); ?></label>
+                <label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( 'Title:', 'woo-multi-currency' ); ?></label>
                 <input placeholder="<?php echo esc_attr__( 'Please enter your title', 'woo-multi-currency' ) ?>"
-                       class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>"
-                       name="<?php echo $this->get_field_name( 'title' ); ?>" type="text"
+                       class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"
+                       name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text"
                        value="<?php echo esc_attr( $title ); ?>">
             </p>
 			<?php do_action( 'wmc_after_widget_form', $instance, $this ) ?>

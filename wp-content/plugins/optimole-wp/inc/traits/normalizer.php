@@ -28,6 +28,23 @@ trait Optml_Normalizer {
 	}
 
 	/**
+	 * Return domain hash.
+	 *
+	 * @param string $domain Full url.
+	 *
+	 * @return string Domain hash.
+	 */
+	public function to_domain_hash( $domain ) {
+		$domain_parts = parse_url( $domain );
+		$domain       = isset( $domain_parts['host'] ) ? $domain_parts['host'] : '';
+		$prefix       = substr( $domain, 0, 4 );
+		if ( $prefix === 'www.' ) {
+			$domain = substr( $domain, 4 );
+		}
+
+		return base64_encode( $domain );
+	}
+	/**
 	 * Strip slashes on unicode encoded strings.
 	 *
 	 * @param string $string Input string.
@@ -36,26 +53,6 @@ trait Optml_Normalizer {
 	 */
 	public function strip_slashes( $string ) {
 		return html_entity_decode( stripslashes( preg_replace( '/\\\u([\da-fA-F]{4})/', '&#x\1;', $string ) ) );
-	}
-	/**
-	 * Normalize value to an integer within bounds.
-	 *
-	 * @param mixed   $value Value to process.
-	 * @param integer $min Lower bound.
-	 * @param integer $max Upper bound.
-	 *
-	 * @return integer
-	 */
-	public function to_bound_integer( $value, $min, $max ) {
-		$integer = absint( $value );
-		if ( $integer < $min ) {
-			$integer = $min;
-		}
-		if ( $integer > $max ) {
-			$integer = $max;
-		}
-
-		return $integer;
 	}
 
 	/**
@@ -104,6 +101,7 @@ trait Optml_Normalizer {
 		$accepted_qualities = [
 			'eco'      => 'eco',
 			'auto'     => 'auto',
+			'mauto'    => 'mauto',
 			'high_c'   => 55,
 			'medium_c' => 75,
 			'low_c'    => 90,
@@ -133,6 +131,27 @@ trait Optml_Normalizer {
 	}
 
 	/**
+	 * Normalize value to an integer within bounds.
+	 *
+	 * @param mixed   $value Value to process.
+	 * @param integer $min Lower bound.
+	 * @param integer $max Upper bound.
+	 *
+	 * @return integer
+	 */
+	public function to_bound_integer( $value, $min, $max ) {
+		$integer = absint( $value );
+		if ( $integer < $min ) {
+			$integer = $min;
+		}
+		if ( $integer > $max ) {
+			$integer = $max;
+		}
+
+		return $integer;
+	}
+
+	/**
 	 * Normalize arguments for crop.
 	 *
 	 * @param array $crop_args Crop arguments.
@@ -143,8 +162,8 @@ trait Optml_Normalizer {
 
 		$enlarge = false;
 		if ( isset( $crop_args['enlarge'] ) ) {
+			$enlarge   = $crop_args['enlarge'];
 			$crop_args = $crop_args['crop'];
-			$enlarge = $crop_args['enlarge'];
 		}
 		if ( $crop_args === true ) {
 			return [
@@ -226,5 +245,19 @@ trait Optml_Normalizer {
 			'opacity'  => 1,
 			'position' => $gravity,
 		];
+	}
+	/**
+	 * If missing, add schema to urls.
+	 *
+	 * @param string $url Url to check.
+	 *
+	 * @return string
+	 */
+	public function add_schema( $url ) {
+		$schema_url = $url;
+		if ( str_starts_with( $schema_url, '//' ) ) {
+			$schema_url = is_ssl() ? 'https:' : 'http:' . $schema_url;
+		}
+		return $schema_url;
 	}
 }

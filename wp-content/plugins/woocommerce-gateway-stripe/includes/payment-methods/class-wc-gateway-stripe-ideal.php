@@ -4,13 +4,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class that handles iDeal payment method.
+ * Class that handles iDEAL payment method.
  *
  * @extends WC_Gateway_Stripe
  *
  * @since 4.0.0
  */
 class WC_Gateway_Stripe_Ideal extends WC_Stripe_Payment_Gateway {
+
+	const ID = 'stripe_ideal';
+
 	/**
 	 * Notices (array)
 	 *
@@ -57,11 +60,15 @@ class WC_Gateway_Stripe_Ideal extends WC_Stripe_Payment_Gateway {
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->id           = 'stripe_ideal';
-		$this->method_title = __( 'Stripe iDeal', 'woocommerce-gateway-stripe' );
-		/* translators: link */
-		$this->method_description = sprintf( __( 'All other general Stripe settings can be adjusted <a href="%s">here</a>.', 'woocommerce-gateway-stripe' ), admin_url( 'admin.php?page=wc-settings&tab=checkout&section=stripe' ) );
-		$this->supports           = [
+		$this->id                 = self::ID;
+		$this->method_title       = __( 'Stripe iDEAL', 'woocommerce-gateway-stripe' );
+		$this->method_description = sprintf(
+		/* translators: 1) HTML anchor open tag 2) HTML anchor closing tag */
+			__( 'All other general Stripe settings can be adjusted %1$shere%2$s.', 'woocommerce-gateway-stripe' ),
+			'<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=stripe' ) ) . '">',
+			'</a>'
+		);
+		$this->supports = [
 			'products',
 			'refunds',
 		];
@@ -214,7 +221,7 @@ class WC_Gateway_Stripe_Ideal extends WC_Stripe_Payment_Gateway {
 			$post_data['statement_descriptor'] = WC_Stripe_Helper::clean_statement_descriptor( $this->statement_descriptor );
 		}
 
-		WC_Stripe_Logger::log( 'Info: Begin creating iDeal source' );
+		WC_Stripe_Logger::log( 'Info: Begin creating iDEAL source' );
 
 		return WC_Stripe_API::request( apply_filters( 'wc_stripe_ideal_source', $post_data, $order ), 'sources' );
 	}
@@ -257,7 +264,7 @@ class WC_Gateway_Stripe_Ideal extends WC_Stripe_Payment_Gateway {
 			$order->update_meta_data( '_stripe_source_id', $response->id );
 			$order->save();
 
-			WC_Stripe_Logger::log( 'Info: Redirecting to iDeal...' );
+			WC_Stripe_Logger::log( 'Info: Redirecting to iDEAL...' );
 
 			return [
 				'result'   => 'success',
@@ -269,7 +276,13 @@ class WC_Gateway_Stripe_Ideal extends WC_Stripe_Payment_Gateway {
 
 			do_action( 'wc_gateway_stripe_process_payment_error', $e, $order );
 
-			if ( $order->has_status( [ 'pending', 'failed' ] ) ) {
+			if ( $order->has_status(
+				apply_filters(
+					'wc_stripe_allowed_payment_processing_statuses',
+					[ 'pending', 'failed' ],
+					$order
+				)
+			) ) {
 				$this->send_failed_order_email( $order_id );
 			}
 

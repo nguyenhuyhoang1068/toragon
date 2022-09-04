@@ -27,7 +27,7 @@ class Options extends OptionsAbstract {
 				'description' => sprintf(
 					wp_kses(
 						/* translators: %1$s - URL to sendgrid.com; %2$s - URL to Sendgrid documentation on wpmailsmtp.com */
-						__( '<a href="%1$s" target="_blank" rel="noopener noreferrer">SendGrid</a> is one of the leading transactional email services, sending over 35 billion emails every month. They provide users with 100 free emails per day.<br><br>Read our <a href="%2$s" target="_blank" rel="noopener noreferrer">SendGrid documentation</a> to learn how to set up SendGrid and improve your email deliverability.', 'wp-mail-smtp' ),
+						__( '<a href="%1$s" target="_blank" rel="noopener noreferrer">SendGrid</a> is a popular transactional email provider that sends more than 35 billion emails every month. If you\'re just starting out, the free plan allows you to send up to 100 emails each day without entering your credit card details.<br><br>To get started, read our <a href="%2$s" target="_blank" rel="noopener noreferrer">SendGrid documentation</a>.', 'wp-mail-smtp' ),
 						[
 							'br' => [],
 							'a'  => [
@@ -38,7 +38,7 @@ class Options extends OptionsAbstract {
 						]
 					),
 					'https://sendgrid.com',
-					'https://wpmailsmtp.com/docs/how-to-set-up-the-sendgrid-mailer-in-wp-mail-smtp/'
+					esc_url( wp_mail_smtp()->get_utm_url( 'https://wpmailsmtp.com/docs/how-to-set-up-the-sendgrid-mailer-in-wp-mail-smtp/', 'SendGrid documentation' ) )
 				),
 				'supports'    => [
 					'from_email'       => true,
@@ -123,7 +123,7 @@ class Options extends OptionsAbstract {
 								],
 							]
 						),
-						'https://wpmailsmtp.com/docs/how-to-set-up-the-sendgrid-mailer-in-wp-mail-smtp/#setup'
+						esc_url( wp_mail_smtp()->get_utm_url( 'https://wpmailsmtp.com/docs/how-to-set-up-the-sendgrid-mailer-in-wp-mail-smtp/#setup', 'SendGrid documentation - setup' ) )
 					);
 					?>
 				</p>

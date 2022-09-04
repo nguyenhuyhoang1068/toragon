@@ -71,7 +71,7 @@ class DataSourceRegistry {
 		if (isset($this->sources[$id]))
 			return $this->sources[$id];
 
-		if (WP_DEBUG) {
+		if (WP_DEBUG && $id !== '') {
 			trigger_error('The source with id "' . $id . '" was requested, but no such source was found. Using default source instead.', E_USER_NOTICE);
 		}
 
@@ -130,8 +130,8 @@ class DataSourceRegistry {
 		if (wp_using_ext_object_cache()) {
 			if (WP_DEBUG) {
 				\trigger_error('Object caching is active, so transient deletion routine does not do anything ...', E_USER_NOTICE);
-				return 'Object caching is active, so transient deletion routine does not do anything ...';
 			}
+			return 'Object caching is active, so transient deletion routine does not do anything ...';
 		} else {
 			return _geoip_detect2_empty_cache();
 		}

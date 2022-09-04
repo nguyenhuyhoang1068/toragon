@@ -18,7 +18,7 @@ class WOOMULTI_CURRENCY_F_Frontend_Mini_Cart {
 
 	public function remove_session() {
 		$selected_currencies = $this->settings->get_currencies();
-		if ( isset( $_GET['wmc-currency'] ) && in_array( wp_unslash( $_GET['wmc-currency'] ), $selected_currencies ) ) {
+		if ( isset( $_GET['wmc-currency'] ) && in_array( sanitize_text_field( $_GET['wmc-currency'] ), $selected_currencies ) ) {
 			wp_enqueue_script( 'woo-multi-currency-cart', WOOMULTI_CURRENCY_F_JS . 'woo-multi-currency-cart.js', array( 'jquery' ), WOOMULTI_CURRENCY_F_VERSION );
 		}
 

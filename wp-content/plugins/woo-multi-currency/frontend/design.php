@@ -10,19 +10,20 @@ class WOOMULTI_CURRENCY_F_Frontend_Design {
 	protected $settings;
 
 	public function __construct() {
-
 		$this->settings = WOOMULTI_CURRENCY_F_Data::get_ins();
-
-		/*Add order information*/
-
-
 		add_action( 'wp_footer', array( $this, 'show_action' ) );
-
-
 		if ( $this->settings->get_enable() ) {
 			add_action( 'wp_enqueue_scripts', array( $this, 'front_end_script' ) );
+			add_filter( 'body_class', array( $this, 'body_class' ) );
+		}
+	}
+
+	public function body_class( $classes ) {
+		if ( is_array( $classes ) ) {
+			$classes[] = 'woocommerce-multi-currency-' . $this->settings->get_current_currency();
 		}
 
+		return $classes;
 	}
 
 	/**
@@ -32,13 +33,15 @@ class WOOMULTI_CURRENCY_F_Frontend_Design {
 		if ( WP_DEBUG ) {
 			wp_enqueue_style( 'woo-multi-currency', WOOMULTI_CURRENCY_F_CSS . 'woo-multi-currency.css', array(), WOOMULTI_CURRENCY_F_VERSION );
 			wp_enqueue_style( 'wmc-flags', WOOMULTI_CURRENCY_F_CSS . 'flags-64.min.css' );
+			if ( is_rtl() ) {
+				wp_enqueue_style( 'woo-multi-currency-rtl', WOOMULTI_CURRENCY_F_CSS . 'woo-multi-currency-rtl.css', array(), WOOMULTI_CURRENCY_F_VERSION );
+			}
 		} else {
 			wp_enqueue_style( 'woo-multi-currency', WOOMULTI_CURRENCY_F_CSS . 'woo-multi-currency.min.css', array(), WOOMULTI_CURRENCY_F_VERSION );
 			wp_enqueue_style( 'wmc-flags', WOOMULTI_CURRENCY_F_CSS . 'flags-64.min.css' );
-		}
-
-		if ( is_rtl() ) {
-			wp_enqueue_style( 'woo-multi-currency-rtl', WOOMULTI_CURRENCY_F_CSS . 'woo-multi-currency-rtl.css', array(), WOOMULTI_CURRENCY_F_VERSION );
+			if ( is_rtl() ) {
+				wp_enqueue_style( 'woo-multi-currency-rtl', WOOMULTI_CURRENCY_F_CSS . 'woo-multi-currency-rtl.min.css', array(), WOOMULTI_CURRENCY_F_VERSION );
+			}
 		}
 
 		/*Custom CSS*/
@@ -52,18 +55,17 @@ class WOOMULTI_CURRENCY_F_Frontend_Design {
 		$links                     = $this->settings->get_links();
 		$currency_qty              = count( $links ) - 1;
 
-		$custom = '.woo-multi-currency .wmc-list-currencies .wmc-currency.wmc-active,.woo-multi-currency .wmc-list-currencies .wmc-currency:hover,.woo-multi-currency.wmc-price-switcher a:hover {background: ' . $main_color . ' !important;}
+		$custom = '.woo-multi-currency .wmc-list-currencies .wmc-currency.wmc-active,.woo-multi-currency .wmc-list-currencies .wmc-currency:hover {background: ' . $main_color . ' !important;}
 		.woo-multi-currency .wmc-list-currencies .wmc-currency,.woo-multi-currency .wmc-title, .woo-multi-currency.wmc-price-switcher a {background: ' . $background_color . ' !important;}
 		.woo-multi-currency .wmc-title, .woo-multi-currency .wmc-list-currencies .wmc-currency span,.woo-multi-currency .wmc-list-currencies .wmc-currency a,.woo-multi-currency.wmc-price-switcher a {color: ' . $text_color . ' !important;}';
 
-		$custom .= ".woo-multi-currency.wmc-shortcode .wmc-currency{background-color:{$shortcode_bg_color} !important;color:{$shortcode_color} !important}";
-		$custom .= ".woo-multi-currency.wmc-shortcode .wmc-current-currency{background-color:{$shortcode_active_bg_color} !important;color:{$shortcode_active_color} !important}";
-		$custom .= ".woo-multi-currency.wmc-shortcode.vertical-currency-symbols-circle .wmc-currency-wrapper:hover .wmc-sub-currency {animation: height_slide {$currency_qty}00ms;}";
+		$custom .= ".woo-multi-currency.wmc-shortcode .wmc-currency{background-color:{$shortcode_bg_color};color:{$shortcode_color}}";
+		$custom .= ".woo-multi-currency.wmc-shortcode .wmc-currency.wmc-active,.woo-multi-currency.wmc-shortcode .wmc-current-currency{background-color:{$shortcode_active_bg_color};color:{$shortcode_active_color}}";
+		$custom .= ".woo-multi-currency.wmc-shortcode.vertical-currency-symbols-circle:not(.wmc-currency-trigger-click) .wmc-currency-wrapper:hover .wmc-sub-currency,.woo-multi-currency.wmc-shortcode.vertical-currency-symbols-circle.wmc-currency-trigger-click .wmc-sub-currency{animation: height_slide {$currency_qty}00ms;}";
 		$custom .= "@keyframes height_slide {0% {height: 0;} 100% {height: {$currency_qty}00%;} }";
 
 		$custom .= $this->settings->get_custom_css();
 		wp_add_inline_style( 'woo-multi-currency', $custom );
-
 		/*Multi currency JS*/
 		if ( WP_DEBUG ) {
 			wp_enqueue_script( 'woo-multi-currency', WOOMULTI_CURRENCY_F_JS . 'woo-multi-currency.js', array( 'jquery' ), WOOMULTI_CURRENCY_F_VERSION );
@@ -72,10 +74,11 @@ class WOOMULTI_CURRENCY_F_Frontend_Design {
 		}
 
 		wp_localize_script( 'woo-multi-currency', 'wooMultiCurrencyParams', array(
-			'enableCacheCompatible' => $this->settings->get_param( 'cache_compatible' ),
+			'enableCacheCompatible' => apply_filters( 'wmc_enable_cache_compatible_frontend', $this->settings->get_param( 'cache_compatible' ) ),
 			'ajaxUrl'               => admin_url( 'admin-ajax.php' ),
+			'extra_params'          => apply_filters( 'wmc_frontend_extra_params', array() ),
+			'current_currency'      => $this->settings->get_current_currency(),
 		) );
-
 	}
 
 	/**
@@ -90,7 +93,17 @@ class WOOMULTI_CURRENCY_F_Frontend_Design {
 			if ( stristr( $logic_value, "return" ) === false ) {
 				$logic_value = "return (" . $logic_value . ");";
 			}
-			if ( ! eval( $logic_value ) ) {
+			try {
+				if ( ! eval( $logic_value ) ) {
+					return;
+				}
+			} catch ( Error $e ) {
+				trigger_error( esc_html( $e->getMessage() ), E_USER_WARNING );
+
+				return;
+			} catch ( Exception $e ) {
+				trigger_error( esc_html( $e->getMessage() ), E_USER_WARNING );
+
 				return;
 			}
 		}
@@ -142,53 +155,56 @@ class WOOMULTI_CURRENCY_F_Frontend_Design {
 						$selected = 'wmc-active';
 					}
 					?>
-                    <div class="wmc-currency <?php echo esc_attr( $selected ) ?>" data-currency="<?php echo esc_attr($k)?>">
-						<?php switch ( $this->settings->get_sidebar_style() ) {
-							case 1: ?>
-                                <span><?php echo get_woocommerce_currency_symbol( $k ) ?></span>
-								<?php break;
+                    <div class="wmc-currency <?php echo esc_attr( $selected ) ?>"
+                         data-currency="<?php echo esc_attr( $k ) ?>">
+						<?php
+						switch ( $this->settings->get_sidebar_style() ) {
+							case 1:
+								$symbol = get_woocommerce_currency_symbol( $k );
+								break;
 							case 2:
 							case 3:
 							case 4:
 								$country = $this->settings->get_country_data( $k );
-								?>
-                                <span>
-                                  <i class="vi-flag-64 flag-<?php echo strtolower( $country['code'] ) ?> "></i></span>
-								<?php
+								$symbol  = '<i class="vi-flag-64 flag-' . strtolower( $country['code'] ) . '"></i>';
 								break;
 							default:
-								?>
-                                <span><?php echo esc_html( $k ) ?></span>
-							<?php }
-						if ( $selected ){
-							echo '<span class="wmc-active-title">';
-						}else{ ?>
-                        <a rel="nofollow" href="<?php echo esc_url( $link ) ?>">
-							<?php
-							}
-							switch ( $this->settings->get_sidebar_style() ) {
-								case 3:
-									echo $k;
-									break;
-								case 4:
-									echo get_woocommerce_currency_symbol( $k );
-									break;
-								default:
-									echo esc_html( $currency_name[ $k ] );
+								$symbol = esc_html( $k );
+						}
+						switch ( $this->settings->get_sidebar_style() ) {
+							case 3:
+								$currency_code = $k;
+								break;
+							case 4:
+								$currency_code = get_woocommerce_currency_symbol( $k );
+								break;
+							default:
+								$currency_code = $currency_name[ $k ];
 
-							}
-							if ( $selected ){
-								echo '</span>';
-							}else{
+						}
+						?>
+                        <span class="wmc-currency-symbol"><?php echo wp_kses_post( $symbol ); ?></span>
+						<?php
+						if ( $selected ) {
 							?>
-                        </a>
-					<?php } ?>
+                            <span class="wmc-active-title"><?php echo esc_html( $currency_code ); ?></span>
+							<?php
+						} else {
+							?>
+                            <a <?php echo esc_attr( WOOMULTI_CURRENCY_F_Data::get_rel_nofollow() ); ?>
+                                    href="<?php echo esc_url( $link ) ?>"><?php echo esc_html( $currency_code ); ?></a>
+							<?php
+						}
+						?>
                     </div>
-				<?php } ?>
+					<?php
+				}
+				?>
                 <div class="wmc-sidebar-open"></div>
             </div>
         </div>
-	<?php }
+		<?php
+	}
 
 	/**
 	 * Check design enable

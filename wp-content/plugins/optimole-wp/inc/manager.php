@@ -80,6 +80,7 @@ final class Optml_Manager {
 		'smart_search_woocommerce',
 		'facetwp',
 		'wp_rest_cache',
+		'wp_bakery',
 	];
 	/**
 	 * The current state of the buffer.
@@ -183,7 +184,12 @@ final class Optml_Manager {
 		if ( array_key_exists( 'context', $_GET ) && $_GET['context'] == 'edit' ) {  // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
 			return false; // @codeCoverageIgnore
 		}
+		// avada
 		if ( array_key_exists( 'fb-edit', $_GET ) && ! empty( $_GET['fb-edit'] ) ) {
+			return false; // @codeCoverageIgnore
+		}
+		if ( array_key_exists( 'builder', $_GET ) && ! empty( $_GET['builder'] )
+			&& array_key_exists( 'builder_id', $_GET ) && ! empty( $_GET['builder_id'] ) ) {
 			return false; // @codeCoverageIgnore
 		}
 		/**
@@ -564,7 +570,7 @@ final class Optml_Manager {
 		$extracted_urls  = array_filter(
 			$extracted_urls,
 			function ( $value ) use ( $slashed_config ) {
-				return strpos( $value, Optml_Config::$service_url ) === false && strpos( $value, $slashed_config ) === false;
+				return strpos( $value, Optml_Config::$service_url ) === false && strpos( $value, $slashed_config ) === false || Optml_Media_Offload::is_not_processed_image( $value );
 			}
 		);
 		$upload_resource = $this->tag_replacer->get_upload_resource();

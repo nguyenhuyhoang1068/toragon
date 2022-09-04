@@ -30,7 +30,7 @@ class WOOMULTI_CURRENCY_Elementor_Widget extends Widget_Base {
 	}
 
 	public function get_title() {
-		return __( 'Multi Currency', 'woo-multi-currency' );
+		return esc_html__( 'Multi Currency', 'woo-multi-currency' );
 	}
 
 	public function get_icon() {
@@ -41,11 +41,11 @@ class WOOMULTI_CURRENCY_Elementor_Widget extends Widget_Base {
 		return [ 'woocommerce-elements' ];
 	}
 
-	protected function _register_controls() {
+	protected function register_controls() {
 		$this->start_controls_section(
 			'general',
 			[
-				'label' => __( 'General', 'woo-multi-currency' ),
+				'label' => esc_html__( 'General', 'woo-multi-currency' ),
 				'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
 			]
 		);
@@ -53,7 +53,7 @@ class WOOMULTI_CURRENCY_Elementor_Widget extends Widget_Base {
 		$this->add_control(
 			'layout',
 			[
-				'label'       => __( 'Select switcher layout', 'woocommerce-photo-reviews' ),
+				'label'       => esc_html__( 'Select switcher layout', 'woo-multi-currency' ),
 				'type'        => \Elementor\Controls_Manager::SELECT,
 				'label_block' => true,
 				'options'     => [
@@ -75,7 +75,7 @@ class WOOMULTI_CURRENCY_Elementor_Widget extends Widget_Base {
 		$this->add_control(
 			'flag_size',
 			[
-				'label'     => __( 'Flag size', 'woo-multi-currency' ),
+				'label'     => esc_html__( 'Flag size', 'woo-multi-currency' ),
 				'type'      => \Elementor\Controls_Manager::NUMBER,
 				'min'       => 0,
 				'max'       => 1,
@@ -94,7 +94,7 @@ class WOOMULTI_CURRENCY_Elementor_Widget extends Widget_Base {
 		$settings  = $this->get_settings_for_display();
 		$layout    = $settings['layout'] ? '_' . $settings['layout'] : '';
 		$flag_size = $settings['flag_size'] ? 'flag_size=' . $settings['flag_size'] : '';
-		echo do_shortcode( "[woo_multi_currency{$layout} $flag_size]" );
+		echo WOOMULTI_CURRENCY_F_Data::wp_kses_post( do_shortcode( "[woo_multi_currency{$layout} $flag_size]" ) );
 	}
 
 	public function render_plain_content() {
@@ -102,6 +102,6 @@ class WOOMULTI_CURRENCY_Elementor_Widget extends Widget_Base {
 		$layout    = $settings['layout'] ? '_' . $settings['layout'] : '';
 		$flag_size = $settings['flag_size'] ? 'flag_size=' . $settings['flag_size'] : '';
 		$shortcode = "[woo_multi_currency{$layout} $flag_size]";
-		echo $shortcode;
+		echo WOOMULTI_CURRENCY_F_Data::wp_kses_post( $shortcode );
 	}
 }

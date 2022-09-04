@@ -9,47 +9,32 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class WOOMULTI_CURRENCY_F_Plugin_Visual_Product_Builder {
 	protected $settings;
+	protected static $vpc_options_price = array();
 
 	public function __construct() {
 		$this->settings = WOOMULTI_CURRENCY_F_Data::get_ins();
 		if ( $this->settings->get_enable() ) {
 			if ( class_exists( 'Vpc' ) ) {
-				add_filter( 'vpc_options_price', array( $this, 'vpc_options_price' ) );
-				global $wp_filter;
-
-				if ( isset( $wp_filter['woocommerce_before_calculate_totals']->callbacks[10] ) ) {
-					$hooks = $wp_filter['woocommerce_before_calculate_totals']->callbacks[10];
-					foreach ( $hooks as $k => $hook ) {
-						if ( strpos( $k, 'get_cart_item_price' ) === false ) {
-
-						} else {
-							if ( isset( $hook['function'][0] ) && is_object( $hook['function'][0] ) ) {
-								$class_name = get_class( $hook['function'][0] );
-								if ( strtoupper( 'VPC_Public' ) == strtoupper( $class_name ) ) {
-									unset( $wp_filter['woocommerce_before_calculate_totals']->callbacks[10][$k] );
-									break;
-								}
-							}
-						}
-					}
-				}
-
+				add_filter( 'vpc_options_price', array( $this, 'vpc_options_price' ), 10, 4 );
+				villatheme_remove_object_filter( 'woocommerce_before_calculate_totals', 'VPC_Public', 'get_cart_item_price', 10 );
 				add_action( 'woocommerce_before_calculate_totals', array( $this, 'get_cart_item_price' ) );
 			}
 		}
 	}
 
-	function get_cart_item_price( $cart ) {
+	public function get_cart_item_price( $cart ) {
 		if ( ! get_option( 'vpc-license-key' ) ) {
 			return;
 		}
 		// This is necessary for WC 3.0+
-		if ( is_admin() && ! defined( 'DOING_AJAX' ) )
+		if ( is_admin() && ! defined( 'DOING_AJAX' ) ) {
 			return;
+		}
 
 		// Avoiding hook repetition (when using price calculations for example)
-		if ( did_action( 'woocommerce_before_calculate_totals' ) >= 2 )
+		if ( did_action( 'woocommerce_before_calculate_totals' ) >= 2 ) {
 			return;
+		}
 		global $vpc_settings;
 		$hide_secondary_product_in_cart = get_proper_value( $vpc_settings, 'hide-wc-secondary-product-in-cart', 'Yes' );
 
@@ -77,8 +62,8 @@ class WOOMULTI_CURRENCY_F_Plugin_Visual_Product_Builder {
 					$price = $cart_item['data']->get_price();
 				}
 
-				if($this->settings->get_current_currency()!==$this->settings->get_default_currency()){
-					$price = wmc_revert_price($price);
+				if ( $price ) {
+					$price = wmc_revert_price( $price );
 				}
 
 				if ( vpc_woocommerce_version_check() ) {
@@ -89,7 +74,7 @@ class WOOMULTI_CURRENCY_F_Plugin_Visual_Product_Builder {
 
 				$a_price = 0;
 				if ( ! empty( $recap ) ) {
-					$a_price = self::get_config_price( $product_id, $recap, $cart_item );
+					$a_price = self::get_config_price( $product_id, $recap, $cart_item, true );
 					if ( isset( $tax_status ) && $tax_status != 'taxable' ) {
 						$a_price = vpc_apply_taxes_on_price_if_needed( $a_price, $cart_item['data'] );
 					}
@@ -97,11 +82,18 @@ class WOOMULTI_CURRENCY_F_Plugin_Visual_Product_Builder {
 				if ( class_exists( 'Ofb' ) ) {
 					if ( isset( $cart_item['form_data'] ) && ! empty( $cart_item['form_data'] ) ) {
 						$form_data = $cart_item['form_data'];
-						if(isset($form_data['id_ofb']))
-							$a_price  += get_form_data( $form_data['id_ofb'], $form_data );
+						if ( isset( $form_data['id_ofb'] ) ) {
+							$a_price += get_form_data( $form_data['id_ofb'], $form_data, $product_id, true );
+						}
 					}
 				}
-				$total = $price + $a_price;
+				if ( function_exists( 'vpc_get_price_before_discount' ) ) {
+					$total = wmc_get_price( vpc_get_price_before_discount( $product_id, $price ) ) + $a_price;
+					$total = wmc_revert_price( $total );
+				} else {
+					$total = $price + $a_price;
+				}
+
 				if ( vpc_woocommerce_version_check() ) {
 					$cart_item['data']->price = $total;
 				} else {
@@ -111,7 +103,7 @@ class WOOMULTI_CURRENCY_F_Plugin_Visual_Product_Builder {
 		}
 	}
 
-	private static function get_config_price( $product_id, $config, $cart_item ) {
+	private static function get_config_price( $product_id, $config, $cart_item, $statut, $apply_wad_discount = true ) {
 		if ( ! get_option( 'vpc-license-key' ) ) {
 			return;
 		}
@@ -133,18 +125,42 @@ class WOOMULTI_CURRENCY_F_Plugin_Visual_Product_Builder {
 					}
 					if ( $linked_product ) {
 						$option_price = self::get_product_linked_price( $linked_product );
+						if ( function_exists( 'vpc_get_opt_price_before_dicount_in_cart' ) ) {
+							$option_price = vpc_get_opt_price_before_dicount_in_cart( $product_id, $linked_product, $option_price, $statut );
+						}
+					} else {
+						/*only convert price if it's not linked to a product*/
+						$option_price = wmc_get_price( $option_price );
 					}
 
 					// We make sure we're not handling any empty priced option
 					if ( empty( $option_price ) ) {
-						$option_price = 0;
+						if ( ! $linked_product ) {
+							$option_price = self::extract_option_field_from_config( $option, $component, $original_config->settings, 'price' );
+							if ( $option_price !== false and $apply_wad_discount ) {
+								$option_price = 0;
+								if ( function_exists( 'vpc_get_wad_discount_for_opt_in_cart' ) ) {
+									$option_price = vpc_get_wad_discount_for_opt_in_cart( $product_id, $option_price );
+								}
+							} else {
+								$option_price = 0;
+							}
+						} else {
+							$option_price = 0;
+						}
+					} else {
+						if ( ! $linked_product && $apply_wad_discount ) {
+							if ( function_exists( 'vpc_get_wad_discount_for_opt_in_cart' ) ) {
+								$option_price = vpc_get_wad_discount_for_opt_in_cart( $product_id, $option_price );
+							}
+						}
 					}
-
 					$total_price += $option_price;
 				}
 			}
 		}
-		return apply_filters( 'vpc_config_price', $total_price, $product_id, $config, $cart_item );
+
+		return apply_filters( 'vpc_config_price', $total_price, $product_id, $config, $cart_item, $statut );
 	}
 
 	private static function get_product_linked_price( $linked_product ) {
@@ -163,6 +179,7 @@ class WOOMULTI_CURRENCY_F_Plugin_Visual_Product_Builder {
 		} else {
 			$option_price = 0;
 		}
+
 		return $option_price;
 	}
 
@@ -175,9 +192,9 @@ class WOOMULTI_CURRENCY_F_Plugin_Visual_Product_Builder {
 		}
 		if ( isset( $config['components'] ) ) {
 			foreach ( $config['components'] as $i => $component ) {
-				if ( vpc_remove_special_characters($component['cname'],'"' ) == $unslashed_searched_component ) {
+				if ( vpc_remove_special_characters( $component['cname'], '"' ) == $unslashed_searched_component ) {
 					foreach ( $component['options'] as $component_option ) {
-						if ( vpc_remove_special_characters($component_option['name'],'"')  == $unslashed_searched_option ) {
+						if ( vpc_remove_special_characters( $component_option['name'], '"' ) == $unslashed_searched_option ) {
 							if ( isset( $component_option[ $field ] ) ) {
 								return $component_option[ $field ];
 							}
@@ -186,19 +203,26 @@ class WOOMULTI_CURRENCY_F_Plugin_Visual_Product_Builder {
 				}
 			}
 		}
+
 		return false;
 	}
 
 	/**
-	 * Change price in Build page
+	 * @param $price
+	 * @param $option
+	 * @param $component
+	 * @param $vpc VPC_Default_Skin
 	 *
-	 * @param $data
-	 *
-	 * @return mixed
+	 * @return float|int|mixed|void
 	 */
+	public function vpc_options_price( $price, $option, $component, $vpc ) {
+		if ( ! empty( $option['product'] ) ) {//do not convert an option if it's linked to a product
+			return $price;
+		}
+		if ( ! isset( self::$vpc_options_price[ $option['option_id'] ] ) ) {
+			self::$vpc_options_price[ $option['option_id'] ] = wmc_get_price( $price );
+		}
 
-	public function vpc_options_price( $data ) {
-		return wmc_get_price( $data );
+		return self::$vpc_options_price[ $option['option_id'] ];
 	}
-
 }

@@ -474,50 +474,85 @@ if( ! function_exists( 'berocket_isset' ) ){
         }
     }
 }
+if( ! function_exists( 'berocket_check_array_same' ) ) {
+    function berocket_check_array_same($array1, $array2) {
+        $same = false;
+        if( is_array($array1) && is_array($array2) && count($array1) == count($array2) ) {
+            $same = true;
+            $array1_keys = array_keys($array1);
+            $array2_keys = array_keys($array2);
+            $array1_vals = array_values($array1);
+            $array2_vals = array_values($array2);
+            for($i = 0; $i < count($array1_keys); $i++) {
+                if( $array1_keys[$i] !== $array2_keys[$i] || $array1_vals[$i] !== $array2_vals[$i] ) {
+                    $same = false;
+                    break;
+                }
+            }
+        }
+        return $same;
+    }
+}
 if( ! function_exists( 'berocket_sanitize_array' ) ){
-    function berocket_sanitize_array( $array ) {
+    function berocket_sanitize_array( $array, $option_name = array(), $previous_settings = array() ) {
         if ( is_object( $array ) ) $array = (array) $array; // wp_check_invalid_utf8 is not working with objects
 
         if ( is_array( $array ) ) {
-            $array = array_map('berocket_sanitize_array', $array);
+            foreach($array as $arr_key => &$arr_val) {
+                $new_option_name = array();
+                if( count($option_name) > 0 ) {
+                    $new_option_name = $option_name;
+                    $new_option_name[] = $arr_key;
+                }
+                $arr_val = berocket_sanitize_array($arr_val, $new_option_name, $previous_settings);
+            }
         } else {
-            $filtered = wp_check_invalid_utf8( $array );
+            $filtered = apply_filters('berocket_sanitize_array_predefine', null, $array, $option_name, $previous_settings);
+            if( $filtered === null ) {
+                $filtered = wp_check_invalid_utf8( $array );
+                
+                if( apply_filters('berocket_sanitize_array_kses', true, $array, $option_name, $previous_settings) ) {
+                    $allowed_html       = wp_kses_allowed_html();
+                    $allowed_html['br'] = array();
+                    $filtered           = wp_kses( $filtered, $allowed_html );
+                } else {
+                    do
+                    {
+                        // Remove really unwanted tags
+                        $old_data = $filtered;
+                        $filtered = preg_replace('#</*(?:applet|b(?:ase|gsound|link)|embed|frame(?:set)?|i(?:frame|layer)|l(?:ayer|ink)|meta|object|s(?:cript|tyle)|title|xml)[^>]*+>#i', '', $filtered);
+                    }
+                    while ($old_data !== $filtered);
+                }
 
-            // Remove any attribute starting with "on" or xmlns
-            $filtered = preg_replace('#(<[^>]+?[\x00-\x20"\'])(?:on|xmlns)[^>]*+>#iu', '$1>', $filtered);
+                // Remove any attribute starting with "on" or xmlns
+                $filtered = preg_replace('#(<[^>]+?[\x00-\x20"\'])(?:on|xmlns)[^>]*+>#iu', '$1>', $filtered);
 
-            // Remove javascript: and vbscript: protocols
-            $filtered = preg_replace('#([a-z]*)[\x00-\x20]*=[\x00-\x20]*([`\'"]*)[\x00-\x20]*j[\x00-\x20]*a[\x00-\x20]*v[\x00-\x20]*a[\x00-\x20]*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iu', '$1=$2nojavascript...', $filtered);
-            $filtered = preg_replace('#([a-z]*)[\x00-\x20]*=([\'"]*)[\x00-\x20]*v[\x00-\x20]*b[\x00-\x20]*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iu', '$1=$2novbscript...', $filtered);
-            $filtered = preg_replace('#([a-z]*)[\x00-\x20]*=([\'"]*)[\x00-\x20]*-moz-binding[\x00-\x20]*:#u', '$1=$2nomozbinding...', $filtered);
+                // Remove javascript: and vbscript: protocols
+                $filtered = preg_replace('#([a-z]*)[\x00-\x20]*=[\x00-\x20]*([`\'"]*)[\x00-\x20]*j[\x00-\x20]*a[\x00-\x20]*v[\x00-\x20]*a[\x00-\x20]*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iu', '$1=$2nojavascript...', $filtered);
+                $filtered = preg_replace('#([a-z]*)[\x00-\x20]*=([\'"]*)[\x00-\x20]*v[\x00-\x20]*b[\x00-\x20]*s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:#iu', '$1=$2novbscript...', $filtered);
+                $filtered = preg_replace('#([a-z]*)[\x00-\x20]*=([\'"]*)[\x00-\x20]*-moz-binding[\x00-\x20]*:#u', '$1=$2nomozbinding...', $filtered);
 
-            // Only works in IE: <span style="width: expression(alert('Ping!'));"></span>
-            $filtered = preg_replace('#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?expression[\x00-\x20]*\([^>]*+>#i', '$1>', $filtered);
-            $filtered = preg_replace('#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?behaviour[\x00-\x20]*\([^>]*+>#i', '$1>', $filtered);
-            $filtered = preg_replace('#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:*[^>]*+>#iu', '$1>', $filtered);
+                // Only works in IE: <span style="width: expression(alert('Ping!'));"></span>
+                $filtered = preg_replace('#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?expression[\x00-\x20]*\([^>]*+>#i', '$1>', $filtered);
+                $filtered = preg_replace('#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?behaviour[\x00-\x20]*\([^>]*+>#i', '$1>', $filtered);
+                $filtered = preg_replace('#(<[^>]+?)style[\x00-\x20]*=[\x00-\x20]*[`\'"]*.*?s[\x00-\x20]*c[\x00-\x20]*r[\x00-\x20]*i[\x00-\x20]*p[\x00-\x20]*t[\x00-\x20]*:*[^>]*+>#iu', '$1>', $filtered);
 
-            // Remove namespaced elements (we do not need them)
-            $data = preg_replace('#</*\w+:\w[^>]*+>#i', '', $filtered);
+                // Remove namespaced elements (we do not need them)
+                $data = preg_replace('#</*\w+:\w[^>]*+>#i', '', $filtered);
 
-            do
-            {
-                // Remove really unwanted tags
-                $old_data = $filtered;
-                $filtered = preg_replace('#</*(?:applet|b(?:ase|gsound|link)|embed|frame(?:set)?|i(?:frame|layer)|l(?:ayer|ink)|meta|object|s(?:cript|tyle)|title|xml)[^>]*+>#i', '', $filtered);
-            }
-            while ($old_data !== $filtered);
+                $filtered = str_replace('fromCharCode', '', $filtered);
 
-            $filtered = str_replace('fromCharCode', '', $filtered);
+                $found = false;
+                while ( preg_match('/%[a-f0-9]{2}/i', $filtered, $match) ) {
+                    $filtered = str_replace($match[0], '', $filtered);
+                    $found = true;
+                }
 
-            $found = false;
-            while ( preg_match('/%[a-f0-9]{2}/i', $filtered, $match) ) {
-                $filtered = str_replace($match[0], '', $filtered);
-                $found = true;
-            }
-
-            if ( $found ) {
-                // Strip out the whitespace that may now exist after removing the octets.
-                $filtered = preg_replace('/ +/', ' ', $filtered);
+                if ( $found ) {
+                    // Strip out the whitespace that may now exist after removing the octets.
+                    $filtered = preg_replace('/ +/', ' ', $filtered);
+                }
             }
             $array = $filtered;
         }

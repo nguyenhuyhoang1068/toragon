@@ -151,4 +151,53 @@ class TRP_Google_Translate_V2_Machine_Translator extends TRP_Machine_Translator 
     public function get_engine_specific_language_codes($languages){
         return $this->trp_languages->get_iso_codes($languages);
     }
+
+    /*
+     * Google does not support formality yet, but we need this for the machine translation tab to show the unsupported languages for formality
+     */
+    public function check_formality(){
+
+        $formality_supported_languages = array();
+
+        return $formality_supported_languages;
+    }
+
+    public function check_api_key_validity() {
+        $machine_translator = $this;
+        $translation_engine = $this->settings['trp_machine_translation_settings']['translation-engine'];
+        $api_key            = $machine_translator->get_api_key();
+
+        $is_error       = false;
+        $return_message = '';
+
+        if ( 'google_translate_v2' === $translation_engine && $this->settings['trp_machine_translation_settings']['machine-translation'] === 'yes') {
+
+            if ( isset( $this->correct_api_key ) && $this->correct_api_key != null ) {
+                return $this->correct_api_key;
+            }
+
+            if ( empty( $api_key ) ) {
+                $is_error       = true;
+                $return_message = __( 'Please enter your Google Translate key.', 'translatepress-multilingual' );
+            } else {
+                // Perform test.
+                $response = $machine_translator->test_request();
+                $code     = wp_remote_retrieve_response_code( $response );
+                if ( 200 !== $code ) {
+                    $is_error           = true;
+                    $translate_response = trp_gt_response_codes( $code );
+                    $return_message     = $translate_response['message'];
+                }
+            }
+            $this->correct_api_key = array(
+                'message' => $return_message,
+                'error'   => $is_error,
+            );
+        }
+
+        return array(
+            'message' => $return_message,
+            'error'   => $is_error,
+        );
+    }
 }

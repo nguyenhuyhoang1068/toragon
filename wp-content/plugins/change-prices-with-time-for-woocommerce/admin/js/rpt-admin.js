@@ -17,15 +17,14 @@
 			tbody.append( html );
  			$(".rpt-date-column .rpt-datepicker").datepicker({
 	        	dateFormat : 'dd-mm-yy',
-						changeMonth: true, 
-						changeYear: true,
 	   		});
-	 	})
+			$( document.body ).trigger( 'wc-enhanced-select-init' );
+	 	});
 
 	 	$( document ).on( 'click', '.rpt-delete', function(){
 			var table = $(this).parents('.wc-rpt-table'),
 				variation = $(this).parents('.woocommerce_variation');
-	 		$(this).parents('tr').remove();
+	 		$(this).parent().parent().remove();
 
 	 		if ( variation.length ) {
 	 			variation.addClass('variation-needs-update');
@@ -67,8 +66,6 @@
             tbody.append( html );
             $(".rpt-date-column .rpt-datepicker").datepicker({
                 dateFormat : 'dd-mm-yy',
-								changeMonth: true, 
-								changeYear: true,
             });
         });
 
@@ -103,15 +100,11 @@
 
 		$(".rpt-date-column .rpt-datepicker").datepicker({
 	        dateFormat : 'dd-mm-yy',
-					changeMonth: true, 
-					changeYear: true,
 		});
 		
 		$( document.body ).on( 'woocommerce_variations_loaded', function(){
 			$(".rpt-date-column .rpt-datepicker").datepicker({
 				dateFormat : 'dd-mm-yy',
-				changeMonth: true, 
-				changeYear: true,
 			});
 		});
 	});

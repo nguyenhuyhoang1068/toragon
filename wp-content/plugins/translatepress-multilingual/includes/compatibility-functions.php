@@ -203,6 +203,21 @@ function trp_woo_ultimate_pdf_invoices_data_compatibility($data_array){
     return $data_array;
 }
 
+/**
+ * Compatibility with WooCommerce PDF Catalog (woocommerce-pdf-catalog)
+ * https://www.welaunch.io/en/product/woocommerce-pdf-catalog/
+ *
+ * @since 2.2.7
+ *
+ */
+add_filter( 'trp_stop_translating_page', 'trp_woocommerce_pdf_catalog_compatibility_dont_translate_pdf', 10, 2 );
+function trp_woocommerce_pdf_catalog_compatibility_dont_translate_pdf( $bool, $output ){
+	if ( isset( $_REQUEST['pdf-catalog'] ) ) {
+		return true;
+	}
+	return $bool;
+}
+
 
 /**
  * Compatibility with WooCommerce order notes
@@ -247,6 +262,18 @@ function trp_woo_skip_dynamic_translation( $skip_selectors ){
     return $skip_selectors;
 }
 
+/**
+ * Prevent translation of names and addresses in WooCommerce emails.
+ */
+add_action( 'woocommerce_email_customer_details', 'trp_woo_prevent_address_from_translation_in_emails' );
+function trp_woo_prevent_address_from_translation_in_emails(){
+    add_filter( 'woocommerce_order_get_formatted_shipping_address', 'trp_woo_address_no_translate', 10, 3 );
+    add_filter( 'woocommerce_order_get_formatted_billing_address', 'trp_woo_address_no_translate', 10, 3 );
+}
+
+function trp_woo_address_no_translate( $address, $raw_address, $order ){
+    return empty( $address ) ? $address : '<span data-no-translation>' . $address . '</span>';
+}
 
 /**
  * Compatibility with WooCommerce product variation.
@@ -745,12 +772,12 @@ function trp_superfly_change_menu_loading_hook(){
  */
 add_filter( 'wpseo_canonical', 'trp_wpseo_canonical_compat', 99999, 2);
 function trp_wpseo_canonical_compat( $canonical, $presentation_class = null ){
-	global $TRP_LANGUAGE;
-	$trp = TRP_Translate_Press::get_trp_instance();
-	$url_converter = $trp->get_component( 'url_converter' );
-	$canonical = $url_converter->get_url_for_language($TRP_LANGUAGE, $canonical, '');
+    global $TRP_LANGUAGE;
+    $trp           = TRP_Translate_Press::get_trp_instance();
+    $url_converter = $trp->get_component( 'url_converter' );
+    $canonical     = $url_converter->get_url_for_language( $TRP_LANGUAGE, $canonical, '' );
 
-	return $canonical;
+    return $canonical;
 };
 
 add_filter( 'wpseo_opengraph_url', 'trp_opengraph_url', 99999 );
@@ -876,20 +903,13 @@ if( function_exists( 'ct_is_show_builder' ) || defined( 'FL_BUILDER_VERSION' ) )
     /**
      * Disable automatic language redirect when the Oxygen or Beaver Builders are showing
      */
-    add_action( 'plugins_loaded', 'trp_page_builder_compatibility_disable_automatic_language_redirect' );
-    function trp_page_builder_compatibility_disable_automatic_language_redirect(){
-
+    add_filter( 'trp_ald_enqueue_redirecting_script', 'trp_ald_dont_redirect_inside_page_builders');
+    function trp_ald_dont_redirect_inside_page_builders( $enqueue_redirecting_script ){
         if( ( isset( $_GET['ct_builder'] ) && $_GET['ct_builder'] == 'true' ) || isset( $_GET['fl_builder'] ) ){
-
-            $trp    = TRP_Translate_Press::get_trp_instance();
-            $loader = $trp->get_component( 'loader' );
-
-            $loader->remove_hook( 'wp_enqueue_scripts', 'enqueue_cookie_adding' );
-
+            return false;
         }
-
+        return $enqueue_redirecting_script;
     }
-
 }
 
 /**
@@ -1004,6 +1024,22 @@ function trp_thrive_arhitect_compatibility($bool)    {
         $bool = false;
 
     return $bool;
+}
+// do not redirect the URL's that are used inside Thrive Architect Editor
+add_filter( 'trp_allow_language_redirect', 'trp_thrive_no_redirect_in_editor', 10, 3 );
+function trp_thrive_no_redirect_in_editor( $allow_redirect, $needed_language, $current_page_url ){
+	if ( strpos($current_page_url, 'tve=true&tcbf')!== false ){
+		return false;
+	}
+	return $allow_redirect;
+};
+// skip the URL's that are used inside Thrive Architect Editor as they are stripped of parameters in certain cases and the editor isn't working.
+add_filter('trp_skip_url_for_language', 'trp_thrive_skip_language_in_editor', 10, 2);
+function trp_thrive_skip_language_in_editor($skip, $url){
+	if ( strpos($url, 'tve=true&tcbf') !== false ){
+		return true;
+	}
+	return $skip;
 }
 
 /**
@@ -1245,6 +1281,8 @@ function trp_add_current_menu_item_css_class( $items ){
     $trp_settings = $trp->get_component( 'settings' );
     $settings = $trp_settings->get_settings();
 
+    add_filter('pre_get_posts', 'trp_the_event_calendar_set_query_to_true', 2, 1);
+
     foreach( $items as $item ){
         if ( !( $TRP_LANGUAGE === $settings['default-language'] && isset( $settings['add-subdirectory-to-default-language']) && $settings['add-subdirectory-to-default-language'] !== 'yes'  ) &&
             !in_array( 'current-menu-item', $item->classes ) && !in_array( 'menu-item-object-language_switcher', $item->classes ) && ( !empty($item->url) && $item->url !== '#')
@@ -1269,9 +1307,22 @@ function trp_add_current_menu_item_css_class( $items ){
             }
         }
     }
+
+    remove_filter('pre_get_posts', 'trp_the_event_calendar_set_query_to_true', 2);
     return $items;
 }
 
+/**
+ * Function needed to set tribe_suppress_query_filters to false in query in order to avoid errors with The Event Calendar
+ *
+ * @param $query
+ * @return mixed
+ */
+function trp_the_event_calendar_set_query_to_true($query){
+    $query->set('tribe_suppress_query_filters', false);
+
+    return $query;
+}
 
 /**
  * Compatibility with xstore theme ajax search on other languages than english and when automatic translation was on
@@ -1548,9 +1599,20 @@ if( function_exists( 'wppb_plugin_init' ) )
  */
 
 if(class_exists('WP_Typography')) {
+    add_action('plugins_loaded', 'trp_wp_typography');
+}
 
-    add_filter('typo_content_filters', 'trp_remove_filters_wp_typography');
-    add_filter( 'trp_translated_html', 'trp_add_filters_wp_typography', 9999, 1 );
+function trp_wp_typography(){
+    global $TRP_LANGUAGE;
+    $trp = TRP_Translate_Press::get_trp_instance();
+    $trp_settings = $trp->get_component('settings');
+    $settings = $trp_settings->get_settings();
+
+    if ($TRP_LANGUAGE !== $settings['default-language']) {
+        add_filter( 'typo_content_filters', 'trp_remove_filters_wp_typography' );
+        add_filter( 'trp_translated_html', 'trp_add_filters_wp_typography', 100000, 1 );
+        add_filter('run_wptexturize', '__return_null', 11);
+    }
 }
 
 function trp_remove_filters_wp_typography($filters){
@@ -1564,9 +1626,59 @@ function trp_remove_filters_wp_typography($filters){
 function trp_add_filters_wp_typography($final_html){
     $wpt= WP_Typography::get_instance();
 
+    add_filter('run_wptexturize', '__return_false', 11);
+
     $final_html = $wpt->process($final_html, $is_title = false, $force_feed = false, null );
 
     return $final_html;
 
 }
 
+
+/*
+ * Compatibility with All In One SEO Pack
+ */
+
+if(function_exists('aioseo')){
+
+    if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
+        $callstack_functions = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 15);//set a limit if it is supported to improve performance
+    } else {
+        $callstack_functions = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT);
+    }
+
+    if (!empty($callstack_functions)) {
+        foreach ( $callstack_functions as $callstack_function ) {
+            if ( isset($callstack_function["object"]->{"callbacks"}) ) {
+                foreach ($callstack_function["object"]->{"callbacks"}[10] as $key=>$value){
+                    if(strpos($key, 'actionScheduler')){
+                        if(array_key_exists('breadcrumbs_archiveFormat',  $callstack_function["object"]->{"callbacks"}[10][ $key ]["function"][0]->{"options"}->{"localized"}  )) {
+                            add_action( 'trp_before_running_hooks', 'trp_AIOSEO_remove_gettext_hooks', 10, 1 );
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+function trp_AIOSEO_remove_gettext_hooks($trp_loader){
+    $trp                = TRP_Translate_Press::get_trp_instance();
+    $translation_render = $trp->get_component( 'translation_render' );
+    $trp_loader->remove_hook( 'the_title', 'wrap_with_post_id', $translation_render );
+}
+
+
+/**
+ * Compatibility with Elementor/Divi/WPBakery when "Use a subdirectory for the default language" is set to Yes
+ * Making sure the page edited with Elementor/Divi/WPBakery appears in the default language instead of the first language from the Language list
+ */
+add_filter( 'trp_needed_language', 'trp_page_builders_compatibility_with_subdirectory_for_default_language', 10, 4 );
+function trp_page_builders_compatibility_with_subdirectory_for_default_language( $needed_language, $lang_from_url, $settings, $trp) {
+    if ( ( ( isset( $_GET['action'] ) && $_GET['action'] === 'elementor' ) || isset( $_GET['elementor-preview'] ) ) //Elementor
+        || ( ( isset( $_GET['et_fb'] ) && $_GET['et_fb'] === '1' ) && ( isset( $_GET['PageSpeed'] ) && $_GET['PageSpeed'] === "off" ) ) //Divi
+        || ( ( isset( $_GET['vc_action'] ) && $_GET['vc_action'] === 'vc_inline' ) || ( isset( $_GET['vc_editable'] ) && $_GET['vc_editable'] === 'true' ) ) ) { //WPBakery
+        $needed_language = $settings['default-language'];
+    }
+    return $needed_language;
+}

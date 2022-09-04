@@ -65,8 +65,15 @@ function ur_get_page_id( $page ) {
 	 */
 	if ( 'myaccount' === $page && ur_post_content_has_shortcode( 'user_registration_my_account' ) && $page_id === $my_account_page_id ) {
 		$page = $page_id;
+	} elseif ( 'myaccount' !== $page && ur_post_content_has_shortcode( 'user_registration_login' ) && $page_id !== $my_account_page_id ) {
+		$page = $page_id;
 	} else {
 		$page = apply_filters( 'user_registration_get_' . $page . '_page_id', get_option( 'user_registration_' . $page . '_page_id' ) );
+	}
+
+	if ( $page > 0 && function_exists( 'pll_current_language' ) && ! empty( pll_current_language() ) ) {
+		$translations = pll_get_post_translations( $page );
+		$page = isset( $translations[ pll_current_language() ] ) ? $translations[ pll_current_language() ] : $page;
 	}
 
 	return $page ? absint( $page ) : - 1;
@@ -133,6 +140,7 @@ function ur_get_endpoint_url( $endpoint, $value = '', $permalink = '' ) {
  * @return array
  */
 function ur_nav_menu_items( $items ) {
+
 	if ( ! is_user_logged_in() ) {
 		$customer_logout = get_option( 'user_registration_logout_endpoint', 'user-logout' );
 
@@ -148,6 +156,14 @@ function ur_nav_menu_items( $items ) {
 					unset( $items[ $key ] );
 				}
 			}
+		}
+	}
+	$customer_logout = get_option( 'user_registration_logout_endpoint', 'user-logout' );
+
+	foreach ( $items as $item ) {
+
+		if ( $item->post_name === 'logout' && ! empty( $customer_logout ) && 'yes' === get_option( 'user_registration_disable_logout_confirmation', 'no' ) ) {
+			 $item->url = wp_nonce_url( $item->url, 'user-logout' );
 		}
 	}
 

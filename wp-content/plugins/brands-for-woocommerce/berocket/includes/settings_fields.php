@@ -3,18 +3,26 @@ if ( ! class_exists('BeRocket_framework_settings_fields') ) {
     class BeRocket_framework_settings_fields {
         function __construct() {
             do_action( 'BeRocket_framework_settings_fields_construct' );
-            add_filter( 'berocket_framework_item_content_text', array( $this, 'text' ), 10, 6 );
-            add_filter( 'berocket_framework_item_content_number', array( $this, 'number' ), 10, 6 );
-            add_filter( 'berocket_framework_item_content_radio', array( $this, 'radio' ), 10, 8 );
-            add_filter( 'berocket_framework_item_content_checkbox', array( $this, 'checkbox' ), 10, 8 );
-            add_filter( 'berocket_framework_item_content_selectbox', array( $this, 'selectbox' ), 10, 6 );
-            add_filter( 'berocket_framework_item_content_textarea', array( $this, 'textarea' ), 10, 6 );
-            add_filter( 'berocket_framework_item_content_color', array( $this, 'color' ), 10, 6 );
-            add_filter( 'berocket_framework_item_content_image', array( $this, 'image' ), 10, 6 );
-            add_filter( 'berocket_framework_item_content_faimage', array( $this, 'faimage' ), 10, 6 );
-            add_filter( 'berocket_framework_item_content_fontawesome', array( $this, 'fontawesome' ), 10, 6 );
-            add_filter( 'berocket_framework_item_content_fa', array( $this, 'fontawesome' ), 10, 6 );
-            add_filter( 'berocket_framework_item_content_products', array( $this, 'products' ), 10, 6 );
+            $fields = array(
+                'text'          => 'text',
+                'number'        => 'number',
+                'radio'         => 'radio',
+                'checkbox'      => 'checkbox',
+                'selectbox'     => 'selectbox',
+                'textarea'      => 'textarea',
+                'color'         => 'color',
+                'image'         => 'image',
+                'faimage'       => 'faimage',
+                'fontawesome'   => 'fontawesome',
+                'fa'            => 'fontawesome',
+                'products'      => 'products',
+            );
+            foreach($fields as $field_hook => $field) {
+                add_filter( 'berocket_framework_item_content_'.$field_hook, array( $this, $field ), 10, 8 );
+            }
+            foreach($fields as $field_hook => $field) {
+                add_filter( 'berocket_framework_item_content_'.$field_hook, array( $this, 'admin_disable' ), 100, 8 );
+            }
         }
 
         function text( $html, $field_item, $field_name, $value, $class, $extra ) {
@@ -22,7 +30,7 @@ if ( ! class_exists('BeRocket_framework_settings_fields') ) {
             if ( ! empty( $field_item[ 'label_be_for' ] ) ) {
                 $html .= '<span class="br_label_be_for">' . $field_item[ 'label_be_for' ] . '</span>';
             }
-            $html .= '<input type="text" name="' . $field_name . '" value="' . htmlentities( $value ) . '"' . $class . $extra . '/>';
+            $html .= '<input'.( empty($field_item['disabled']) ? '' : ' disabled=disabled').' type="text" name="' . $field_name . '" value="' . htmlentities( $value ) . '"' . $class . $extra . '/>';
             if ( ! empty( $field_item[ 'label_for' ] ) ) {
                 $html .= '<span class="br_label_for">' . $field_item[ 'label_for' ] . '</span>';
             }
@@ -36,7 +44,7 @@ if ( ! class_exists('BeRocket_framework_settings_fields') ) {
             if ( ! empty( $field_item[ 'label_be_for' ] ) ) {
                 $html .= '<span class="br_label_be_for">' . $field_item[ 'label_be_for' ] . '</span>';
             }
-            $html .= '<input type="number" name="' . $field_name . '" value="' . $value . '"' . $class . $extra . ( empty( $field_item[ 'min' ] ) ? '' : ' min="' . $field_item[ 'min' ] . '"' ) . ( empty( $field_item[ 'max' ] ) ? '' : ' max="' . $field_item[ 'max' ] . '"' ) . '/>';
+            $html .= '<input'.( empty($field_item['disabled']) ? '' : ' disabled=disabled').' type="number" name="' . $field_name . '" value="' . $value . '"' . $class . $extra . ( empty( $field_item[ 'min' ] ) ? '' : ' min="' . $field_item[ 'min' ] . '"' ) . ( empty( $field_item[ 'max' ] ) ? '' : ' max="' . $field_item[ 'max' ] . '"' ) . '/>';
             if ( ! empty( $field_item[ 'label_for' ] ) ) {
                 $html .= '<span class="br_label_for">' . $field_item[ 'label_for' ] . '</span>';
             }
@@ -51,7 +59,7 @@ if ( ! class_exists('BeRocket_framework_settings_fields') ) {
             if ( ! empty( $field_item[ 'label_be_for' ] ) ) {
                 $html .= '<span class="br_label_be_for">' . $field_item[ 'label_be_for' ] . '</span>';
             }
-            $html .= '<input type="radio" name="' . $field_name . '" value="' . $field_item[ 'value' ] . '"' . ( $field_item[ 'value' ] == $radio_default ? ' checked="checked" ' : '' ) . $class . $extra . '/>';
+            $html .= '<input'.( empty($field_item['disabled']) ? '' : ' disabled=disabled').' type="radio" name="' . $field_name . '" value="' . $field_item[ 'value' ] . '"' . ( $field_item[ 'value' ] == $radio_default ? ' checked="checked" ' : '' ) . $class . $extra . '/>';
             if ( ! empty( $field_item[ 'label_for' ] ) ) {
                 $html .= '<span class="br_label_for">' . $field_item[ 'label_for' ] . '</span>';
             }
@@ -65,7 +73,7 @@ if ( ! class_exists('BeRocket_framework_settings_fields') ) {
             if ( ! empty( $field_item[ 'label_be_for' ] ) ) {
                 $html .= '<span class="br_label_be_for">' . $field_item[ 'label_be_for' ] . '</span>';
             }
-            $html .= '<input type="checkbox" name="' . $field_name . '" value="' . $field_item[ 'value' ] . '"' . ( ( ! empty( $option_values ) ) ? ' checked="checked" ' : '' ) . $class . $extra . '/>';
+            $html .= '<input'.( empty($field_item['disabled']) ? '' : ' disabled=disabled').' type="checkbox" name="' . $field_name . '" value="' . $field_item[ 'value' ] . '"' . ( ( ! empty( $option_values ) ) ? ' checked="checked" ' : '' ) . $class . $extra . '/>';
             if ( ! empty( $field_item[ 'label_for' ] ) ) {
                 $html .= '<span class="br_label_for">' . $field_item[ 'label_for' ] . '</span>';
             }
@@ -79,7 +87,7 @@ if ( ! class_exists('BeRocket_framework_settings_fields') ) {
             if ( ! empty( $field_item[ 'label_be_for' ] ) ) {
                 $html .= '<span class="br_label_be_for">' . $field_item[ 'label_be_for' ] . '</span>';
             }
-            $html .= '<select name="' . $field_name . '"' . $class . $extra . '>';
+            $html .= '<select'.( empty($field_item['disabled']) ? '' : ' disabled=disabled').' name="' . $field_name . '"' . $class . $extra . '>';
             if ( isset( $field_item[ 'options' ] ) and is_array( $field_item[ 'options' ] ) and count( $field_item[ 'options' ] ) ) {
                 foreach ( $field_item[ 'options' ] as $option ) {
                     $html .= '<option value="' . $option[ 'value' ] . '"' . ( ( $value == $option[ 'value' ] ) ? ' selected="selected" ' : '' ) . '>' . $option[ 'text' ] . '</option>';
@@ -100,7 +108,7 @@ if ( ! class_exists('BeRocket_framework_settings_fields') ) {
             if ( ! empty( $field_item[ 'label_be_for' ] ) ) {
                 $html .= '<span class="br_label_be_for">' . $field_item[ 'label_be_for' ] . '</span>';
             }
-            $html .= '<textarea name="' . $field_name . '"' . $class . $extra . '>' . htmlentities( $value ) . '</textarea>';
+            $html .= '<textarea'.( empty($field_item['disabled']) ? '' : ' disabled=disabled').' name="' . $field_name . '"' . $class . $extra . '>' . htmlentities( $value ) . '</textarea>';
             if ( ! empty( $field_item[ 'label_for' ] ) ) {
                 $html .= '<span class="br_label_for">' . $field_item[ 'label_for' ] . '</span>';
             }
@@ -168,6 +176,13 @@ if ( ! class_exists('BeRocket_framework_settings_fields') ) {
                 $html .= '<span class="br_label_for">' . $field_item[ 'label_for' ] . '</span>';
             }
 
+            return $html;
+        }
+        function admin_disable( $html, $field_item, $field_name ) {
+            if( ! empty($field_item['admin_disabled']) ) {
+                $admin = ( is_multisite() ? __('MULTISITE ADMIN', 'BeRocket_domain') : __('ADMIN', 'BeRocket_domain') );
+                $html .= '<p style="font-weight:900;">'.sprintf(__('Field can be changed only by %s', 'BeRocket_domain'), $admin).'</p>';
+            }
             return $html;
         }
     }

@@ -45,7 +45,10 @@ input:-webkit-autofill:active  {
   font-weight: 400;
 }
 .search .pre-order {
-  background-color: #1a1918 !important;
+  /* hoang1068 start */
+  /*background-color: #1a1918 !important;*/
+  background-color: #bd2130 !important;
+  /* hoang1068 end */
 }
 .search  .site-main >div.row .p-item .card .woosw-btn:before {
   color: white;
@@ -441,7 +444,10 @@ table.cart{
   top: 0;
   padding: 5px 8px;
   font-size: 0.85rem;
-  background-color: #303030;
+  /* hoang1068 start */
+  /*background-color: #303030;*/
+  background-color: #bd2130;
+  /* hoang1068 end */
   color: #ffffff;
 }
 .page-id-24 .cart .woosw-btn {
@@ -741,7 +747,10 @@ table.cart{
   right: 20px !important;
 }
 .woocommerce-MyAccount-content .products li .card{background-color: black;}
-.woocommerce-MyAccount-content .products li .card .pre-order{background-color: black;}
+/* hoang1068 start */
+/*.woocommerce-MyAccount-content .products li .card .pre-order{background-color: black;}*/
+.woocommerce-MyAccount-content .products li .card .pre-order{background-color: #bd2130;}
+/* hoang1068 end */
 .woocommerce-MyAccount-content .woosw-btn{top: 31px !important;}
 .woocommerce-MyAccount-content .woosw-btn::before {
   color: white !important;
@@ -911,7 +920,10 @@ table:not( .has-background ) tbody tr:nth-child(2n) td, fieldset, fieldset legen
     top: 0;
     padding: 5px 8px;
     font-size: 0.85rem;
-    background-color: #303030;
+    /* hoang1068 start */
+    /*background-color: #303030;*/
+    background-color: #bd2130;
+    /* hoang1068 end */
     color: #ffffff;
 }
 .woosw-content-items input::-webkit-outer-spin-button,
@@ -1080,7 +1092,10 @@ table:not( .has-background ) tbody tr:nth-child(2n) td, fieldset, fieldset legen
       top: 0;
       padding: 5px 8px;
       font-size: 0.85rem;
-      background-color: #1a1918;
+      /* hoang1068 start */
+      /*background-color: #1a1918;*/
+      background-color: #bd2130;
+      /* hoang1068 end */
       color: #ffffff;
     }
 
@@ -1363,7 +1378,10 @@ body:not(.page-id-5490) input.plus,body:not(.page-id-5490) input.minus{display: 
 #product_productnew_content .text-danger a{color: white !important;}
 #product_productnew_content .box-product .wrap-img{margin-top: 25px;}
 #product_productnew_content .remaining-out-stock{color:white !important;font-size: 14px;}
-#product_productnew_content .pre-order{background:#1a1918;}
+/* hoang1068 start */
+/*#product_productnew_content .pre-order{background:#1a1918;}*/
+#product_productnew_content .pre-order{background:#bd2130;}
+/* hoang1068 end */
 #product_productnew_content{margin-bottom:0  !important;}
 #product_productnew_content > div.row{
   padding: 20px;
@@ -1590,7 +1608,10 @@ body:not(.page-id-5490) input.plus,body:not(.page-id-5490) input.minus{display: 
 .single-product  .woocommerce-product-gallery__wrapper > div.pre-order{
   margin-top: 20px;
   margin-right: 20px;
-  background-color: #303030;
+  /* hoang1068 start */
+  /*background-color: #303030;*/
+  background-color: #bd2130;
+  /* hoang1068 end */
 }
 .single-product .product-detail-inner .related .products .pre-order{background:none;}
 .single-product .products .card .wrap-img{margin-top: 32px;}
@@ -1656,7 +1677,10 @@ body:not(.page-id-5490) input.plus,body:not(.page-id-5490) input.minus{display: 
   font-weight: 400;
 }
 #product_product_content .products li .card .pre-order{
-  background-color: #1a1918;
+  /* hoang1068 start */
+  /*background-color: #1a1918;*/
+  background-color: #bd2130;
+  /* hoang1068 end */
 }
 #product_product_content .products .card .wrap-img{margin-top: 36px;}
 #product_product_content .woosw-btn{top:31px;}
@@ -2083,7 +2107,10 @@ body:not(.page-id-5490) input.plus,body:not(.page-id-5490) input.minus{display: 
   color: white !important;
 }
 .slider-products .box-product .pre-order {
-  background: #1a1918;
+  /* hoang1068 start */
+  /*background: #1a1918;*/
+  background: #bd2130;
+  /* hoang1068 end */
 }
 .slider-products .remaining-out-stock {
   color: white !important;
@@ -2558,6 +2585,16 @@ a:hover {
   text-decoration: none;
   color: #fbcf1f !important;
 }
+
+/* hoang1068 start */
+a:hover img {
+  -ms-transform: scale(1.5, 1.5);
+  /* IE 9 */
+  transform: scale(1.5, 1.5);
+  transition: transform 3s;
+  /* Standard syntax */ 
+}
+/* hoang1068 end */
 
 .txt-blur {
   color: #666666 !important;

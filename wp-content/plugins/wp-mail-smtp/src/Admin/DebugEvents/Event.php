@@ -212,7 +212,11 @@ class Event {
 	public function get_created_at() {
 
 		$timezone = new \DateTimeZone( 'UTC' );
-		$date     = \DateTime::createFromFormat( WP::datetime_mysql_format(), $this->created_at, $timezone );
+		$date     = false;
+
+		if ( ! empty( $this->created_at ) ) {
+			$date = \DateTime::createFromFormat( WP::datetime_mysql_format(), $this->created_at, $timezone );
+		}
 
 		if ( $date === false ) {
 			$date = new \DateTime( 'now', $timezone );
@@ -343,7 +347,9 @@ class Event {
 			</div>
 			<div class="wp-mail-smtp-debug-event-row wp-mail-smtp-debug-event-preview-content">
 				<span class="debug-event-label"><?php esc_html_e( 'Content', 'wp-mail-smtp' ); ?></span>
-				<div class="debug-event-value"><?php echo esc_html( $this->get_content() ); ?></div>
+				<div class="debug-event-value">
+						<?php echo wp_kses( str_replace( [ "\r\n", "\r", "\n" ], '<br>', $this->get_content() ), [ 'br' => [] ] ); ?>
+				</div>
 			</div>
 			<?php if ( ! empty( $initiator ) ) : ?>
 			<div class="wp-mail-smtp-debug-event-row wp-mail-smtp-debug-event-preview-caller">
@@ -377,11 +383,19 @@ class Event {
 	 */
 	public function get_short_details() {
 
-		return sprintf( /* Translators: %s - Email initiator/source name. */
-			esc_html__( 'Email Source: %s' ),
-			esc_html( $this->get_initiator() )
-		)
-		. PHP_EOL . esc_html( $this->get_content() );
+		$result = [];
+
+		if ( ! empty( $this->get_initiator() ) ) {
+			$result[] = sprintf(
+				/* Translators: %s - Email initiator/source name. */
+				esc_html__( 'Email Source: %s', 'wp-mail-smtp' ),
+				esc_html( $this->get_initiator() )
+			);
+		}
+
+		$result[] = esc_html( $this->get_content() );
+
+		return implode( WP::EOL, $result );
 	}
 
 	/**
@@ -466,7 +480,7 @@ class Event {
 		if ( ! is_string( $content ) ) {
 			$this->content = wp_json_encode( $content );
 		} else {
-			$this->content = wp_strip_all_tags( $content, false );
+			$this->content = wp_strip_all_tags( str_replace( '<br>', "\r\n", $content ), false );
 		}
 	}
 

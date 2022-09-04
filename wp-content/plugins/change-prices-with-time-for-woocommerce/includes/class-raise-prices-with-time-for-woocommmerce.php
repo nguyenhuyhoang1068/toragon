@@ -71,7 +71,7 @@ if ( ! class_exists( 'Raise_Prices_With_Time_For_Woocommmerce' ) ) {
 		public function __construct() {
 
 			$this->plugin_name = 'raise-prices-with-time-for-woocommmerce';
-			$this->version     = '1.7.1';
+			$this->version     = '1.8.2';
 
 			$this->load_dependencies();
 			$this->set_locale();
@@ -156,9 +156,14 @@ if ( ! class_exists( 'Raise_Prices_With_Time_For_Woocommmerce' ) ) {
 
 			$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 			$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
-			$this->loader->add_action( 'wc_pre_orders_product_options_end', $plugin_admin, 'wc_product_prices' , 100,2);
+			$this->loader->add_action( 'woocommerce_product_options_pricing', $plugin_admin, 'wc_product_prices' );
 			$this->loader->add_action( 'woocommerce_process_product_meta', $plugin_admin, 'wc_product_save', 99, 2 );
+			$this->loader->add_action( 'woocommerce_settings_rpt', $plugin_admin, 'settings_page' );
+			$this->loader->add_action( 'woocommerce_update_options_rpt', $plugin_admin, 'update_settings' );
+			$this->loader->add_action( 'woocommerce_admin_field_rpt_bulk_edit', $plugin_admin, 'buld_edit_field' );
 
+
+			$this->loader->add_filter( 'woocommerce_settings_tabs_array', $plugin_admin, 'add_settings_tab', 50 );
 			$this->loader->add_filter('woocommerce_get_sections_products', $plugin_admin, 'add_settings_section' );
 			$this->loader->add_filter( 'woocommerce_get_settings_products', $plugin_admin, 'add_settings', 20, 2 );
 		}
@@ -182,10 +187,11 @@ if ( ! class_exists( 'Raise_Prices_With_Time_For_Woocommmerce' ) ) {
 			$this->loader->add_action( 'woocommerce_cart_loaded_from_session', $plugin_public, 'apply_prices', 99 );
 			$this->loader->add_action( 'woocommerce_add_to_cart', $plugin_public, 'apply_prices_on_add_to_cart', 19, 6 );
 
-			$this->loader->add_filter( 'woocommerce_single_product_summary', $plugin_public, 'show_single_product_countdown', 25 );
+			$this->loader->add_filter( 'woocommerce_single_product_summary', $plugin_public, 'show_single_product_countdown', 11 );
 			$this->loader->add_filter( 'woocommerce_add_to_cart', $plugin_public, 'add_cart_item_data', 99 );
 			$this->loader->add_filter( 'woocommerce_get_cart_item_from_session', $plugin_public, 'load_cart_item_data_from_session', 5, 2 );
 
+			$this->loader->add_filter( 'get_post_metadata', $plugin_public, 'filter_bulk_data', 20, 4 );
 
 			if ( 'yes' === get_option( 'cpwt_show_countdown_on_shop_pages', 'no' ) ) {
 				$this->loader->add_action( 'woocommerce_after_shop_loop_item', $plugin_public, 'show_product_countdown_loop', 10 );

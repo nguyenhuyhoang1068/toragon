@@ -3,11 +3,13 @@
  */
 import { __ } from '@wordpress/i18n';
 import { decodeEntities } from '@wordpress/html-entities';
-import { SelectControl } from '@wordpress/components';
-import { useValidationContext } from '@woocommerce/base-context';
+import { SelectControl } from 'wordpress-components';
 import { useEffect } from 'react';
 import classnames from 'classnames';
-import { ValidationInputError } from '@woocommerce/base-components/validation';
+import {
+	ValidationInputError,
+	useValidationContext,
+} from '@woocommerce/base-context';
 
 // Default option for select boxes.
 const selectAnOption = {
@@ -30,11 +32,8 @@ const AttributeSelectControl = ( {
 		'woocommerce'
 	),
 } ) => {
-	const {
-		getValidationError,
-		setValidationErrors,
-		clearValidationError,
-	} = useValidationContext();
+	const { getValidationError, setValidationErrors, clearValidationError } =
+		useValidationContext();
 	const errorId = attributeName;
 	const error = getValidationError( errorId ) || {};
 
@@ -58,10 +57,10 @@ const AttributeSelectControl = ( {
 	] );
 
 	// Remove validation errors when unmounted.
-	useEffect( () => () => void clearValidationError( errorId ), [
-		errorId,
-		clearValidationError,
-	] );
+	useEffect(
+		() => () => void clearValidationError( errorId ),
+		[ errorId, clearValidationError ]
+	);
 
 	return (
 		<div className="wc-block-components-product-add-to-cart-attribute-picker__container">

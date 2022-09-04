@@ -35,10 +35,12 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
     include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
     load_plugin_textdomain('BeRocket_domain', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/');
     class BeRocket_Framework {
-        public static $framework_version = '2.6.0.6';
+        public static $framework_version = '2.7.4';
+        public $plugin_framework_version = '2.7.4';
         public static $settings_name = '';
         public $addons;
         public $libraries;
+        protected $disable_settings_for_admin = array();
         private $post;
         private $cc;
         protected static $instance;
@@ -122,6 +124,20 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
                 }
                 $this->libraries = new BeRocket_framework_libraries($this->active_libraries, $this->info, $this->values, $this->get_option());
                 add_filter('BeRocket_admin_init_user_capabilities', array($this, 'init_user_capabilities'));
+                add_filter('berocket_sanitize_array_predefine', array($this, 'sanitize_array_predefine'), 10, 4);
+                add_filter('berocket_sanitize_array_kses', array($this, 'sanitize_array_kses'), 10, 4);
+                add_filter('brfr_menu_item_remove_'.$this->info['plugin_name'], array($this, 'menu_item_remove'), 10, 3);
+                //CHECK OLD FRAMEWORK
+                add_filter('berocket_sanitize_array_kses', array($this, 'disable_for_old_plugins'), 10, 4);
+                $framework_version_current = self::$framework_version;
+                $framework_version = $framework_version_current;
+                include($this->info['plugin_dir']."/berocket/framework_version.php");
+                $this->plugin_framework_version = $framework_version_current;
+                if( $this->plugin_version_capability < 10 ) {
+                    if( file_exists(plugin_dir_path( __FILE__ ) . 'sale/sale.php') ) {
+                        include_once( plugin_dir_path( __FILE__ ) . 'sale/sale.php');
+                    }
+                }
             }
             do_action($this->info[ 'plugin_name' ].'_framework_construct', $this->cc);
             add_filter('brfr_get_plugin_version_capability_'.$this->cc->info['plugin_name'], array($this, 'get_plugin_version_capability'));
@@ -155,7 +171,8 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
 
         public function plugins_loaded() {
             if( ! empty($_POST[ $this->cc->values[ 'settings_name' ] ]) ) {
-                $this->post = berocket_sanitize_array($_POST[ $this->cc->values[ 'settings_name' ] ]);
+                $previous_options = $this->get_option();
+                $this->post = berocket_sanitize_array($_POST[ $this->cc->values[ 'settings_name' ] ], array($this->cc->values[ 'settings_name' ]), $previous_options);
             }
         }
 
@@ -386,7 +403,8 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
          */
         public function set_styles() {
             $options = $this->get_option();
-            $custom_css = berocket_sanitize_array($options[ 'custom_css' ]);
+            $previous_options = $this->get_option();
+            $custom_css = berocket_sanitize_array($options[ 'custom_css' ], array($this->cc->values[ 'settings_name' ]), $previous_options);
             echo '<style>' . $custom_css . '</style>';
         }
         public function set_scripts() {
@@ -486,10 +504,10 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
                 BeRocket_Framework::$framework_version
             );
 
-            // wp_register_style(
-            //     'berocket_font_awesome',
-            //     plugins_url( 'assets/css/font-awesome.min.css', __FILE__ )
-            // );
+            wp_register_style(
+                'berocket_font_awesome',
+                plugins_url( 'assets/css/font-awesome.min.css', __FILE__ )
+            );
             wp_localize_script( 'berocket_framework_admin', 'berocket_framework_admin', array(
                 'security' => wp_create_nonce("search-products")
             ) );
@@ -655,6 +673,8 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
 
                     if ( isset($tab_content) and is_array($tab_content) and count( $tab_content ) ) {
                         foreach ( $tab_content as $item ) {
+                            $item = apply_filters('brfr_menu_item_remove_'.$this->info['plugin_name'], $item, $tab_name, $tab_content);
+                            if( empty($item) ) continue;
                             $class = $extra = '';
 
                             if ( isset($item['class']) && trim( $item['class'] ) ) {
@@ -973,8 +993,9 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
          * @return mixed
          */
         public function sanitize_option( $input ) {
+            $previous_options = $this->get_option();
             $new_input = $this->recursive_array_set( $this->cc->defaults, $input );
-            $new_input = berocket_sanitize_array($new_input);
+            $new_input = berocket_sanitize_array($new_input, array($this->cc->values[ 'settings_name' ]), $previous_options);
             wp_cache_delete( $this->cc->values[ 'settings_name' ], 'berocket_framework_option' );
             return apply_filters('brfr_sanitize_option_' . $this->cc->info[ 'plugin_name' ], $new_input, $input, $this->cc->defaults);
         }
@@ -1073,20 +1094,20 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
         }
 
         public static function register_font_awesome($type = 'all') {
-            // if( $type == 'all' || $type == 'fa4' ) {
-            //     wp_register_style( 'font-awesome', plugins_url( 'assets/css/font-awesome.min.css', __FILE__ ) );
-            // }
-            // if( $type == 'all' || $type == 'fa5' ) {
-            //     wp_register_style( 'font-awesome-5', plugins_url( 'assets/css/fontawesome5.min.css', __FILE__ ) );
-            // }
-            // if( $type == 'all' || $type == 'fa5c' ) {
-            //     wp_register_style( 'font-awesome-5-compat', plugins_url( 'assets/css/fontawesome4-compat.min.css', __FILE__ ) );
-            // }
-            // if( $type == 'fa5live' ) {
-            //     add_action('admin_footer', array(__CLASS__, 'fa5live'));
-            //     add_action('wp_footer', array(__CLASS__, 'fa5live'));
-            //     wp_enqueue_style( 'font-awesome-5-compat', plugins_url( 'assets/css/fontawesome4-compat.min.css', __FILE__ ) );
-            // }
+            if( $type == 'all' || $type == 'fa4' ) {
+                wp_register_style( 'font-awesome', plugins_url( 'assets/css/font-awesome.min.css', __FILE__ ) );
+            }
+            if( $type == 'all' || $type == 'fa5' ) {
+                wp_register_style( 'font-awesome-5', plugins_url( 'assets/css/fontawesome5.min.css', __FILE__ ) );
+            }
+            if( $type == 'all' || $type == 'fa5c' ) {
+                wp_register_style( 'font-awesome-5-compat', plugins_url( 'assets/css/fontawesome4-compat.min.css', __FILE__ ) );
+            }
+            if( $type == 'fa5live' ) {
+                add_action('admin_footer', array(__CLASS__, 'fa5live'));
+                add_action('wp_footer', array(__CLASS__, 'fa5live'));
+                wp_enqueue_style( 'font-awesome-5-compat', plugins_url( 'assets/css/fontawesome4-compat.min.css', __FILE__ ) );
+            }
         }
         public static function fa5live() {
             echo '<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">';
@@ -1111,6 +1132,86 @@ if( ! class_exists( 'BeRocket_Framework' ) ) {
         public function init_user_capabilities($user_caps) {
             $user_caps[] = $this->option_page_capability();
             return $user_caps;
+        }
+        //disable fields for not admin
+        function sanitize_array_predefine($value, $array, $option_name, $previous_settings) {
+            if( ! is_super_admin() && $this->search_disabled_settings($option_name) ) {
+                array_shift($option_name);
+                $value = br_get_value_from_array($previous_settings, $option_name);
+            }
+            return $value;
+        }
+        function sanitize_array_kses($apply, $array, $option_name, $previous_settings) {
+            if( is_super_admin() && $this->search_disabled_settings($option_name) ) {
+                $apply = false;
+            }
+            return $apply;
+        }
+        function menu_item_remove($item, $tab_name, $tab_content) {
+            if ( is_array($item) && ( empty($item['section']) or $item['section'] == 'field' ) ) {
+                $field_items = array();
+                $single = false;
+                if( isset($item['items']) && is_array($item['items']) ) {
+                    $field_items = $item['items'];
+                } else {
+                    $field_items[] = $item;
+                    $single = true;
+                }
+                $new_field_name = array();
+                foreach($field_items as $field_name => $field_item) {
+                    $option_name = $field_item['name'];
+                    if( ! is_array($option_name) ) {
+                        $option_name = array($option_name);
+                    }
+                    array_unshift($option_name, $this->values[ 'settings_name' ]);
+                    if( ! is_super_admin() && $this->search_disabled_settings($option_name) ) {
+                        $field_item['disabled'] = true;
+                        $field_item['admin_disabled'] = true;
+                    }
+                    $new_field_name[$field_name] = $field_item;
+                    
+                }
+                if( count($new_field_name) > 0 ) {
+                    if( $single ) {
+                        $item = array_pop($new_field_name);
+                    } else {
+                        $item['items'] = $new_field_name;
+                    }
+                } else {
+                    $item = false;
+                }
+            } elseif( ! empty($item['name']) ) {
+                $option_name = $item['name'];
+                if( ! is_array($option_name) ) {
+                    $option_name = array($option_name);
+                }
+                array_unshift($option_name, $this->values[ 'settings_name' ]);
+                if( ! is_super_admin() &&$this->search_disabled_settings($option_name) ) {
+                    $item = false;
+                }
+            }
+            return $item;
+        }
+        function search_disabled_settings($option_name) {
+            $disable = false;
+            if( is_array($this->disable_settings_for_admin) && count($this->disable_settings_for_admin) > 0 ) {
+                foreach($this->disable_settings_for_admin as $search_option_name) {
+                    array_unshift($search_option_name, $this->values[ 'settings_name' ]);
+                    if(berocket_check_array_same($option_name, $search_option_name) ) {
+                        $disable = true;
+                    }
+                }
+            }
+            return $disable;
+        }
+        function disable_for_old_plugins($apply, $array, $option_name, $previous_settings) {
+            if( is_array($option_name) && count($option_name) > 0 ) {
+                $base_name = array_shift($option_name);
+                if( $base_name === $this->values[ 'settings_name' ] && version_compare($this->plugin_framework_version, '2.7', '<') ) {
+                    $apply = false;
+                }
+            }
+            return $apply;
         }
     }
     add_action('admin_init', 'BeRocket_admin_init_user_capabilities');

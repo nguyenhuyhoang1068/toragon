@@ -3,9 +3,9 @@ Contributors: cozmoslabs, razvan.mo, madalin.ungureanu, sareiodata, cristophor
 Donate link: https://www.translatepress.com/
 Tags: translate, translation, multilingual, automatic translation, bilingual, front-end translation, google translate, language
 Requires at least: 3.1.0
-Tested up to: 5.8.1
+Tested up to: 6.0.1
 Requires PHP: 5.6.20
-Stable tag: 2.1.2
+Stable tag: 2.3.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -140,6 +140,129 @@ For more information please check out our [documentation](https://translatepress
 
 
 == Changelog ==
+= 2.3.4 =
+* Improved compatibility with WooCommerce Payments
+* Fixed php notice about notification_id
+
+= 2.3.3 =
+* Fixed security vulnerability
+
+= 2.3.2 =
+* Added Translate Page button in Gutenberg Editor
+* Improved TranslatePress General settings UI on smaller screens
+
+= 2.3.1 =
+* Added function trp_translate to facilitate custom integrations by other devs
+* Renamed possibly conflicting lang attribute of the template tag used to detect language
+
+= 2.3.0 =
+* Added compatibility with Elementor Containers for exclude/include in certain language
+* Added Advanced option to change html lang attribute to a region independent form
+* Fixed issue with ACF plugin when saving metabox fields
+* Fixed issue with the option to Exclude strings from automatic translation when the excluded text is a substring of another excluded text
+* Fixed notice in PHP 8+ versions about passing null variables being deprecated
+
+= 2.2.9 =
+* Fix: compatibility issue between translation interface and Thrive Architect
+* Fix: make sure processed links are stripped of extra tags
+* Fix: a potential error in the url converter
+
+= 2.2.8 =
+* Fixed truncated archive urls on front page on translated pages
+* Fixed bug with language switcher not working properly for posts with translated slugs when using Advanced option to Exclude Paths From Translation
+* Fixed canonical of archive links sometimes not having translated slugs in url
+* Fixed FAQ schema not being fully translated
+* Fixed trp_hreflang hook parameters
+
+= 2.2.7 =
+* Added compatibility for WooCommerce PDF Catalog plugin
+* Fixed edge case causing SQL errors due to case sensitivity on table names
+* Fixed hreflang code for Belarusian
+* Fixed Gujarati flag
+
+= 2.2.6 =
+* Improved automatic translation usage by skipping detection of icalendar strings
+* Unsupported languages are now checked automatically when saving Automatic Translation tab settings
+* Added new filters that allow changing the custom tables names from external scripts
+
+= 2.2.5 =
+* Fixed span tag appearing in WooCommerce Orders in WP Dashboard
+* Fixed warnings from The Event Calendar about SQL commands
+* Fixed errors appearing in logs when using custom integration code
+
+= 2.2.4 =
+* Prevent automatic translation of names and addresses in WooCommerce emails
+* Added external function for devs to easily create custom language switchers: trp_custom_language_switcher
+* Fixed issue with not including hreflang tags for some languages when Advanced option to Remove hreflang with Country Locale is used
+* Fixed warning related to using custom language flags
+
+= 2.2.3 =
+* Fixed XSS security vulnerability
+* Fixed sitemap containing urls with language slugs linking to paths excluded from translation
+* Fixed issue affecting translation of some particular JSON requests
+* Fixed edge case error regarding MO objects
+* Moved Automatic translate slugs option to Automatic Translation tab
+
+= 2.2.2 =
+* Fixed issue in WP 5.9 causing Invalid Data SQL Error reports
+* Improved page load time for WooCommerce websites on translated languages
+* Improved admin notices regarding database optimization
+
+= 2.2.1 =
+* Added Advanced option to adjust hreflang to hide region independent language tags or country locale tags
+* Added missing flags for Tamil (Sri Lanka), Spanish (Ecuador), Spanish (Dominican Republic), Amharic
+* Improved Automatic Translation tab checking for translation API key validity
+* Improved Plugins interface action buttons for TP by taking into account free/pro status
+* Fixed error management interface displaying raw HTML instead of formatted HTML
+* Fixed notice in admin for an edge case
+* Fixed notice in Test API Page when test request resulted in WP Error
+
+= 2.2.0 =
+* Fixed language slug incorrectly ending up in .htaccess in some cases
+* Fixed issue in hreflang tags when using certain custom language codes
+* Added missing Persian (Afghanistan) flag
+
+= 2.1.9 =
+* Improved database optimization tool by adding option to remove CDATA and untranslated links from TP custom tables
+* Fixed database optimization tool not starting in some cases
+* Fixed edge case error unknown format specifier on php 8 related to automatic translation of gettext strings
+* Added noindex tag to Translation Editor pages to prevent duplicate indexing
+
+= 2.1.8 =
+* Added language formality setting to be used in Automatic Translation
+* Added Advanced option for enabling clickable shortcode language switcher
+* Improved tool for database optimization from Advanced tab
+* Fixed translation blocks ignoring target blank on links
+
+= 2.1.7 =
+* Added form in settings to sign up for TranslatePress email course
+* Fixed issue when logging in that redirected to "page not found" when languages are reordered
+* Fixed hyphenation issue on default language when using WP-typography plugin
+* Fixed notices regarding is_file call
+
+= 2.1.6 =
+* Show sanitized translation when editing gettext strings in Translation Editor
+* Fixed showing translation language instead of default language in some cases in Elementor, Divi and WPBakery editors
+* Fixed breadcrumbs issue with All in One SEO plugin on translation language
+* Fixed Beaver Builder Editor loading loop when Automatic User Language Detection is active
+* Fixed issue with excluding path from translation
+
+= 2.1.5 =
+* Show sanitized translation after saving changes in Translation Editor
+* Improved query for getting existing translations
+* Fixed issue with using wildcard in Translate only certain paths feature
+* Fixed php warning on settings page about DeepL
+
+= 2.1.4 =
+* Optimized automatic translation usage by improved recognition of cdata, js scripts and encoded html
+* Fixed conflict with Ultimate Dashboard
+
+= 2.1.3 =
+* Added Opposite Language menu item when using 2 languages
+* Added support for opposite language in floating language switcher
+* Fixed DeepL API key check showing green icon with incorrect keys
+* Fixed some cases of increased automatic translation usage
+
 = 2.1.2 =
 * Added Advanced option to show opposite language in shortcode language switcher
 * Added CSS class current-language-menu-item to menu language switcher to allow customization

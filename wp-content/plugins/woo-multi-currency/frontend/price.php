@@ -4,17 +4,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use Automattic\Jetpack\Constants;
+
 /**
  * Class WOOMULTI_CURRENCY_F_Frontend_Price
  */
 class WOOMULTI_CURRENCY_F_Frontend_Price {
-	protected $settings;
+	protected static $settings;
 	protected $price;
 
 	public function __construct() {
-
-		$this->settings = WOOMULTI_CURRENCY_F_Data::get_ins();
-		if ( $this->settings->get_enable() ) {
+		self::$settings = WOOMULTI_CURRENCY_F_Data::get_ins();
+		if ( self::$settings->get_enable() ) {
 			/*Simple product*/
 			add_filter(
 				'woocommerce_product_get_regular_price', array(
@@ -53,147 +54,93 @@ class WOOMULTI_CURRENCY_F_Frontend_Price {
 			add_filter( 'woocommerce_variation_prices', array( $this, 'get_woocommerce_variation_prices' ), 99, 3 );
 
 			/*Pay with Multi Currencies*/
-			add_action( 'template_redirect', array( $this, 'init' ), 99 );
+			add_action( 'init', array( $this, 'init' ), 99 );
 
 			/*Approximately*/
 			add_filter( 'woocommerce_get_price_html', array( $this, 'add_approximately_price' ), 20, 2 );
-			if ( $this->settings->get_price_switcher() ) {
+			if ( self::$settings->get_price_switcher() ) {
 				add_action( 'woocommerce_single_product_summary', array( $this, 'add_price_switcher' ), 20, 2 );
 			}
 
-			if ( $this->settings->get_param( 'cache_compatible' ) ) {
-				add_filter( 'woocommerce_get_price_html', array( $this, 'compatible_cache_plugin' ), 20, 2 );
+			if ( is_plugin_active( 'woocommerce-bookings/woocommerce-bookings.php' ) ) {
+				/*Fix wrong sale price added when changing currency for WooCommerce Bookings products*/
+				add_filter( 'woocommerce_get_price_html', array( $this, 'woocommerce_get_price_html' ), 20, 2 );
 			}
+			/*Yith dynamic pricing and discount*/
+			add_action( 'ywdpd_before_calculate_discounts', array( $this, 'remove_filters' ), 1 );
+			add_action( 'ywdpd_after_calculate_discounts', array( $this, 'add_filters' ), 1 );
 		}
 	}
 
+	public function remove_filters() {
+		remove_filter( 'woocommerce_product_get_price', array( $this, 'woocommerce_product_get_price' ), 99 );
+	}
+
+	public function add_filters() {
+		add_filter( 'woocommerce_product_get_price', array( $this, 'woocommerce_product_get_price' ), 99, 2 );
+	}
+
 	/**
-	 * @param $html_price    default price
-	 * @param $a
+	 * @param $price_html
+	 * @param $product WC_Product_Booking
 	 *
 	 * @return string
 	 */
-	public function add_price_switcher() {
+	public function woocommerce_get_price_html( $price_html, $product ) {
+		if ( $product && is_a( $product, 'WC_Product_Booking' ) && self::$settings->get_current_currency() !== self::$settings->get_default_currency() ) {
+			$base_price = WC_Bookings_Cost_Calculation::calculated_base_cost( $product );
+			if ( 'incl' === get_option( 'woocommerce_tax_display_shop' ) ) {
+				if ( function_exists( 'wc_get_price_excluding_tax' ) ) {
+					$display_price = wc_get_price_including_tax( $product, array(
+						'qty'   => 1,
+						'price' => $base_price,
+					) );
+				} else {
+					$display_price = $product->get_price_including_tax( 1, $base_price );
+				}
+			} else {
+				if ( function_exists( 'wc_get_price_excluding_tax' ) ) {
+					$display_price = wc_get_price_excluding_tax( $product, array(
+						'qty'   => 1,
+						'price' => $base_price,
+					) );
+				} else {
+					$display_price = $product->get_price_excluding_tax( 1, $base_price );
+				}
+			}
+			remove_filter( 'woocommerce_product_get_price', array( $this, 'woocommerce_product_get_price' ), 99 );
+			$display_price_suffix_comp  = wc_price( apply_filters( 'woocommerce_product_get_price', $display_price, $product ) ) . $product->get_price_suffix();
+			$original_price_suffix_comp = wc_price( $display_price ) . $product->get_price_suffix();
+			add_filter( 'woocommerce_product_get_price', array( $this, 'woocommerce_product_get_price' ), 99, 2 );
+			$original_price_suffix = wc_price( $display_price ) . $product->get_price_suffix();
+			$display_price         = apply_filters( 'woocommerce_product_get_price', $display_price, $product );
+			$display_price_suffix  = wc_price( $display_price ) . $product->get_price_suffix();
 
-		if ( is_admin() || ! is_single() ) {
-			return;
+			if ( $original_price_suffix_comp !== $display_price_suffix_comp ) {
+				$price_html = "<del>{$original_price_suffix}</del><ins>{$display_price_suffix}</ins>";
+			} elseif ( $display_price ) {
+				if ( $product->has_additional_costs() || $product->get_display_cost() ) {
+					/* translators: 1: display price */
+					$price_html = sprintf( __( 'From: %s', 'woocommerce-bookings' ), wc_price( $display_price ) ) . $product->get_price_suffix();
+				} else {
+					$price_html = wc_price( $display_price ) . $product->get_price_suffix();
+				}
+			} elseif ( ! $product->has_additional_costs() ) {
+				$price_html = esc_html__( 'Free', 'woocommerce-bookings' );
+			} else {
+				$price_html = '';
+			}
 		}
-		global $post;
-		if ( is_object( $post ) && $post->ID && $post->post_type == 'product' && $post->post_status == 'publish' ) {
-			$product          = wc_get_product( $post->ID );
-			$links            = $this->settings->get_links();
-			$current_currency = $this->settings->get_current_currency();
-			$country          = $this->settings->get_country_data( $current_currency );
-			$list_currencies  = $this->settings->get_list_currencies();
-			$class            = array( 'wmc-price-switcher' );
 
-			wp_enqueue_style( 'wmc-flags', WOOMULTI_CURRENCY_F_CSS . 'flags-64.min.css' );
+		return $price_html;
+	}
 
-			?>
-            <div class="woo-multi-currency <?php echo implode( ' ', $class ) ?>"
-                 title="<?php esc_attr_e( 'Please select your currency', 'woo-multi-currency' ) ?>">
-                <div class="wmc-currency-wrapper">
-                        <span class="wmc-current-currency">
-                              <i style="zoom: 0.8" alt="<?php echo esc_attr( $country['name'] ) ?>"
-                                 class="vi-flag-64 flag-<?php echo strtolower( $country['code'] ) ?> "></i>
-                        </span>
-                    <div class="wmc-sub-currency">
-
-						<?php
-
-						foreach ( $links as $k => $link ) {
-
-							/*End override*/
-							$country = $this->settings->get_country_data( $k );
-
-							?>
-                            <div class="wmc-currency" data-currency="<?php echo $k ?>">
-                                <a rel="nofollow" title="<?php echo esc_attr( $country['name'] ) ?>"
-                                   href="<?php echo esc_url( $link ) ?>">
-                                    <i style="zoom: 0.8" alt="<?php echo esc_attr( $country['name'] ) ?>"
-                                       class="vi-flag-64 flag-<?php echo strtolower( $country['code'] ) ?> "></i>
-									<?php switch ( $this->settings->get_price_switcher() ) {
-										case 2:
-											echo '<span class="wmc-price-switcher-code" >' . $k . '</span>';
-											break;
-										case 3:
-											$decimals           = $list_currencies[ $k ]['decimals'];
-											$decimal_separator  = wc_get_price_decimal_separator();
-											$thousand_separator = wc_get_price_thousand_separator();
-											$pos                = $list_currencies[ $k ]['pos'];
-											$symbol             = $list_currencies[ $k ]['custom'];
-											$symbol             = $symbol ? $symbol : get_woocommerce_currency_symbol( $k );
-											switch ( $pos ) {
-												case 'left' :
-													$format = '%1$s%2$s';
-													break;
-												case 'right' :
-													$format = '%2$s%1$s';
-													break;
-												case 'left_space' :
-													$format = '%1$s&nbsp;%2$s';
-													break;
-												case 'right_space' :
-													$format = '%2$s&nbsp;%1$s';
-													break;
-											}
-
-											$price = 0;
-											if ( $this->settings->check_fixed_price() ) {
-
-												$product_id    = $product->get_id();
-												$product_price = wmc_adjust_fixed_price( json_decode( get_post_meta( $product_id, '_regular_price_wmcp', true ), true ) );
-												$sale_price    = wmc_adjust_fixed_price( json_decode( get_post_meta( $product_id, '_sale_price_wmcp', true ), true ) );
-												if ( isset( $product_price[ $k ] ) && ! $product->is_on_sale() && $product_price[ $k ] > 0 ) {
-													$price = $product_price[ $k ];
-												} elseif ( isset( $sale_price[ $k ] ) && $sale_price[ $k ] > 0 ) {
-													$price = $sale_price[ $k ];
-												}
-											}
-											if ( ! $price ) {
-												$price = $product->get_price( 'edit' );
-												$price = number_format( wmc_get_price( wc_get_price_to_display( $product, array(
-													'qty'   => 1,
-													'price' => $price
-												) ), $k ), $decimals, $decimal_separator, $thousand_separator );
-											} else {
-												$price = number_format( wc_get_price_to_display( $product, array(
-													'qty'   => 1,
-													'price' => $price
-												) ), $decimals, $decimal_separator, $thousand_separator );
-											}
-
-											$pos = strpos( $symbol, '#PRICE#' );
-											if ( $pos === false ) {
-												$formatted_price = sprintf( $format, $symbol, $price );
-											} else {
-												$formatted_price = str_replace( '#PRICE#', $price, $symbol );
-											}
-											$max_price = '';
-											if ( $product->get_type() == 'variable' ) {
-												$price_max = $this->get_variation_max_price( $product, $k );
-												if ( $price_max != wmc_get_price( $product->get_price( 'edit' ), $k ) ) {
-													$price_max = number_format( wc_get_price_to_display( $product, array(
-														'qty'   => 1,
-														'price' => $price_max
-													) ), $decimals, $decimal_separator, $thousand_separator );
-													if ( $pos === false ) {
-														$max_price = ' - ' . sprintf( $format, $symbol, $price_max );
-													} else {
-														$max_price = ' - ' . str_replace( '#PRICE#', $price_max, $symbol );
-													}
-												}
-											}
-											echo '<span class="wmc-price-switcher-price">' . $formatted_price . $max_price . '</span>';
-
-									} ?>
-                                </a>
-                            </div>
-						<?php } ?>
-                    </div>
-                </div>
-            </div>
-			<?php
+	/**
+	 *
+	 */
+	public function add_price_switcher() {
+		if ( is_product() ) {
+			echo do_shortcode( '[woo_multi_currency_product_price_switcher]' );
 		}
 	}
 
@@ -204,7 +151,7 @@ class WOOMULTI_CURRENCY_F_Frontend_Price {
 	 *
 	 * @return int|string
 	 */
-	protected function get_variation_max_price( $product, $currency_code = false, $raw = false ) {
+	public static function get_variation_max_price( $product, $currency_code = false, $raw = false ) {
 		$variation_ids = $product->get_visible_children();
 		$price_max     = 0;
 		foreach ( $variation_ids as $variation_id ) {
@@ -213,11 +160,11 @@ class WOOMULTI_CURRENCY_F_Frontend_Price {
 			if ( $variation ) {
 				$price = 0;
 				if ( ! $currency_code ) {
-					$currenct_currency = $this->settings->get_current_currency();
+					$currenct_currency = self::$settings->get_current_currency();
 				} elseif ( ! $raw ) {
 					$currenct_currency = $currency_code;
 				}
-				if ( $this->settings->check_fixed_price() && ! $raw ) {
+				if ( self::$settings->check_fixed_price() && ! $raw ) {
 					$product_id    = $variation_id;
 					$product_price = wmc_adjust_fixed_price( json_decode( get_post_meta( $product_id, '_regular_price_wmcp', true ), true ) );
 					$sale_price    = wmc_adjust_fixed_price( json_decode( get_post_meta( $product_id, '_sale_price_wmcp', true ), true ) );
@@ -245,31 +192,80 @@ class WOOMULTI_CURRENCY_F_Frontend_Price {
 	}
 
 	/**
-	 * @param $html_price    default price
-	 * @param $a
+	 * @param $product WC_Product|WC_Product_Variable
+	 * @param bool $currency_code
+	 * @param bool $raw
+	 *
+	 * @return bool|float|int|mixed|string
+	 */
+	public static function get_variation_min_price( $product, $currency_code = false, $raw = false ) {
+		$variation_ids     = $product->get_visible_children();
+		$price_min         = false;
+		$check_fixed_price = self::$settings->check_fixed_price();
+		foreach ( $variation_ids as $variation_id ) {
+			$variation = wc_get_product( $variation_id );
+			if ( $variation ) {
+				$price = 0;
+				if ( ! $currency_code ) {
+					$current_currency = self::$settings->get_current_currency();
+				} elseif ( ! $raw ) {
+					$current_currency = $currency_code;
+				}
+				if ( $check_fixed_price && ! $raw ) {
+					$product_id    = $variation_id;
+					$product_price = wmc_adjust_fixed_price( json_decode( get_post_meta( $product_id, '_regular_price_wmcp', true ), true ) );
+					$sale_price    = wmc_adjust_fixed_price( json_decode( get_post_meta( $product_id, '_sale_price_wmcp', true ), true ) );
+					if ( isset( $product_price[ $current_currency ] ) && ! $product->is_on_sale( 'edit' ) && $product_price[ $current_currency ] > 0 ) {
+						$price = $product_price[ $current_currency ];
+					} elseif ( isset( $sale_price[ $current_currency ] ) && $sale_price[ $current_currency ] > 0 ) {
+						$price = $sale_price[ $current_currency ];
+					}
+				}
+
+				if ( ! $price ) {
+					$price = $variation->get_price( 'edit' );
+					if ( ! $raw ) {
+						$price = wmc_get_price( $price, $currency_code );
+					}
+				}
+				if ( $price_min === false ) {
+					$price_min = $price;
+				}
+				if ( $price < $price_min ) {
+					$price_min = $price;
+				}
+			}
+		}
+
+		return $price_min;
+	}
+
+	/**
+	 * @param $html_price
+	 * @param $product WC_Product
 	 *
 	 * @return string
 	 */
 	public function add_approximately_price( $html_price, $product ) {
 
-		if ( is_admin() ) {
+		if ( is_admin() && ! wp_doing_ajax() ) {
 			return $html_price;
 		}
-		if ( $this->settings->get_auto_detect() == 2 ) {
+		if ( self::$settings->get_auto_detect() == 2 ) {
 			if ( '' === $product->get_price() || ! $product->is_in_stock() ) {
 				return $html_price;
 			}
-			if ( ! $this->settings->getcookie( 'wmc_currency_rate' ) || ! $this->settings->getcookie( 'wmc_currency_symbol' ) || ! $this->settings->getcookie( 'wmc_ip_info' ) ) {
+			if ( ! self::$settings->getcookie( 'wmc_currency_rate' ) || ! self::$settings->getcookie( 'wmc_currency_symbol' ) || ! self::$settings->getcookie( 'wmc_ip_info' ) ) {
 				return $html_price;
 			}
-			$geoplugin_arg = json_decode( base64_decode( $this->settings->getcookie( 'wmc_ip_info' ) ), true );
+			$geoplugin_arg = json_decode( base64_decode( self::$settings->getcookie( 'wmc_ip_info' ) ), true );
 
 			$detect_currency_code = isset( $geoplugin_arg['currency_code'] ) ? $geoplugin_arg['currency_code'] : '';
-			if ( $detect_currency_code == $this->settings->get_current_currency() ) {
+			if ( $detect_currency_code == self::$settings->get_current_currency() ) {
 				return $html_price;
 			}
-			$list_currencies    = $this->settings->get_list_currencies();
-			$default_currency   = $this->settings->get_default_currency();
+			$list_currencies    = self::$settings->get_list_currencies();
+			$default_currency   = self::$settings->get_default_currency();
 			$decimal_separator  = wc_get_price_decimal_separator();
 			$thousand_separator = wc_get_price_thousand_separator();
 			if ( $detect_currency_code && isset( $list_currencies[ $detect_currency_code ] ) ) {
@@ -279,8 +275,8 @@ class WOOMULTI_CURRENCY_F_Frontend_Price {
 				$decimals    = $list_currencies[ $default_currency ]['decimals'];
 				$current_pos = $list_currencies[ $default_currency ]['pos'];
 			}
-			$rate   = $this->settings->getcookie( 'wmc_currency_rate' );
-			$symbol = $this->settings->getcookie( 'wmc_currency_symbol' );
+			$rate   = self::$settings->getcookie( 'wmc_currency_rate' );
+			$symbol = self::$settings->getcookie( 'wmc_currency_symbol' );
 			switch ( $current_pos ) {
 				case 'left' :
 					$format = '%1$s%2$s';
@@ -309,7 +305,7 @@ class WOOMULTI_CURRENCY_F_Frontend_Price {
 			}
 			$max_price = '';
 			if ( $product->get_type() == 'variable' ) {
-				$price_max = $this->get_variation_max_price( $product, false, true );
+				$price_max = self::get_variation_max_price( $product, false, true );
 				if ( $price_max != $product->get_price( 'edit' ) ) {
 					$price_max = number_format( wc_get_price_to_display( $product, array(
 							'qty'   => 1,
@@ -322,7 +318,7 @@ class WOOMULTI_CURRENCY_F_Frontend_Price {
 					}
 				}
 			}
-			$html_price .= '<div class="wmc-approximately">' . esc_html__( 'Approximately', 'woo-multi-currency' ) . ': ' . $formatted_price . $max_price . '</div>';
+			$html_price .= '<span class="wmc-approximately">' . esc_html__( 'Approximately', 'woo-multi-currency' ) . ': ' . $formatted_price . $max_price . '</span>';
 
 		}
 
@@ -332,9 +328,9 @@ class WOOMULTI_CURRENCY_F_Frontend_Price {
 	/**
 	 * Check on checkout page
 	 */
-	public static function init() {
+	public function init() {
 
-		if ( is_admin() && ! is_ajax() ) {
+		if ( is_admin() && ! wp_doing_ajax() ) {
 			return;
 		}
 		/*Fix UX Builder of Flatsome*/
@@ -345,37 +341,78 @@ class WOOMULTI_CURRENCY_F_Frontend_Price {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			return;
 		}
-
-		$settings    = WOOMULTI_CURRENCY_F_Data::get_ins();
-		$allow_multi = $settings->get_enable_multi_payment();
-
-		$old_currency = $settings->getcookie( 'wmc_current_currency_old' );
-		$is_checkout  = is_checkout();
-		/*Checkout && Cartpage*/
+		if ( ! ( wp_doing_ajax() && isset( $_POST['action'] ) && $_POST['action'] == 'wmc_get_products_price' || ! wp_doing_ajax() ) ) {
+			return;
+		}
+		$allow_multi      = self::$settings->get_enable_multi_payment();
+		$current_currency = self::$settings->get_current_currency();
+		$old_currency     = self::$settings->getcookie( 'wmc_current_currency_old' );
 		if ( ! $allow_multi ) {
-			$cur = $is_checkout ? $settings->get_default_currency() : $old_currency;
-			$settings->set_current_currency( $cur, false );
+			if ( $this->is_checkout() ) {
+				self::$settings->set_current_currency( self::$settings->get_default_currency(), false );
+			} elseif ( $old_currency && $old_currency != $current_currency ) {
+				self::$settings->set_current_currency( $old_currency, false );
+			}
 		}
 	}
 
+	public function is_checkout() {
+		if ( class_exists( 'Polylang' ) && function_exists( 'is_checkout' ) ) {
+			return is_checkout();
+		} else {
+			return $this->has_shortcode( $this->get_post_from_url(), 'woocommerce_checkout' ) || strpos( $this->get_current_url(), wc_get_checkout_url() ) !== false || Constants::is_defined( 'WOOCOMMERCE_CHECKOUT' ) || apply_filters( 'woocommerce_is_checkout', false );
+		}
+	}
 
-	/**
-	 * Variable Parent min max price
+	public function get_post_from_url() {
+		$current_url = $this->get_current_url();
+		if ( class_exists( 'SitePress' ) ) {
+			global $sitepress;
+			remove_filter( 'url_to_postid', array( $sitepress, 'url_to_postid' ) );
+			$id = url_to_postid( $current_url );
+			add_filter( 'url_to_postid', array( $sitepress, 'url_to_postid' ) );
+		} else {
+			$id = url_to_postid( $current_url );
+		}
+
+		$post = get_post( $id );
+
+		return $post;
+	}
+
+	public function has_shortcode( $post, $tag ) {
+		return is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, $tag );
+	}
+
+	public function get_current_url() {
+		global $wp;
+		$current_url = site_url( add_query_arg( array(), $wp->request ) );
+
+		$redirect_url = isset( $_SERVER['REDIRECT_URI'] ) ? $_SERVER['REDIRECT_URI'] : '';
+		$redirect_url = ! empty( $_SERVER['REDIRECT_URL'] ) ? $_SERVER['REDIRECT_URL'] : $redirect_url;
+		$redirect_url = ! empty( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : $redirect_url;
+
+		return $current_url . $redirect_url;
+	}
+
+	/**Variable Parent min max price
 	 *
 	 * @param $price_arr
+	 * @param $product
+	 * @param $for_display
 	 *
 	 * @return array
 	 */
 	public function get_woocommerce_variation_prices( $price_arr, $product, $for_display ) {
 		$temp_arr = $price_arr;
 		if ( is_array( $price_arr ) && ! empty( $price_arr ) ) {
-			$fixed_price = $this->settings->check_fixed_price();
+			$fixed_price = self::$settings->check_fixed_price();
 
 			foreach ( $price_arr as $price_type => $values ) {
 				foreach ( $values as $key => $value ) {
 
 					if ( $fixed_price ) {
-						$current_currency = $this->settings->get_current_currency();
+						$current_currency = self::$settings->get_current_currency();
 						if ( $temp_arr['regular_price'][ $key ] != $temp_arr['price'][ $key ] ) {
 							if ( $price_type == 'regular_price' ) {
 								$regular_price_wmcp = wmc_adjust_fixed_price( json_decode( get_post_meta( $key, '_regular_price_wmcp', true ), true ) );
@@ -418,6 +455,12 @@ class WOOMULTI_CURRENCY_F_Frontend_Price {
 		return $price_arr;
 	}
 
+	/**
+	 * @param $price
+	 * @param $product
+	 *
+	 * @return float|string
+	 */
 	public function tax_handle( $price, $product ) {
 		if ( ! $price ) {
 			return $price;
@@ -428,22 +471,26 @@ class WOOMULTI_CURRENCY_F_Frontend_Price {
 		return 'incl' === get_option( 'woocommerce_tax_display_shop' ) ? wc_get_price_including_tax( $product, $data ) : wc_get_price_excluding_tax( $product, $data );
 	}
 
-	/**
-	 * Sale price with product variable
+	/**Sale price with product variable
+	 *
+	 * @param $price
+	 * @param $product WC_Product
+	 *
+	 * @return mixed
 	 */
 	public function woocommerce_product_variation_get_sale_price( $price, $product ) {
 		if ( ! $price ) {
 			return $price;
 		}
 		$product_id = $product->get_id();
-		if ( isset( $this->price[ $product_id ][ $price ] ) ) {
+		if ( ! wp_doing_ajax() && isset( $this->price[ $product_id ][ $price ] ) ) {
 			return $this->price[ $product_id ][ $price ];
 		}
 		$changes = $product->get_changes();
 
-		if ( $this->settings->check_fixed_price() && ( is_array( $changes ) ) && count( $changes ) < 1 ) {
+		if ( self::$settings->check_fixed_price() && ( is_array( $changes ) ) && count( $changes ) < 1 ) {
 
-			$currenct_currency = $this->settings->get_current_currency();
+			$currenct_currency = self::$settings->get_current_currency();
 			$product_id        = $product->get_id();
 			$product_price     = wmc_adjust_fixed_price( json_decode( get_post_meta( $product_id, '_sale_price_wmcp', true ), true ) );
 			if ( isset( $product_price[ $currenct_currency ] ) ) {
@@ -457,22 +504,26 @@ class WOOMULTI_CURRENCY_F_Frontend_Price {
 		//Do nothing to remove prices hash to alway get live price.
 	}
 
-	/**
-	 * Regular price with product variable
+	/**Regular price with product variable
+	 *
+	 * @param $price
+	 * @param $product WC_Product
+	 *
+	 * @return mixed
 	 */
 	public function woocommerce_product_variation_get_regular_price( $price, $product ) {
 		if ( ! $price ) {
 			return $price;
 		}
 		$product_id = $product->get_id();
-		if ( isset( $this->price[ $product_id ][ $price ] ) ) {
+		if ( ! wp_doing_ajax() && isset( $this->price[ $product_id ][ $price ] ) ) {
 			return $this->price[ $product_id ][ $price ];
 		}
 		$changes = $product->get_changes();
 
-		if ( $this->settings->check_fixed_price() && ( is_array( $changes ) ) && count( $changes ) < 1 ) {
+		if ( self::$settings->check_fixed_price() && ( is_array( $changes ) ) && count( $changes ) < 1 ) {
 
-			$currenct_currency = $this->settings->get_current_currency();
+			$currenct_currency = self::$settings->get_current_currency();
 			$product_id        = $product->get_id();
 			$product_price     = wmc_adjust_fixed_price( json_decode( get_post_meta( $product_id, '_regular_price_wmcp', true ), true ) );
 			if ( isset( $product_price[ $currenct_currency ] ) ) {
@@ -488,25 +539,26 @@ class WOOMULTI_CURRENCY_F_Frontend_Price {
 	}
 
 
-	/**
-	 * Sale product variable price
+	/**Sale product variable price
 	 *
 	 * @param $price
-	 * @param $product
+	 * @param $product WC_Product
+	 *
+	 * @return mixed
 	 */
 	public function woocommerce_product_variation_get_price( $price, $product ) {
 		if ( ! $price ) {
 			return $price;
 		}
 		$product_id = $product->get_id();
-		if ( isset( $this->price[ $product_id ][ $price ] ) ) {
+		if ( ! wp_doing_ajax() && isset( $this->price[ $product_id ][ $price ] ) ) {
 			return $this->price[ $product_id ][ $price ];
 		}
 		$changes = $product->get_changes();
 
-		if ( $this->settings->check_fixed_price() && ( is_array( $changes ) ) && count( $changes ) < 1 ) {
+		if ( self::$settings->check_fixed_price() && ( is_array( $changes ) ) && count( $changes ) < 1 ) {
 
-			$currenct_currency = $this->settings->get_current_currency();
+			$currenct_currency = self::$settings->get_current_currency();
 			$product_id        = $product->get_id();
 			$product_price     = wmc_adjust_fixed_price( json_decode( get_post_meta( $product_id, '_regular_price_wmcp', true ), true ) );
 			$sale_price        = wmc_adjust_fixed_price( json_decode( get_post_meta( $product_id, '_sale_price_wmcp', true ), true ) );
@@ -526,27 +578,27 @@ class WOOMULTI_CURRENCY_F_Frontend_Price {
 	}
 
 	/**
-	 * Regular price of simple product
-	 *
 	 * @param $price
-	 * @param $product
+	 * @param $product WC_Product
+	 *
+	 * @return mixed
 	 */
 	public function woocommerce_product_get_price( $price, $product ) {
 		if ( ! $price ) {
 			return $price;
 		}
 		$product_id = $product->get_id();
-		if ( isset( $this->price[ $product_id ][ $price ] ) ) {
+		if ( ! wp_doing_ajax() && isset( $this->price[ $product_id ][ $price ] ) ) {
 			return $this->price[ $product_id ][ $price ];
 		}
 		$changes = $product->get_changes();
 
-		if ( $this->settings->check_fixed_price() && ( is_array( $changes ) ) && count( $changes ) < 1 ) {
-			$currenct_currency = $this->settings->get_current_currency();
+		if ( self::$settings->check_fixed_price() && ( is_array( $changes ) ) && count( $changes ) < 1 ) {
+			$currenct_currency = self::$settings->get_current_currency();
 			$product_id        = $product->get_id();
 			$product_price     = wmc_adjust_fixed_price( json_decode( get_post_meta( $product_id, '_regular_price_wmcp', true ), true ) );
 			$sale_price        = wmc_adjust_fixed_price( json_decode( get_post_meta( $product_id, '_sale_price_wmcp', true ), true ) );
-			if ( isset( $product_price[ $currenct_currency ] ) && ! $product->is_on_sale() ) {
+			if ( isset( $product_price[ $currenct_currency ] ) && ! self::is_on_sale( $product ) ) {
 				if ( $product_price[ $currenct_currency ] > 0 ) {
 					return $this->set_cache( $product_price[ $currenct_currency ], $product_id, $price );
 
@@ -564,7 +616,7 @@ class WOOMULTI_CURRENCY_F_Frontend_Price {
 
 	/**
 	 * @param $price
-	 * @param $product
+	 * @param $product WC_Product
 	 *
 	 * @return mixed
 	 */
@@ -573,14 +625,14 @@ class WOOMULTI_CURRENCY_F_Frontend_Price {
 			return $price;
 		}
 		$product_id = $product->get_id();
-		if ( isset( $this->price[ $product_id ][ $price ] ) ) {
+		if ( ! wp_doing_ajax() && isset( $this->price[ $product_id ][ $price ] ) ) {
 			return $this->price[ $product_id ][ $price ];
 		}
 		$changes = $product->get_changes();
 
-		if ( $this->settings->check_fixed_price() && ( is_array( $changes ) ) && count( $changes ) < 1 ) {
+		if ( self::$settings->check_fixed_price() && ( is_array( $changes ) ) && count( $changes ) < 1 ) {
 
-			$currenct_currency = $this->settings->get_current_currency();
+			$currenct_currency = self::$settings->get_current_currency();
 			$product_id        = $product->get_id();
 			$product_price     = wmc_adjust_fixed_price( json_decode( get_post_meta( $product_id, '_sale_price_wmcp', true ), true ) );
 			if ( isset( $product_price[ $currenct_currency ] ) ) {
@@ -596,7 +648,7 @@ class WOOMULTI_CURRENCY_F_Frontend_Price {
 
 	/**
 	 * @param $price
-	 * @param $product
+	 * @param $product WC_Product
 	 *
 	 * @return mixed
 	 */
@@ -605,14 +657,14 @@ class WOOMULTI_CURRENCY_F_Frontend_Price {
 			return $price;
 		}
 		$product_id = $product->get_id();
-		if ( isset( $this->price[ $product_id ][ $price ] ) ) {
+		if ( ! wp_doing_ajax() && isset( $this->price[ $product_id ][ $price ] ) ) {
 			return $this->price[ $product_id ][ $price ];
 		}
 		$changes = $product->get_changes();
 
-		if ( $this->settings->check_fixed_price() && ( is_array( $changes ) ) && count( $changes ) < 1 ) {
+		if ( self::$settings->check_fixed_price() && ( is_array( $changes ) ) && count( $changes ) < 1 ) {
 
-			$currenct_currency = $this->settings->get_current_currency();
+			$currenct_currency = self::$settings->get_current_currency();
 			$product_id        = $product->get_id();
 			$product_price     = wmc_adjust_fixed_price( json_decode( get_post_meta( $product_id, '_regular_price_wmcp', true ), true ) );
 			if ( isset( $product_price[ $currenct_currency ] ) ) {
@@ -626,15 +678,29 @@ class WOOMULTI_CURRENCY_F_Frontend_Price {
 		return $this->set_cache( wmc_get_price( $price ), $product_id, $price );
 	}
 
-	/**
-	 * Set price to global. It will help more speedy.
+	/**Set price to global. It will help more speedy.
 	 *
 	 * @param $price
 	 * @param $id
+	 * @param $key
 	 *
 	 * @return mixed
 	 */
 	protected function set_cache( $price, $id, $key ) {
+		$ajax = isset( $_GET['wc-ajax'] ) ? sanitize_text_field( $_GET['wc-ajax'] ) : '';
+		if ( $ajax === 'ppc-create-order' ) {
+			/**
+			 * Fix bug with WooCommerce PayPal Payments
+			 *
+			 * 'HUF', 'JPY' and 'TWD' do not support decimals, the rest must have 2 decimals
+			 */
+			$current_currency = self::$settings->get_current_currency();
+			$args             = array( 'decimals' => 2 );
+			if ( in_array( $current_currency, array( 'HUF', 'JPY', 'TWD' ) ) ) {
+				$args['decimals'] = 0;
+			}
+			$price = WOOMULTI_CURRENCY_F_Data::convert_price_to_float( $price, $args );
+		}
 		if ( $price && $id && $key ) {
 			/*Default decimal is "."*/
 			$this->price[ $id ][ $key ] = str_replace( ',', '.', $price );
@@ -645,8 +711,28 @@ class WOOMULTI_CURRENCY_F_Frontend_Price {
 		}
 	}
 
-	public function compatible_cache_plugin( $price, $product ) {
-		return "<span class='wmc-cache-pid' data-wmc_product_id='{$product->get_id()}'>" . $price . '</span>';
-	}
+	/**Fix error 500 with Subscriptions for WooCommerce plugin from WebToffee if using $product->is_on_sale('edit') for variable_subscription product
+	 *
+	 * @param $product WC_Product
+	 *
+	 * @return bool
+	 */
+	public static function is_on_sale( $product ) {
+		$context = 'edit';
+		if ( '' !== (string) $product->get_sale_price( $context ) && $product->get_regular_price( $context ) > $product->get_sale_price( $context ) ) {
+			$on_sale = true;
 
+			if ( $product->get_date_on_sale_from( $context ) && $product->get_date_on_sale_from( $context )->getTimestamp() > time() ) {
+				$on_sale = false;
+			}
+
+			if ( $product->get_date_on_sale_to( $context ) && $product->get_date_on_sale_to( $context )->getTimestamp() < time() ) {
+				$on_sale = false;
+			}
+		} else {
+			$on_sale = false;
+		}
+
+		return $on_sale;
+	}
 }

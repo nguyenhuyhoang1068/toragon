@@ -6,8 +6,8 @@ class BeRocket_brands_show_brands_addon extends BeRocket_framework_addon_lib {
     function get_addon_data() {
         $data = parent::get_addon_data();
         return array_merge($data, array(
-            'addon_name'    => 'Show Brands',
-            'tooltip'       => 'Display brands text and image on shop page and product page'
+            "addon_name"    => __( 'Show Brands', 'brands-for-woocommerce' ),
+            "tooltip"       => __( 'Display brands text and image on shop page and product page', 'brands-for-woocommerce' ),
         ));
     }
 }

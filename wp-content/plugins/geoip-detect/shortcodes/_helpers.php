@@ -34,6 +34,7 @@ function _geoip_detect2_shortcode_options($attr) {
 	if (isset($attr['property'])) {
 		$opt['property'] = $attr['property'];
 	}
+
 	return $opt;
 }
 
@@ -58,8 +59,10 @@ function _geoip_detect_flatten_html_attr($attr) {
  */
 function geoip_detect2_shortcode_is_ajax_mode($attr) {
 	if (isset($attr['ajax'])) {
-		$value = filter_var($attr['ajax'], FILTER_VALIDATE_BOOLEAN );
-		return $value;
+		$value = filter_var($attr['ajax'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE );
+		if (is_bool($value)) {
+			return $value;
+		}
 	}
 
 	if (get_option('geoip-detect-ajax_enabled') && get_option('geoip-detect-ajax_shortcodes')) {
@@ -68,8 +71,45 @@ function geoip_detect2_shortcode_is_ajax_mode($attr) {
 	return false;
 }
 
+function _geoip_detect2_html_contains_block_elements($html) {
+	if (!$html) {
+		return false;
+	}
+	$html = mb_strtolower($html);
+
+	// There are more. But these are most common
+	$blocklevelElements = [
+		'div',
+		'p',
+		'blockquote',
+		'figure',
+		'form',
+		'h1',
+		'h2',
+		'h3',
+		'h4',
+		'h5',
+		'h6',
+		'ul',
+		'ol',
+		'pre',
+		'table',
+	];
+	foreach ($blocklevelElements as $element) {
+		if (strpos($html, '<' . $element) !== false) {
+			if (preg_match('#<' . $element . '[\s/>]#', $html)) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
 
 function _geoip_detect2_create_placeholder($tag = "span", $attr = [], $data = null, $innerHTML = '') {
+	if ($tag === 'span' && _geoip_detect2_html_contains_block_elements($innerHTML)) {
+		$tag = 'div';
+	}
+
 	$tag = sanitize_key($tag);
 	$html = "<$tag";
 

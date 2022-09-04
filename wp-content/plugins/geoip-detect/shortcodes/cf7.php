@@ -35,6 +35,13 @@ function geoip_detect2_add_wpcf7_shortcodes() {
  *
  * `[geoip_detect2_countries mycountry default:US]`
  * Visitor's country is preselected, but in case the country is unknown, use "United States"
+ * 
+ * `[geoip_detect2_countries mycountry autosave]`
+ * Visitor's country is preselected, but when the visitor changes the country, his choice is saved in his browser (in AJAX-mode only)
+ * 
+ * `[geoip_detect2_countries mycountry default:US country:US country:IT country:FR]`
+ * Visitor's country is preselected, only show US/IT/FR as possible selections, 
+ * but in case the country is unknown or not in the list, use "United States"
  *
  */
 function geoip_detect2_shortcode_country_select_wpcf7($tag) {
@@ -46,8 +53,9 @@ function geoip_detect2_shortcode_country_select_wpcf7($tag) {
 
 	$class = wpcf7_form_controls_class( $tag->type );
 	$validation_error = wpcf7_get_validation_error( $tag->name );
-	if ($validation_error)
+	if ($validation_error) {
 		$class .= ' wpcf7-not-valid';
+	}
 
 	$attr = array(
 		'name' => $tag->name,
@@ -61,8 +69,17 @@ function geoip_detect2_shortcode_country_select_wpcf7($tag) {
 		'default' => $tag->get_option('default', '', true),
 		'flag' => $tag->has_option('flag'),
 		'tel' => $tag->has_option('tel'),
+		'list' => implode(',', (array) $tag->get_option('country', '[a-zA-Z]+', false)),
+		'ajax' => $tag->get_option('ajax', '', true),
+		'autosave' => $tag->has_option( 'autosave' ),
 	);
-	
+	if ($attr['ajax'] === false /* option not given */) {
+		unset($attr['ajax']);
+	}
+	if (empty($attr['selected'])) {
+		unset($attr['selected']);
+	}
+
 	$html = geoip_detect2_shortcode_country_select($attr);
 
 	$html = sprintf(
@@ -112,7 +129,13 @@ function geoip_detect2_shortcode_text_input_wpcf7($tag) {
 		'lang' => $tag->get_option('lang', '', true),
 		'property' => $tag->get_option('property', '', true),
 		'default' => $tag->get_option('default', '', true),
+		'ajax' => $tag->get_option('ajax', '', true),
+		'autosave' => $tag->has_option( 'autosave' ),
 	);
+	if ($attr['ajax'] === false /* option not given */) {
+		unset($attr['ajax']);
+	} 
+
 	$html = geoip_detect2_shortcode_text_input($attr);
 
 	$html = sprintf(
@@ -122,50 +145,61 @@ function geoip_detect2_shortcode_text_input_wpcf7($tag) {
 	return $html;
 }
 
+function geoip_detect2_cf7_property_underscore_to_normal($name) {
+	$name = str_replace('__', '.', $name);
+	$name = _geoip_dashes_to_camel_case($name);
+
+	$tr = [
+		'region' => 'mostSpecificSubdivision',
+		'state' => 'mostSpecificSubdivision',
+	];
+	if (isset($tr[$name])) {
+		$name = $tr[$name];
+	}
+
+	return $name;
+}
+
 function geoip_detect2_shortcode_user_info_wpcf7($output, $name, $isHtml) {
 	$lines = array();
 
-	switch($name) {
-		case 'geoip_detect2_get_client_ip':
-			$lines[] = geoip_detect2_get_client_ip();
-			break;
-		case 'geoip_detect2_get_current_source_description':
-			$lines[] = geoip_detect2_get_current_source_description();
-			break;
-		case 'geoip_detect2_property_country':
-			$info = geoip_detect2_get_info_from_current_ip();
-			$lines[] = $info->country->name;
-			break;
-		case 'geoip_detect2_property_most_specific_subdivision':
-		case 'geoip_detect2_property_state':
-		case 'geoip_detect2_property_region':
-			$name = 'geoip_detect2_property_most_specific_subdivision';
-			$info = geoip_detect2_get_info_from_current_ip();
-			$lines[] = $info->mostSpecificSubdivision->name;
-			break;
-		case 'geoip_detect2_property_city':
-			$info = geoip_detect2_get_info_from_current_ip();
-			$lines[] = $info->city->name;
-			break;
+	// Custom property, e.g. `[geoip_detect2_property_extra__flag]`
+	$parts = explode('geoip_detect2_property_', $name);
+	if (count($parts) > 1 && $parts[0] === '') { // Property starts by 'geoip_detect2_property_'
+		$property = $parts[1];
+		$property = geoip_detect2_cf7_property_underscore_to_normal($property);
 
-		case 'geoip_detect2_user_info':
-			$lines[] = sprintf(__('IP of the user: %s', 'geoip-detect'), geoip_detect2_get_client_ip());
-
-			$info = geoip_detect2_get_info_from_current_ip();
-			if ($info->country->name)
-				$lines[] = sprintf(__('Country: %s', 'geoip-detect'), $info->country->name);
-			if ($info->mostSpecificSubdivision->name)
-				$lines[] = sprintf(__('State or region: %s', 'geoip-detect'), $info->mostSpecificSubdivision->name);
-			if ($info->city->name)
-				$lines[] = sprintf(__('City: %s', 'geoip-detect'), $info->city->name);
-
-			$lines[] = '';
-			$lines[] = sprintf(__('Data from: %s', 'geoip-detect'), geoip_detect2_get_current_source_description());
-			break;
-			
-		default:
-			return $output;
+		$info = geoip_detect2_get_info_from_current_ip();
+		$lines[] = geoip_detect2_shortcode_get_property_simplified($info, $property);
+	} else {
+		switch($name) {
+			case 'geoip_detect2_get_client_ip':
+				$lines[] = geoip_detect2_get_client_ip();
+				break;
+			case 'geoip_detect2_get_current_source_description':
+				$lines[] = geoip_detect2_get_current_source_description();
+				break;
+	
+			case 'geoip_detect2_user_info':
+				$lines[] = sprintf(__('IP of the user: %s', 'geoip-detect'), geoip_detect2_get_client_ip());
+	
+				$info = geoip_detect2_get_info_from_current_ip();
+				if ($info->country->name)
+					$lines[] = sprintf(__('Country: %s', 'geoip-detect'), $info->country->name);
+				if ($info->mostSpecificSubdivision->name)
+					$lines[] = sprintf(__('State or region: %s', 'geoip-detect'), $info->mostSpecificSubdivision->name);
+				if ($info->city->name)
+					$lines[] = sprintf(__('City: %s', 'geoip-detect'), $info->city->name);
+	
+				$lines[] = '';
+				$lines[] = sprintf(__('Data from: %s', 'geoip-detect'), geoip_detect2_get_current_source_description());
+				break;
+				
+			default:
+				return $output;
+		}
 	}
+
 
 	/**
 	 * Filter: geoip2_detect_wpcf7_special_mail_tags

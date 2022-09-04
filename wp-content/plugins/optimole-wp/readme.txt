@@ -2,7 +2,7 @@
 Contributors: optimole
 Tags: image optimization, convert webp, responsive images, lazy load, images, optimization, performance, photos, free cdn
 Requires at least: 4.7
-Tested up to: 5.8
+Tested up to: 6.0
 Requires PHP: 5.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.en.html
@@ -17,6 +17,8 @@ Automatically compress, optimize and serve scaled images along with next-gen Web
 > * Fully automated; [set and forget](https://docs.optimole.com/article/1173-how-to-get-started-with-optimole-in-just-3-steps)
 > * Supports all image types
 > * Supports both Retina and WebP images
+> * Machine Learning(ML) powered automatic compression
+> * AVIF format support for lower image size
 > * Cloud image library support
 > * Serves images from a global CDN for free
 > * Optimizes based on the visitor's actual device (no more guesswork and width estimations)
@@ -43,13 +45,13 @@ With the basic plan, you will be able to optimize unmetered number of images for
 Better yet. The free version is fully functional and includes all of the following great features:
 
 **Format Based Optimization**
-Our cloud-based transformation process means we can optimize images based on the format as well as serve images in next-gen formats. If your visitor is using a WebP capable browser, then Optimole will convert to WebP the image and send it to their device.
+Our cloud-based transformation process means we can optimize images based on the format as well as serve images in next-gen formats. If your visitor is using a WebP capable browser, then Optimole will convert to WebP the image and send it to their device. AVIF support included.
 
 **Cloud Library support**
 Offload your website images directly to Optimole Cloud and save storage space on your server. Cross share images between your all your websites connected to Optimole.
 
 **Image Optimization**
-Our algorithms crunch the numbers to provide the best lossy or lossless optimization for the best-looking image at the smallest size.
+Our algorithms crunch the numbers to provide the best lossy or lossless optimization for the best-looking image at the smallest size using Machine Learning(ML) powered compression.
 
 **Exact Used Size**
 Optimole will use just one image and resize it delivering a responsive image to fit perfectly on your visitors' devices. No more awkward guesses at potential screen widths. Serve scaled images instantly.
@@ -70,7 +72,7 @@ Who has time for adding watermarks? Optimole will do the hard work for you. Just
 Optimole provides an option to downgrade the image quality when it detects a slower network. Efficiently encode images by making up to 40% smaller with this neat feature to help visitors in a bottleneck.
 
 **Compatibility**
-Optimole loves page builders and has unique tweaks to solve image replacements. It also has full compatibility with the new block editor in WordPress 5.0
+Optimole loves page builders and has unique tweaks to solve image replacements. It also has full compatibility with the new block editor since WordPress 5.0
 
 **CDN**
 Optimole provides free access to a AWS CloudFront CDN with edge locations in more than 200 cities around the globe.
@@ -82,7 +84,7 @@ The stripped EXGIF data is not stored on our service. Optimole likes to work beh
 Optimole can be installed in a few clicks and then left in the back-end to do its job. Not happy with it? Optimole has a clean uninstall and your site will be just as before Optimole was installed.
 
 **Go Pro**
-Premium users will be able to optimize images for more than 25k monthly active users. Images in the Premium plan are served from AWS Cloudfront with over 200 locations all over the world.
+Premium users will be able to optimize images starting with more than 25k monthly active users. Images in the Premium plan are served from AWS Cloudfront with over 200 locations all over the world.
 
 == Screenshots ==
 
@@ -92,6 +94,99 @@ Premium users will be able to optimize images for more than 25k monthly active u
 4. Plugin settings
 
 == Changelog ==
+
+##### [Version 3.4.4](https://github.com/Codeinwp/optimole-wp/compare/v3.4.3...v3.4.4) (2022-07-14)
+
+* Enhance WooCommerce and WPBakery compatibilities when users are offloading the images to Optimole cloud.
+* Improve compatibility with all plugins that are editing the media modal tabs.
+
+
+
+
+##### [Version 3.4.3](https://github.com/Codeinwp/optimole-wp/compare/v3.4.2...v3.4.3) (2022-05-30)
+
+* Enhance Thrive compatibility when users are offloading the images to Optimole cloud.
+
+
+
+
+##### [Version 3.4.2](https://github.com/Codeinwp/optimole-wp/compare/v3.4.1...v3.4.2) (2022-05-25)
+
+* Fix edge cases for auto allowing domain on site migration.
+
+
+
+
+##### [Version 3.4.1](https://github.com/Codeinwp/optimole-wp/compare/v3.4.0...v3.4.1) (2022-05-10)
+
+* Auto allow domain when the website URL is being changed, such as moving from production -> staging or viceversa
+
+
+
+
+#### [Version 3.4.0](https://github.com/Codeinwp/optimole-wp/compare/v3.3.5...v3.4.0) (2022-04-18)
+
+* Adds Machine Learning(ML) quality compression which will predict the right quality for your image in order to get the smallest possible size with minimum perceived quality losses, delivering images with ~40% smaller size than the current solution.
+* Adds AVIF format conversion enabled by default for everyone. 
+* Fix edge case when content URL is relative and prevents Optimole from replacing the URLs.
+
+
+
+
+##### [Version 3.3.5](https://github.com/Codeinwp/optimole-wp/compare/v3.3.4...v3.3.5) (2022-03-31)
+
+#### Fixes
+- updates compatibility with FacetWP 
+- fixes warning regarding image size calculation
+
+
+
+
+##### [Version 3.3.4](https://github.com/Codeinwp/optimole-wp/compare/v3.3.3...v3.3.4) (2022-03-25)
+
+* Add support for HEIC/AVIF formats as source input
+
+
+
+
+##### [Version 3.3.3](https://github.com/Codeinwp/optimole-wp/compare/v3.3.2...v3.3.3) (2022-03-18)
+
+#### Fixes
+- adds filter <code>optml_gif_to_video_flags</code> to exclude GIF placeholders from video conversion
+- adds compatibility with Avada live to remove replacement in edit mode
+
+
+
+
+##### [Version 3.3.2](https://github.com/Codeinwp/optimole-wp/compare/v3.3.1...v3.3.2) (2022-03-17)
+
+#### Fixes
+* Hardening security for users with administrator roles. 
+* Update dependencies to the latest version.
+
+
+
+
+##### [Version 3.3.1](https://github.com/Codeinwp/optimole-wp/compare/v3.3.0...v3.3.1) (2022-03-10)
+
+#### Features
+- Adds filter, <code>optml_should_avif_ext</code> , for more control over which images are converted to AVIF, by default SVG images are not converted
+#### Fixes
+- Plugin interface header display size on safari
+
+
+
+
+#### [Version 3.3.0](https://github.com/Codeinwp/optimole-wp/compare/v3.2.1...v3.3.0) (2022-02-25)
+
+#### Features
+* Adds opt-in AVIF compatibility, improving the image optimization savings on average with at 30%
+* Major dashboard UI/UX improvements make it cleaner and easier to use.
+* Adds separate functionality for clearing only CSS/JS when Optimole is serving those.
+* Improve Optimole Cloud optimizations speed and performances
+
+
+
 
 ##### [Version 3.2.1](https://github.com/Codeinwp/optimole-wp/compare/v3.2.0...v3.2.1) (2021-10-01)
 
@@ -210,31 +305,31 @@ For both FREE and Paid plans we use AWS CloudFront CDN with more than 200 locati
 
 = I'm already using a CDN, can I use that instead of yours ? =
 
-Short answer, YES. We can help you integrate your default CDN but it will require some additional work from our side and is available to Enterprise plans.
+Short answer, YES. You will only need to whitelist the domain of your existing CDN for Optimole to pick images stored there.
 
-= I'm already using an image optimization plugin, why should I switch to OptiMole? =
+= I'm already using an image optimization plugin, why should I switch to Optimole? =
 
-You don’t need to change your existing optimization plugin, image optimization is just a small part of what we do, if you are happy with ShortPixel for e.g, feel free to continue to use it, OptiMole would then take care only of serving your image at the RIGHT size, advanced cropping and smart lazy-loading.
+You don’t need to change your existing optimization plugin, image optimization is just a small part of what we do, if you are happy with ShortPixel for e.g, feel free to continue to use it, Optimole would then take care only of serving your image at the RIGHT size, advanced cropping and smart lazy-loading.
 
 = Does Optimole handle images from Ajax content  ? =
 
 Yes, we do. By default, Optimole handle images delivered from your ajax content from admin-ajax.php ( not logged in users ) as well as WordPress REST API routes.
 
-= Can I remove the blurry placeholder from the lazyload effct ? =
+= Can I remove the blurry placeholder from the lazyload effect ? =
 
-Yes, you can. We have bundled this tweak into a plugin you can install while you have Optimole active. The blurry placeholder will be removed and the images will be still lazy-loaded. You can find the plugin tweak here -> http://bit.ly/optml-rm-lqip
+Yes, you can. You only need to toggle this feature in the plugin as explained per this doc - https://docs.optimole.com/article/1020-can-i-remove-the-blurry-placeholder-from-the-lazyload-effct
 
 = Will the original images be deleted? =
 
-Absolutely No. We use your original images as sources when deliver the optimized images.
+We use your original images as sources when deliver the optimized images. Unless you want to remove images from your server to save some space with Cloud Library by offloading images to the cloud as explained here - https://docs.optimole.com/article/1323-cloud-library-browsing
 
 = What is the difference between the Auto, High, Medium, Low compression levels? =
 
 A higher compression might result in a small loss of image quality. Selecting the auto level will let Optimole choose the minimum size with no loss in the quality of your picture.
 
-= I used Kraken, Shortpixel, Optimus, EWWW or WP Smush, Imagify  will OptiMole further optimize my images? =
+= I used Kraken, Shortpixel, Optimus, EWWW or WP Smush, Imagify  will Optimole further optimize my images? =
 
- Yes, Optimole will also take care of serving your image at the RIGHT size for your visitors and optimize them to the best possible format for their browser.
+Yes, Optimole will also take care of serving your image at the RIGHT size for your visitors and optimize them to the best possible format for their browser.
 
 = Which formats can be optimized ? =
 
@@ -248,9 +343,14 @@ Yes. We automatically detect user browser and serve WebP if is supported, otherw
 
 Yes. You need to add `define("OPTML_DISABLE_PNG_LAZYLOAD",true);` to `your wp-config.php` file.
 
+You can also use plugin's UI and exclude images by their type as explained here - https://docs.optimole.com/article/1191-exclude-from-optimizing-or-lazy-loading
+
 = Can I disable optimization for a certain image ? =
 
-Yes, you can follow this code snippet and replace the sample image with the one you need:
+Yes, you can exclude certain image by its name as explained here - https://docs.optimole.com/article/1191-exclude-from-optimizing-or-lazy-loading
+
+In case you're tech-savvy and want programatically exclude images by some conditions you can follow this code snippet and replace the sample image with the one you need or have other conditions:
+
 <code>
 add_filter('optml_dont_replace_url', function( $old, $url ) {
 	if ( $url === 'https://example.com/wp-content/uploads/2018/09/1.jpg' ) {

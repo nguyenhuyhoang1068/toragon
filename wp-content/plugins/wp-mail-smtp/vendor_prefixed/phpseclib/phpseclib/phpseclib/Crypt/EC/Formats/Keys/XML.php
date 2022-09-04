@@ -20,13 +20,14 @@
 namespace WPMailSMTP\Vendor\phpseclib3\Crypt\EC\Formats\Keys;
 
 use WPMailSMTP\Vendor\ParagonIE\ConstantTime\Base64;
-use WPMailSMTP\Vendor\phpseclib3\Math\BigInteger;
+use WPMailSMTP\Vendor\phpseclib3\Common\Functions\Strings;
 use WPMailSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Base as BaseCurve;
+use WPMailSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Montgomery as MontgomeryCurve;
 use WPMailSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Prime as PrimeCurve;
 use WPMailSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\TwistedEdwards as TwistedEdwardsCurve;
-use WPMailSMTP\Vendor\phpseclib3\Crypt\EC\BaseCurves\Montgomery as MontgomeryCurve;
-use WPMailSMTP\Vendor\phpseclib3\Common\Functions\Strings;
+use WPMailSMTP\Vendor\phpseclib3\Exception\BadConfigurationException;
 use WPMailSMTP\Vendor\phpseclib3\Exception\UnsupportedCurveException;
+use WPMailSMTP\Vendor\phpseclib3\Math\BigInteger;
 /**
  * XML Formatted EC Key Handler
  *
@@ -62,6 +63,9 @@ abstract class XML
         self::initialize_static_variables();
         if (!\WPMailSMTP\Vendor\phpseclib3\Common\Functions\Strings::is_stringable($key)) {
             throw new \UnexpectedValueException('Key should be a string - not a ' . \gettype($key));
+        }
+        if (!\class_exists('DOMDocument')) {
+            throw new \WPMailSMTP\Vendor\phpseclib3\Exception\BadConfigurationException('The dom extension is not setup correctly on this system');
         }
         $use_errors = \libxml_use_internal_errors(\true);
         $temp = self::isolateNamespace($key, 'http://www.w3.org/2009/xmldsig11#');
@@ -132,7 +136,9 @@ abstract class XML
         }
         $node = $nodes->item(0);
         $ns_name = $node->lookupPrefix($ns);
-        $node->removeAttributeNS($ns, $ns_name);
+        if ($ns_name) {
+            $node->removeAttributeNS($ns, $ns_name);
+        }
         return $dom->saveXML($node);
     }
     /**

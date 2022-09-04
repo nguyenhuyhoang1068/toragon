@@ -17,7 +17,7 @@
 		.trigger("change");
 
 	// Color picker
-	$(".colorpick")
+	$(".colorpick, .colorpickpreview")
 		.iris({
 			change: function (event, ui) {
 				$(this)
@@ -37,7 +37,7 @@
 		$(".iris-picker").hide();
 	});
 
-	$(".colorpick").on("click", function (event) {
+	$(".colorpick, .colorpickpreview").on("click", function (event) {
 		event.stopPropagation();
 	});
 
@@ -98,6 +98,76 @@
 		}
 	);
 
+	$(".user-registration").on(
+		"change",
+		"input#user_registration_integration_setting_invisible_recaptcha_v2",
+		function () {
+			if ($(this).is(":checked")) {
+				$("#user_registration_integration_setting_recaptcha_site_key")
+					.closest("tr")
+					.hide();
+				$(
+					"#user_registration_integration_setting_recaptcha_site_secret"
+				)
+					.closest("tr")
+					.hide();
+				$(
+					"#user_registration_integration_setting_recaptcha_invisible_site_key"
+				)
+					.closest("tr")
+					.show();
+				$(
+					"#user_registration_integration_setting_recaptcha_invisible_site_secret"
+				)
+					.closest("tr")
+					.show();
+			} else {
+				$("#user_registration_integration_setting_recaptcha_site_key")
+					.closest("tr")
+					.show();
+				$(
+					"#user_registration_integration_setting_recaptcha_site_secret"
+				)
+					.closest("tr")
+					.show();
+				$(
+					"#user_registration_integration_setting_recaptcha_invisible_site_key"
+				)
+					.closest("tr")
+					.hide();
+				$(
+					"#user_registration_integration_setting_recaptcha_invisible_site_secret"
+				)
+					.closest("tr")
+					.hide();
+			}
+			$(
+				"#user_registration_integration_setting_recaptcha_threshold_score_v3"
+			)
+				.closest("tr")
+				.hide();
+			$(
+				"#user_registration_integration_setting_recaptcha_site_key_hcaptcha"
+			)
+				.closest("tr")
+				.hide();
+			$(
+				"#user_registration_integration_setting_recaptcha_site_secret_hcaptcha"
+			)
+				.closest("tr")
+				.hide();
+			$("#user_registration_integration_setting_recaptcha_site_key_v3")
+				.closest("tr")
+				.hide();
+			$("#user_registration_integration_setting_recaptcha_site_secret_v3")
+				.closest("tr")
+				.hide();
+			$("#user_registration_integration_setting_invisible_recaptcha_v2")
+				.closest("tr")
+				.show();
+		}
+	);
+
 	function handleReCaptchaHideShow(value) {
 		if (value == "v3") {
 			$("#user_registration_integration_setting_recaptcha_site_key_v3")
@@ -112,7 +182,45 @@
 			$("#user_registration_integration_setting_recaptcha_site_secret")
 				.closest("tr")
 				.hide();
-		} else {
+			$(
+				"#user_registration_integration_setting_recaptcha_site_key_hcaptcha"
+			)
+				.closest("tr")
+				.hide();
+			$(
+				"#user_registration_integration_setting_recaptcha_site_secret_hcaptcha"
+			)
+				.closest("tr")
+				.hide();
+			$(
+				"#user_registration_integration_setting_recaptcha_threshold_score_v3"
+			)
+				.closest("tr")
+				.show();
+			$("#user_registration_integration_setting_invisible_recaptcha_v2")
+				.closest("tr")
+				.hide();
+			$(
+				"#user_registration_integration_setting_recaptcha_invisible_site_key"
+			)
+				.closest("tr")
+				.hide();
+			$(
+				"#user_registration_integration_setting_recaptcha_invisible_site_secret"
+			)
+				.closest("tr")
+				.hide();
+		} else if (value == "hCaptcha") {
+			$(
+				"#user_registration_integration_setting_recaptcha_site_key_hcaptcha"
+			)
+				.closest("tr")
+				.show();
+			$(
+				"#user_registration_integration_setting_recaptcha_site_secret_hcaptcha"
+			)
+				.closest("tr")
+				.show();
 			$("#user_registration_integration_setting_recaptcha_site_key_v3")
 				.closest("tr")
 				.hide();
@@ -121,8 +229,107 @@
 				.hide();
 			$("#user_registration_integration_setting_recaptcha_site_key")
 				.closest("tr")
-				.show();
+				.hide();
 			$("#user_registration_integration_setting_recaptcha_site_secret")
+				.closest("tr")
+				.hide();
+			$(
+				"#user_registration_integration_setting_recaptcha_invisible_site_key"
+			)
+				.closest("tr")
+				.hide();
+			$(
+				"#user_registration_integration_setting_recaptcha_invisible_site_secret"
+			)
+				.closest("tr")
+				.hide();
+			$(
+				"#user_registration_integration_setting_recaptcha_threshold_score_v3"
+			)
+				.closest("tr")
+				.hide();
+			$("#user_registration_integration_setting_invisible_recaptcha_v2")
+				.closest("tr")
+				.hide();
+		} else {
+			if (
+				value == "v2" &&
+				$(
+					"input#user_registration_integration_setting_invisible_recaptcha_v2"
+				).is(":checked")
+			) {
+				$(
+					"#user_registration_integration_setting_recaptcha_site_key_v3"
+				)
+					.closest("tr")
+					.hide();
+				$(
+					"#user_registration_integration_setting_recaptcha_site_secret_v3"
+				)
+					.closest("tr")
+					.hide();
+				$("#user_registration_integration_setting_recaptcha_site_key")
+					.closest("tr")
+					.hide();
+				$(
+					"#user_registration_integration_setting_recaptcha_site_secret"
+				)
+					.closest("tr")
+					.hide();
+				$(
+					"#user_registration_integration_setting_recaptcha_invisible_site_key"
+				)
+					.closest("tr")
+					.show();
+				$(
+					"#user_registration_integration_setting_recaptcha_invisible_site_secret"
+				)
+					.closest("tr")
+					.show();
+			} else {
+				$("#user_registration_integration_setting_recaptcha_site_key")
+					.closest("tr")
+					.show();
+				$(
+					"#user_registration_integration_setting_recaptcha_site_secret"
+				)
+					.closest("tr")
+					.show();
+				$(
+					"#user_registration_integration_setting_recaptcha_invisible_site_key"
+				)
+					.closest("tr")
+					.hide();
+				$(
+					"#user_registration_integration_setting_recaptcha_invisible_site_secret"
+				)
+					.closest("tr")
+					.hide();
+			}
+
+			// Common Hide for V2
+			$(
+				"#user_registration_integration_setting_recaptcha_threshold_score_v3"
+			)
+				.closest("tr")
+				.hide();
+			$(
+				"#user_registration_integration_setting_recaptcha_site_key_hcaptcha"
+			)
+				.closest("tr")
+				.hide();
+			$(
+				"#user_registration_integration_setting_recaptcha_site_secret_hcaptcha"
+			)
+				.closest("tr")
+				.hide();
+			$("#user_registration_integration_setting_recaptcha_site_key_v3")
+				.closest("tr")
+				.hide();
+			$("#user_registration_integration_setting_recaptcha_site_secret_v3")
+				.closest("tr")
+				.hide();
+			$("#user_registration_integration_setting_invisible_recaptcha_v2")
 				.closest("tr")
 				.show();
 		}
@@ -156,10 +363,117 @@
 		}
 	);
 
+	// 	Hide Email Approval Setting if not set to admin approval
+	if (
+		$("#user_registration_general_setting_login_options").val() !==
+		"admin_approval"
+	) {
+		$("#user_registration_login_option_enable_email_approval")
+			.parent()
+			.parent()
+			.parent()
+			.parent()
+			.hide();
+	} else {
+		// Store the initial value of checkbox
+		var user_registration_login_option_enable_email_approval_initial_value =
+			$("#user_registration_login_option_enable_email_approval").prop(
+				"checked"
+			);
+	}
+
+	// Toggle display of enable email approval setting
+	$("#user_registration_general_setting_login_options").on(
+		"change",
+		function () {
+			var enable_approval_row = $(
+				"#user_registration_login_option_enable_email_approval"
+			)
+				.parent()
+				.parent()
+				.parent()
+				.parent();
+
+			if ($(this).val() === "admin_approval") {
+				$("#user_registration_login_option_enable_email_approval").prop(
+					"checked",
+					user_registration_login_option_enable_email_approval_initial_value
+				);
+				enable_approval_row.show();
+			} else {
+				enable_approval_row.hide();
+				$("#user_registration_login_option_enable_email_approval").prop(
+					"checked",
+					false
+				);
+			}
+		}
+	);
+
 	// Change span with file name when user selects a file.
 	$(".user-registration-custom-file__input").on("change", function () {
 		var file = $(".user-registration-custom-file__input").prop("files")[0];
 
 		$(".user-registration-custom-selected-file").html(file.name);
 	});
+
+	$(".ur-image-uploader").on("click", function (e) {
+		ur_uploader = $(this);
+		e.preventDefault();
+		var image = wp
+			.media({
+				library: {
+					type: ["image"],
+				},
+				title: ur_uploader.upload_file,
+				// multiple: true if you want to upload multiple files at once
+				multiple: false,
+			})
+			.open()
+			.on("select", function (e) {
+				// This will return the selected image from the Media Uploader, the result is an object
+				var uploaded_image = image.state().get("selection").first();
+				// We convert uploaded_image to a JSON object to make accessing it easier
+				var image_url = uploaded_image.toJSON().url;
+				// Let's assign the url value to the input field
+				ur_uploader.attr("src", image_url);
+				if (ur_uploader.hasClass("ur-button")) {
+					ur_uploader.siblings("img").show();
+					ur_uploader.siblings("img").attr("src", image_url);
+					ur_uploader
+						.siblings("#user_registration_pdf_logo_image")
+						.val(image_url);
+					ur_uploader.hide();
+					ur_uploader.siblings(".ur-image-remover").show();
+				} else {
+					ur_uploader.attr("src", image_url);
+					ur_uploader
+						.siblings("#user_registration_pdf_logo_image")
+						.val(image_url);
+				}
+			});
+	});
+
+	$(".ur-image-remover").on("click", function (e) {
+		var ur_remover = $(this);
+		e.preventDefault();
+
+		ur_remover.siblings("img").attr("src", "");
+		ur_remover.siblings("#user_registration_pdf_logo_image").val("");
+		ur_remover.siblings(".ur-image-uploader").show();
+		ur_remover.hide();
+		ur_remover.siblings("img").hide();
+	});
+
+	// Handles radio images option click.
+	$(".radio-image")
+		.find("input")
+		.each(function () {
+			var $option_selector = $(this);
+
+			$option_selector.on("click", function () {
+				$(this).closest("ul").find("label").removeClass("selected");
+				$(this).closest("label").addClass("selected");
+			});
+		});
 })(jQuery);

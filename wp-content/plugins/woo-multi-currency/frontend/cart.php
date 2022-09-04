@@ -15,14 +15,14 @@ class WOOMULTI_CURRENCY_F_Frontend_Cart {
 		if ( $this->settings->get_enable() ) {
 			/*Fix round function with case default decimals = 0 and other currency decimal > 0*/
 			add_filter( 'woocommerce_calculated_total', array( $this, 'woocommerce_calculated_total' ), 10, 2 );
-
 		}
 	}
 
 	/**
-	 * Fix Round
+	 * @param $total
+	 * @param $cart WC_Cart
 	 *
-	 * @param $cart
+	 * @return string
 	 */
 	public function woocommerce_calculated_total( $total, $cart ) {
 		$list_currencies  = $this->settings->get_list_currencies();
@@ -41,6 +41,4 @@ class WOOMULTI_CURRENCY_F_Frontend_Cart {
 
 		return $total;
 	}
-
-
 }

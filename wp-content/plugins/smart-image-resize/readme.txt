@@ -1,15 +1,15 @@
 === Smart Image Resize - Make WooCommerce Images the Same Size ===
 Contributors: nlemsieh
 Donate link: https://paypal.me/nlemsieh
-Tags: woocommerce, product image resize, square image, same image size, cut-off image, cropped image, fix image crop, square thumbnail, resize image, picture resize, uniform image, same size, category image size, image resize without cropping, image resize, resize thumbnails, aspect ratio image, unwanted image size, fit image, fit image size, fit image dimensions, insert watermark, image white space, image empty space
+Tags: image resize,uniform images,square image,same size,woocommerce image resize,different image size,product image resize, image crop, image cut-off, resize image, fix image crop,photo resize,image crop, without cropping, image resize, resize thumbnails
 Requires at least: 4.0
-Tested up to: 5.7
+Tested up to: 6.0
 WC requires at least: 3.0
-WC tested up to: 5.1
+WC tested up to: 6.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl.html
 Requires PHP: 5.6
-Stable tag: 1.4.7
+Stable tag: 1.7.6
 
 Make WooCommerce product images the same size and uniform without cropping. No more manual image editing and photo resizing.
 
@@ -27,7 +27,7 @@ Make WooCommerce product images the same size and uniform without cropping. No m
 - Remove unwanted whitespace around image.
 - Set a custom background color of the excess space.
 - Compress thumbnails for faster page load.
-- Take control of regenerated thumbnails by selecting only used ones.
+- Generate only needed thumbnails and delete unused ones.
 - Choose which images to resize.
 
 ### Pro Features
@@ -38,7 +38,7 @@ Make WooCommerce product images the same size and uniform without cropping. No m
 
 - **🚀 Use WebP Images:** Speed up page load by reduce image file up to 90% while still providing transparency and the same quality.
 
-- **🔒Insert watermark (coming soon):** Insert logo, name, SKU, and other info on all images, attracting new potential customers through search engines, and keep images safe from unauthorized use (especially if you sell digital products or if you want to keep the copyright safe for the images you publish online such as photos, pictures, comic strips, etc.)
+- **🔒Insert watermark (beta):** Insert logo, name, SKU, and other info on all images, attracting new potential customers through search engines, and keep images safe from unauthorized use (especially if you sell digital products or if you want to keep the copyright safe for the images you publish online such as photos, pictures, comic strips, etc.)
 - **👨‍💻 Get priority support:**
 Get faster chat and email support.
 
@@ -113,6 +113,103 @@ If you are a pro user, [contact the support](https://sirplugin.com/contact.html)
 
 == Changelog ==
 
+= 1.7.6 =
+
+* Deleted the option "Use WordPress cropping" as it seems to be causing some confusion for many users. To prevent specific sizes from being resized by the plugin use the filter `wp_sir_exclude_sizes` to return an array of size names you want to exclude.
+* Fixed an issue with WebP files not deleted when the WebP feature is turned off.
+* Declared compatibility with WooCommerce 6.3
+* Added a work-around to fix a bug in Regenerate Thumbnails causing the latter to interfere with WPML.
+* Stability improvements
+
+= 1.7.5.3 =
+
+* Fix a bug when background processing is trigged from the frontend.
+
+= 1.7.5.2 =
+
+* bugfixes
+
+= 1.7.5 =
+
+* Recheck and process skipped images in the background after the parent post is saved.
+* Replace "Resize fit mode" option with "Use WordPress cropping".
+* Fix issue with Trimming border size limited to original image size.
+* Improve CMYK images handling
+* Format error message in WP CLI and avoid halting execution.
+* Fix an issue with CMYK profile not being converted to RGB in Imagick.
+* Use another image processor as fallback when current one doesn't support WebP.
+* Fix an issue with default image processor when Imagick doesn't support WebP. 
+* Minor bugfixes 
+* Stability improvement
+* Performance improvement.
+
+= 1.6.2 =
+
+* Use another image processor as fallback when current one doesn't support WebP.
+* Fix WebP Images not served in Ajax responses
+* Fix an issue with default image processor when Imagick doesn't support WebP. 
+
+= 1.6.1 =
+
+* Add the ability to custom woocommerce default sizes.
+* Stability improvement
+
+= 1.6.0 =
+
+* Add the ability to specify the resize fit mode for each size. 
+* Stability improvement
+
+= 1.5.5.1 =
+
+* Stability improvement
+
+= 1.5.5 =
+
+* Fix color issue with some CMYK images.
+* Fix faded images in some Imagick installs.
+
+= 1.5.4 =
+
+* Fix an issue with some themes not loading the correct image size.
+
+= 1.5.3 =
+
+* Stability improvement
+
+= 1.5.2 =
+
+* Fix thumbnail overwriten by WordPress when original image and thumbnail dimensions are identical
+* Fix an issue with Flatsome using full size image instead of woocommerce_single for lazy load.
+* Ignore sizes with 9999 dimension (unlimited height/width).
+* Improve WebP availability detection.
+
+= 1.5.1 =
+
+* Use Imagick as default when available.
+* Fix Avada not serving correct thumbnails on non-WooCommerce pages.
+* Improve the user experience of the settings page. 
+
+
+= 1.5.0 =
+
+* Filter processed images in the media library toolbar
+* Add filter `wp_sir_serve_webp_images`
+* Improve Whitespace trimming tool  
+
+
+= 1.4.10 =
+
+* Declare compatibility with WooCommerce (v5.2)
+
+
+= 1.4.9 =
+
+* Use GD extension by default to process large images.
+
+
+= 1.4.8 =
+
+* Fixed an issue with some images in CMYK color.
 
 = 1.4.7 =
 
@@ -369,6 +466,6 @@ Improve stability
 
  == Upgrade Notice ==
 
-  = 1.4.0 =
+  = 1.6.0 =
 
-* This update adds new important changes to make image resizing much easier. Recommanded for all users.
+* Added the ability to use a specific resizing mode for each size.

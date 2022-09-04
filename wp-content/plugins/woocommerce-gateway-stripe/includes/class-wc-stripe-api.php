@@ -39,10 +39,12 @@ class WC_Stripe_API {
 	 */
 	public static function get_secret_key() {
 		if ( ! self::$secret_key ) {
-			$options = get_option( 'woocommerce_stripe_settings' );
+			$options         = get_option( 'woocommerce_stripe_settings' );
+			$secret_key      = $options['secret_key'] ?? '';
+			$test_secret_key = $options['test_secret_key'] ?? '';
 
-			if ( isset( $options['testmode'], $options['secret_key'], $options['test_secret_key'] ) ) {
-				self::set_secret_key( 'yes' === $options['testmode'] ? $options['test_secret_key'] : $options['secret_key'] );
+			if ( isset( $options['testmode'] ) ) {
+				self::set_secret_key( 'yes' === $options['testmode'] ? $test_secret_key : $secret_key );
 			}
 		}
 		return self::$secret_key;
@@ -57,9 +59,10 @@ class WC_Stripe_API {
 	 */
 	public static function get_user_agent() {
 		$app_info = [
-			'name'    => 'WooCommerce Stripe Gateway',
-			'version' => WC_STRIPE_VERSION,
-			'url'     => 'https://woocommerce.com/products/stripe/',
+			'name'       => 'WooCommerce Stripe Gateway',
+			'version'    => WC_STRIPE_VERSION,
+			'url'        => 'https://woocommerce.com/products/stripe/',
+			'partner_id' => 'pp_partner_EYuSt9peR0WTMg',
 		];
 
 		return [
@@ -81,15 +84,19 @@ class WC_Stripe_API {
 		$user_agent = self::get_user_agent();
 		$app_info   = $user_agent['application'];
 
-		return apply_filters(
+		$headers = apply_filters(
 			'woocommerce_stripe_request_headers',
 			[
-				'Authorization'              => 'Basic ' . base64_encode( self::get_secret_key() . ':' ),
-				'Stripe-Version'             => self::STRIPE_API_VERSION,
-				'User-Agent'                 => $app_info['name'] . '/' . $app_info['version'] . ' (' . $app_info['url'] . ')',
-				'X-Stripe-Client-User-Agent' => wp_json_encode( $user_agent ),
+				'Authorization'  => 'Basic ' . base64_encode( self::get_secret_key() . ':' ),
+				'Stripe-Version' => self::STRIPE_API_VERSION,
 			]
 		);
+
+		// These headers should not be overridden for this gateway.
+		$headers['User-Agent']                 = $app_info['name'] . '/' . $app_info['version'] . ' (' . $app_info['url'] . ')';
+		$headers['X-Stripe-Client-User-Agent'] = wp_json_encode( $user_agent );
+
+		return $headers;
 	}
 
 	/**

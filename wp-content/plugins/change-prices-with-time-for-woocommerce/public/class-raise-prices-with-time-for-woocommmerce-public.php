@@ -240,10 +240,10 @@ class Raise_Prices_With_Time_For_Woocommmerce_Public {
 	 * @return void             
 	 */
 	public function rpt_increase_price_cron( $product_id, $price ) {
-		$product = wc_get_product( $product_id );				
+		$product = wc_get_product( $product_id );
+
 		if( $product ) {
 			$apply_on_sale = RPT_WC_Meta::get( $product->get_id(), 'rpt_apply_sale' );
-			
 			if ( 'yes' === $apply_on_sale && $product->is_on_sale() ) {
 				$product->set_sale_price( $price );
 			} else {
@@ -280,10 +280,15 @@ class Raise_Prices_With_Time_For_Woocommmerce_Public {
 		$rps_prices     = RPT_WC_Meta::get( $product_id );
 		$rpt_timestamps = RPT_WC_Meta::get( $product_id, '_rpt_timestamps' );
 		$rpt_timestamps = apply_filters( 'rpt_timestamps_for_countdown', $rpt_timestamps, $product_id );
+
 		if( ! $rpt_timestamps ) {
 			return;
 		}
-		
+
+		if ( ! is_array( $rpt_timestamps ) ) {
+			$rpt_timestamps = array( $rpt_timestamps );
+		}
+
 		$now    = current_time( 'timestamp' );
 		$offset = get_option('gmt_offset') * 3600;
 		$found_new_timestamp = false;
@@ -313,13 +318,14 @@ class Raise_Prices_With_Time_For_Woocommmerce_Public {
 			if ( $timestamp_offset < $now ) {
 				continue;
 			}
-			$timestamps[ $timestamp_offset ] = wc_price( $price );			
+			$timestamps[ $timestamp_offset ] = wc_price( $price );
 		}
 
 		ksort( $timestamps );
 
 		if( $found_new_timestamp ) {
-			$timestamp_with_offset = $found_new_timestamp;			
+			$timestamp_with_offset = $found_new_timestamp;
+
 			echo '<div class="rpt-countdown-container ' . ( $new_layout ? 'new-layout' : '' ) . '" data-timestamps="' . esc_attr( wp_json_encode( $timestamps ) ) . '">';
 				$show_only_countdown = apply_filters( 'rpt_wc_show_only_countdown', false );
 				if( ! $show_only_countdown && ! $new_layout ) {
@@ -328,7 +334,7 @@ class Raise_Prices_With_Time_For_Woocommmerce_Public {
 				echo '<div class="rpt-countdown ' . ( $new_layout ? 'new-layout' : '' ) . '" data-timestamp="' . $timestamp_with_offset . '" data-timezone="' . get_option('gmt_offset') . '"></div>';
 				if ( $new_layout ) {
 					$price = isset( $timestamps[ $found_new_timestamp ] ) ? $timestamps[ $found_new_timestamp ] : '';
-					if ( $price ) {						
+					if ( $price ) {
 						echo '<div class="rpt-countdown-price">' . $price . '</div>';
 					}
 				}
@@ -344,5 +350,82 @@ class Raise_Prices_With_Time_For_Woocommmerce_Public {
 		echo '<div class="rpt-loop-item">';
 		$this->show_single_product_countdown();
 		echo '</div>';
+	}
+
+	public function get_bulk_prices_for_product( $product_id ) {
+		$prices = get_option( 'rpt_bulk_products', array() );
+
+		if ( ! $prices ) {
+			return false;
+		}
+
+		$product_prices = array();
+		foreach ( $prices as $price_data ) {
+			if ( ! isset( $price_data['product_ids'] ) ) {
+				continue;
+			}
+
+			$product_ids = array_map( 'absint', $price_data['product_ids'] );
+
+			if ( ! in_array( $product_id, $product_ids ) ) {
+				continue;
+			}
+
+			$product_prices[] = $price_data;
+		}
+
+		return $product_prices;
+	}
+
+	public function filter_bulk_data( $check, $object_id, $meta_key, $single ) {
+		if ( null !== $check ) {
+			return $check;
+		}
+
+		if ( $meta_key !== '_rpt_timestamps' && $meta_key !== '_rpt_prices' ) {
+			return $check;
+		}
+
+		$product_prices = $this->get_bulk_prices_for_product( $object_id );
+
+		if ( ! $product_prices ) {
+			return $check;
+		}
+
+		$rpt_array      = array();
+		$rpt_timestamps = array();
+		$offset         = get_option('gmt_offset') * 3600;
+		$count          = 0;
+
+		$current_timestamp = time();
+
+		foreach ( $product_prices as $sale_points ) {
+			if ( ! $sale_points['date'] ) {
+				continue;
+			}
+
+			$date_array = explode( '-', $sale_points['date'] );
+
+			$time = isset( $sale_points['time'] ) ? $sale_points['time'] . ':00' : '00:00:00';
+
+			// Moving from dd-mm-yy to yy-mm-dd
+			$sale_points['date'] = $date_array[2] . '-' . $date_array[1] . '-' . $date_array[0];
+
+			$rpt_array[ $sale_points['date'] . ' ' . $time ] = $sale_points['price'];
+
+			$date = new DateTime( $sale_points['date'] . ' ' . $time );
+
+			$timestamp = $date->getTimestamp();
+			$rpt_timestamps[ $count ] = $timestamp;
+			$count++;
+		}
+
+		// Returning as array since it's a single one.
+		if ( '_rpt_timestamps' === $meta_key ) {
+			return $rpt_timestamps ? array( $rpt_timestamps ) : $check;
+		}
+
+		// Returning as array since it's a single one.
+		return $rpt_array ? array( $rpt_array ) : $check;
 	}
 }

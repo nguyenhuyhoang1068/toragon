@@ -51,9 +51,25 @@ class UR_Setting_Checkbox extends UR_Field_Settings {
 				'default'     => '',
 				'placeholder' => __( 'Choice Limit', 'user-registration' ),
 				'tip'         => __( 'Enter minimum number choices that can be selected.', 'user-registration' ),
+			),
+			'select_all'          => array(
+				'label'       => __( 'Select All ', 'user-registration' ),
+				'data-id'     => $this->field_id . '_select_all',
+				'name'        => $this->field_id . '[select_all]',
+				'class'       => $this->default_class . ' ur-settings-select',
+				'type'        => 'select',
+				'required'    => false,
+				'options'     => array(
+				'no'  => __( 'No', 'user-registration' ),
+				'yes' => __( 'Yes', 'user-registration' ),
+			),
+				'default'     => 'no',
+				'placeholder' =>'',
+				'tip'         => __( 'Enable this option to select all the options', 'user-registration' ),
 			)
 		);
 
+		$fields = apply_filters( 'checkbox_custom_advance_settings',$fields, $this->field_id, $this->default_class  );
 		$this->render_html( $fields );
 	}
 }

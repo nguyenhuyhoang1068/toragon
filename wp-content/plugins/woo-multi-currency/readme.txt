@@ -1,83 +1,87 @@
-=== Multi Currency for WooCommerce - The best free currency exchange plugin - Run smoothly on WooCommerce 4.x===
+=== CURCY - Multi Currency for WooCommerce - The best free currency exchange plugin - Run smoothly on WooCommerce 6.x===
 Contributors: villatheme, mrt3vn
 Donate link: http://www.villatheme.com/donate
-Tags: woocommerce, currency, switcher, exchange, wordpress, currency for woocommerce, multi currency for woocommerce, woocommerce multi currency, woocommerce currency, currency switcher, woocommerce currency, bitcoin
-Requires at least: 4.4
-Tested up to: 5.7
+Tags: best woocommerce currency switcher, ecommerce, multi currency for woo, multi currency in woocommerce, woocommerce, woocommerce auto currency switcher, woocommerce currency switcher, woocommerce exchange rate, woocommerce multi currency, woocommerce multi currency switcher, wordpress
+Requires at least: 5.0.0
+Tested up to: 6.0
 Requires PHP: 7.0
-Stable tag: trunk
 License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Stable tag: 2.1.22
 
 == Description ==
 
-Multi Currency for WooCommerce plugin allows your customers to browse products and checkout in multiple currencies. The plugin converts WooCommerce product price, coupons, shipping price, taxes to customer-preferred currency. Customers can select the currency on front-end with widget, currencies bar. Or you can set the plugin to detect currency based on customer’s location, site’s language.
+If you have a WooCommerce store, CURCY - Multi Currency for WooCommerce is a must-have plugin for you. CURCY - Multi Currency for WooCommerce allows your customers to switch between currencies and helps your store accept payments in multi-currency. The exchange rate can be set up manually or automatically. The plugin can automatically get customers’ geolocation and display the price in the customers’ native currency.
 
 >[Try the Demo](http://new2new.com/?item=woo-multi-currency "Demo Multi Currency for WooCommerce") | [Documents](http://docs.villatheme.com/?item=woocommerce-multi-currency "Documents") | [Pro Version](https://1.envato.market/jABDP "Pro Version") | [Facebook group](https://www.facebook.com/groups/villatheme "VillaTheme")
 
 [youtube https://youtu.be/8SH2tex-xxM]
 
 ### Important Notice:
-- Plugin works based on WooCommerce 3.x plugin.
+
+- Plugin works based on WooCommerce 4.x plugin.
+
+- To handle WP’s Conditional Tags, this plugin uses **eval()** which is very dangerous because it allows execution of arbitrary PHP code. Therefore, please only fill this field with proper conditional tags which are validated and/or provided by trusted developers.
+
 - It is released on WordPress.org and you can use plugin as free to build themes for sale.
-- Many styles and advance features are only available on pro version.
 
 ### MULTI CURRENCY FOR WOOCOMMERCE FEATURES
-&#9658; **Multi Currency:** The plugin converts WooCommerce product price, shipping price, coupon code, taxes … between currencies based on the exchange rate.
 
-&#9658; **Currencies Bar:** a small bar float on a side of your pages allows users to change to their preferred currency. Users can hover their mouse on the bar to open the currencies list. Then click on the currency name on the list to switch between currencies.
+ - **Let customers see product prices in different currencies**: Use the Currency bar (manage in Design tab), Currency Price Switcher (manage this in General tab), or shortcode to let customers switch the currency.
 
-&#9658; **Currency selector widget**: the widget is available in Appearance/ Widgets, you also can use shortcodes to display the widget on anywhere you want. The widget has 7 front-end styles to make sure it can fit with your web design.
+ - **Pay in different currencies**: Enable this option to allow your customers to pay in different currencies
 
-&#9658; **Price switcher:** the price switcher appears under the price in single product pages, allows your customers to switch between currencies. The price switcher has 4 front-end style.
+ - **Auto Detect**: Automatically detect a customer's country code based on IP address and display respective currency set for their country.
 
-&#9658; **Fixed Price:** with the fixed price option, you can add a “fixed price” for each product/variation in each currency. The fixed price will overwrite the price calculated by the exchange rate.
+ - **Geo API**: Choose between WooCommerce and External service. If this option is set to WooCommerce, our plugin will geolocate IP from ipinfo.io or ip-api.com. If this option is set to External, our plugin will use [IP Geolocation](http://www.geoplugin.com/geolocation/) by [geoPlugin](https://www.geoplugin.com/). For more details, please read geoPlugin's [Privacy Policy and User Agreement](https://www.geoplugin.com/privacy).
 
-&#9658; **Hide Currency on front-end:** this option allows you to hide a currency from customers.
+ - **Display approximate price**: If you do not want the plugin to detect customer’s country and show the price in their native currency directly when they come to your store, WooCommerce Multi Currency can still show the price in default currency AND the approximate price in the customer’s native currency
 
-&#9658; **Currency symbol position:** the plugin provides 4 ways to display currency symbol and the price.
+ - **Set the exchange rate manually**: WooCommerce Multi Currency also allows you to set up the exchange rate manually.
 
-&#9658; **Exchange rate:** update the exchange rate with data from Google Finance or enter it manually.
+ - **Manage the Exchange fee**: Every time you exchange money from one currency to another, the bank or money transfer operator may apply a currency exchange fee. The difference between the exchange rate they decide to apply and the real exchange rate traded in the market is the currency exchange fee. WooCommerce Multi Currency allows you to add permanent exchange fees to exchange rates.
 
-&#9658; **Exchange fee:** the plugin allows you to add an exchange fee to each exchange rate.
+ - **Set custom currency symbols**: You can add your custom currency symbols. Example: United States Dollar can be displayed as USD, US$, $…
 
-&#9658; **Decimal number:** the decimal number option allows you to choose how many decimal you want to display on front-end with each currency.
+ - **Set fixed price**: WooCommerce Multi Currency allows you to add fixed prices in different currencies to the product price. The fixed prices will overwrite the prices calculated by exchange rates.
 
-&#9658; **Custom currency symbol:** instead of using the default WooCommerce currency symbol. The plugin allows you to change the symbol of each currency.
-
-&#9658; **Approximate price:** the approximate price option helps you to display an approximate price in customer native currency under the original price. Help customers to see the price in their native currency. The native currency will be detected based on location.
-
-&#9658; **Geo-Detect:** the plugin will detect user country based on IP address, then select a currency to display prices. You can assign countries to currencies.
-
-&#9658; **Language Detect:** the plugin select currency to based on site language. This option works with WPML and Polylang.
-
-&#9658; **Multi Currency Checkout:** customers can check out in their selected currency. This option requires suitable payment gateways to work.
+ - **Hide Currency**: WooCommerce Multi Currency allows you to hide currencies that you do not want to be shown on the front-end.
 
 ### PREMIUM FEATURES
-All features from the free version.
 
-&#9658; **Price format:** you can create some rule to adjust final price to display beautifully for each currency such as $9.87 -> $9.99 ...
+&#9658;All features from the free version.
 
-&#9658; **Unlimited currency:** with the premium version, you can add as many currencies as you want. With the free version, you can use 2 currencies only.
+ - **Unlimited currency**: with the premium version, you can add as many currencies as you want. With the free version, you can use 2 currencies only.
 
-&#9658; **Use session**: with a website which has a cache plugin, there is a problem where the currency back to the default currency when move/reload the page. The session will help in this case by using the session to save the selected currency instead of cookies.
+ - **Use SESSION**: Enable this option and the plugin will use the session instead of cookies to save the selected currency.
 
-&#9658; **Switch currency by JS:** with the free version, the plugin will add a tag to your URL to define the selected currency, yourwebsite.com/?wmc-currency=EUR for example. The switch currency by JS can help to switch currency without adding the tag to your URL.
+ - **Force a specific currency to Checkout**: Put a mandatory currency after customers click “Place order”
 
-&#9658; **Select checkout currency:** select which currency is available to check out.
+ - **Display multiple currencies**: If the product price on the Single product page and the Checkout page is not in the same currency, this option is helpful
 
-&#9658; **Select payment methods:** select which payment method is available with each currency. Other payment methods will be hidden in the checkout page.
+ - **Price format**: you can create some rule to adjust final price to display beautifully for each currency such as $9.87 -> $9.99 ...
 
-&#9658; **Auto-update exchange rate:** the plugin will automatically update exchange rates every 30 minutes, 1 hour, 6 hours, 1 day...
+ - **Switch currency by JS**: with the free version, the plugin will add a tag to your URL to define the selected currency, yourwebsite.com/?wmc-currency=EUR for example. The switch currency by JS can help to switch currency without adding the tag to your URL.
 
-&#9658; **Finance API:** select to update exchange rate from Google Finance, Yahoo Finance, Cuex, TransferWise or from VillaTheme server.
+ - **Select payment methods**: select which payment method is available with each currency. Other payment methods will be hidden in the checkout page.
 
-&#9658; **Update exchange rate email:** the plugin will send a notification email to the site admin whenever the exchange rate is updated successfully. You can choose to send the notification email to another address if you want.
+ - **Multilingual support**: able to select which currency to be used for which language, currently support WPML and Polylang
 
-&#9658; **6 months of support:** with each purchase, you will have 6 months of support from VillaTheme. Our developers will help if you have any problem with Multi Currency for WooCommerce.
+ - **Bulk fixed price**: you can quickly add fixed price for every currency by importing them from a CSV file
+
+ - **Change currency follow**: force currency to change to the one you configure for each country when customers change their billing/shipping country
+
+ - **Update exchange rate automatically**: The plugin automatically updates exchange rates. You can set the time for the automatic update: every 30 minutes, 1 hour, 6 hours, 1 day, 2 days, 3 days, 1 week, 1 month.
+
+ - **Select currency exchange rate APIs**: You can select to update the exchange rate from VillaTheme.com, Google Finance, Yahoo Finance. More exchange rate APIs will be added in the future.
+
+ - **Receive update exchange rate email**: This option of WooCommerce Multi Currency allows the admin to receive a notification email whenever it updates the exchange rate.
+
+ - **Premium support**: with each purchase, you will have 6 or 12 months of premium support from VillaTheme. Our developers will help if you have any problems with Multi Currency for WooCommerce.
 
 &#9658; [GET PREMIUM VERSION NOW](https://1.envato.market/jABDP)
 
-### And much more things are waitting for you discover
+### And much more things are waiting for you to discover
 
 Check screenshots at https://villatheme.com/woo-multi-currency/ or https://villatheme.com/extensions/woo-multi-currency/
 
@@ -92,6 +96,44 @@ Check screenshots at https://villatheme.com/woo-multi-currency/ or https://villa
 - [Report Bugs/Issues](https://villatheme.com/supports)
 
 ### MAY BE YOU NEED
+
+[ChinaDS – Taobao Dropshipping for WooCommerce](https://bit.ly/chinads): Another Taobao dropshipping solution for WooCommerce stores
+
+[9MAIL – WordPress Email Templates Designer](https://bit.ly/9mail-wp-email-templates-designer): Replace plaintext WordPress emails with more beautiful and professional templates
+
+[EPOI – WP Points and Rewards](https://bit.ly/epoi-wordpress-points-and-rewards): Points and Rewards system for a WordPress website
+
+[WebPOS – Point of Sale for WooCommerce](https://bit.ly/webpos-point-of-sale-for-woocommerce): Point of Sale solution for WooCommerce stores
+
+[Jagif – WooCommerce Free Gift](https://bit.ly/jagif): Giving gifts to your customers can never be more easier
+
+[COREEM – Coupon Reminder for WooCommerce](http://bit.ly/woo-coupon-reminder): Send emails to customers to remind them of their coupons, especially ones which are about to expire
+
+[COMPE – WooCommerce Compare Products](https://bit.ly/compe-woo-compare-products): Help your customers compare two or more products to find out the right one they need
+
+[W2S – Migrate WooCommerce to Shopify](https://bit.ly/w2s-migrate-woo-to-shopify): Migrate WooCommerce products to Shopify easily via the official Shopify REST Admin API
+
+[REDIS - WooCommerce Dynamic Pricing and Discounts](https://bit.ly/redis-woo-dynamic-pricing-and-discounts): Create flexible pricing rules for products
+
+[EXMAGE - WordPress Image Links](https://bit.ly/exmage): Save storage by using external image URLs
+
+[Pofily – WooCommerce Product Filters](https://bit.ly/pofily-woo-product-filters): Advanced filters for WooCommerce
+
+[Bopo – Woo Product Bundle Builder](https://bit.ly/bopo-woo-product-bundle-builder): Let the plugin provide your customers with a very flexible and convenient way to purchase bundles
+
+[WPBulky – WordPress Bulk Edit Post Types](https://bit.ly/wpbulky): Save time editing posts/pages/attachment... and other custom post types except for ones created by WooCommerce(product, shop_order and shop_coupon)
+
+[Bulky - Bulk Edit Products for WooCommerce](http://bit.ly/bulk-edit-products-for-woo): Quickly and easily edit your products in bulk. This plugin will save you tons of time editing products.
+
+[Catna – Woo Name Your Price and Offers](http://bit.ly/catna-woo-name-your-price-and-offers): Name Your Price and Offers
+
+[Product Size Chart For WooCommerce](http://bit.ly/product-size-chart-for-woo): A simple but flexible solution to create size chart for your products
+
+[Checkout Upsell Funnel for WooCommerce](http://bit.ly/woo-checkout-upsell-funnel): Offer product suggestions and smart order bumps on checkout page
+
+[Email Template Customizer for WooCommerce](http://bit.ly/woo-email-template-customizer): Customize WooCommerce emails to make them more beautiful and professional after only several mouse clicks
+
+[Dropshipping and Fulfillment for AliExpress and WooCommerce](http://bit.ly/woo-aliexpress-dropshipping): Free dropshipping solution - Transfer data from AliExpress products to WooCommerce effortlessly and fulfill AliExpress orders automatically
 
 [Cart All In One For WooCommerce](http://bit.ly/woo-cart-all-in-one): All cart features you need in one simple plugin
 
@@ -152,6 +194,119 @@ Check screenshots at https://villatheme.com/woo-multi-currency/ or https://villa
 4. Design tab in setting page
 
 == Changelog ==
+
+/*2.1.23 - 2022.07.25*/
+- Fixed: Fill order data in WooCommerce analytics
+
+/*2.1.22 - 2022.06.20*/
+- Fixed: Compatibility issues with WPC Product Bundles for WooCommerce by WPClever
+- Fixed: Flag css overridden by some themes
+
+/*2.1.21 - 2022.06.18*/
+- Fixed: Price not consistent when going to checkout then going to other pages at the first load if Pay in many currencies option is turned off
+
+/*2.1.20 - 2022.06.03*/
+- Fixed: Sanitize/escape data + small fixes
+
+/*2.1.19 - 2022.06.02*/
+- Fixed: Sanitize/escape data
+- Added: New shortcode [woo_multi_currency_layout10]
+- Optimized: RTL
+- Optimized: Sync checkout currency and automatically reload checkout page to work correctly with the new PayPal gateway
+
+/*2.1.18 - 2022.05.31*/
+- Fixed: Correctly escape all URLs
+
+/*2.1.17 - 2022.05.30*/
+- Fixed: Compatibility issues with WooCommerce TM Extra Product Options By ThemeComplete
+- Fixed: Compatibility issues with TeraWallet and UddoktaPay Gateway
+- Updated: Compatibility with WP 6.0
+
+/*2.1.16 - 2022.05.04*/
+- Fixed: Deprecated _register_controls notice from Elementor 3.6
+- Fixed: Some warning notices on the plugin settings page and admin orders page in some cases
+- Fixed: Compatibility issues with TerraWallet - credit not converted if order status is manually switched to paid statuses after payment; cashback conversion
+- Fixed: Compatibility issues with Visual Products Configurator by ORION - linked options not converting
+
+/*2.1.15 - 2022.04.22*/
+- Fixed: Compatibility issues with LearnPress – WooCommerce Payment Methods Integration
+- Fixed: Compatibility issues with Flexible Shipping by WP Desk - do not convert INF
+- Updated: Make Approximate price feature work as configured in "Currency by Country" feature if enabled
+- Updated: Support Class
+
+/*2.1.14 - 2022.03.29*/
+- Fixed: Compatibility issues with LearnPress – WooCommerce Payment Methods Integration
+- Updated: Support Class
+
+/*2.1.13 - 2022.03.21*/
+- Fixed: Compatibility issues with Bookly
+- Fixed: Compatibility issues with Learnpress
+- Fixed: Compatibility issues with TeraWallet
+- Fixed: Compatibility issues with WooCommerce Name Your Price by Kathy Darling
+- Improved: WP rocket compatibility - mandatory cookies filter
+- Updated: Support Class
+
+/**2.1.12 - 2022.01.26**/
+- Fixed: Error with Learnpress new versions
+- Updated: Compatibility with WP 5.9
+
+/**2.1.11 - 2022.01.15**/
+- Fixed: Deprecated is_ajax in WC6.1
+
+/**2.1.10 - 2022.01.11**/
+- Updated: VillaTheme_Support
+- Updated: Added Trademark name
+- Fixed: Compatibility issues with WooCommerce Payments plugin
+- Fixed: Compatibility issues with Woo Discount Rules plugin by Flycart(prices in discount table not converted in some cases)
+- Fixed: Compatibility issues with PPOM for WooCommerce by N-MEDIA - Najeeb Ahmad
+
+/**2.1.9 - 2021.12.11**/
+- Fixed: Compatibility with Woo Discount Rules: fixed regular price is not used to calculate discount if "Calculate discount from" option(Woo Discount Rules settings) is set to Regular price
+- Updated: SCSS
+- Fixed: Price format of EUR may have be incorrect due to WooCommerce Payments plugin
+- Fixed: Analytics net sales in some cases
+- Fixed: Some compatibility issues with WPC Product Bundles for WooCommerce plugin by WPClever
+- Fixed: Reduce z-index of product price switcher to not cover zoom featured/gallery image when zooming
+
+**2.1.8 - 2021.10.26**
+- Fixed: Make converted coupon min/max amount round with respective currency decimals
+- Fixed: Incorrect price shown by calculate_extra_price_ajax_handler ajax(WooCommerce Extra Product Options Pro by ThemeHigh)
+- Fixed: Compatibility issue with Yith frequently bought together, OrderBumps: WooCommerce Checkout Offers - WooFunnels
+- Fixed: Shipping issue with CDEK + Aramex shipping methods
+- Updated: [woo_multi_currency_exchange] shortcode can now be used to print out product price
+- Added: Compatibility with Catna – WooCommerce Name Your Price and Offers(convert price + support fixed price for Name your price fields)
+- Added: Compatibility with WooCommerce Boost Sales new feature - dynamic price and discount for bundle
+
+**2.1.7 - 2021.07.31**
+- Fixed: Flexible shipping cost not converting
+- Fixed: WooCommerce Booking resource not converting
+- Fixed: WooCommerce Product addons compatibility issue
+- Fixed: Conversion issue with Smart bundle for WooCommerce plugin
+- Fixed: Conversion issue with PPOM for WooCommerce plugin
+- Fixed: Missing VAT information in emails
+- Updated: Compatibility with WP 5.8 and WC 5.5
+- Updated: Class VillaTheme_Support
+- Added: ETH, LTC, ZWL
+
+**2.1.6.6 - 2021.06.18**
+- Fixed: Fixed price of simple subscription product not saving
+- Fixed: Shipping class costs conversion
+- Updated: Support class
+
+**2.1.6.5 - 2021.06.15**
+- Fixed: Division by zero in price filter of some themes
+- Added: Unlock the "Rate decimals" option
+
+**2.1.6.4 - 2021.06.11**
+- Fixed: Division by zero when using price filter in some cases
+- Updated: Order stats from other currencies are converted to default currency in WooCommerce Analytics(revenue/orders)
+
+**2.1.6.3 - 2021.06.03**
+- Fixed: Price issue with variable subscription - WooCommerce Subscription
+- Added: Change WooCommerce price filter step according to currency
+- Added: Compatibility with Woo Discount Rules from Flycart including Bulk discount(percentage+fixed), Product adjustment(percentage+fixed), Cart adjustment(percentage discount only)
+- Added: Option to enable/disable the use of rel="nofollow" in currency switcher buttons
+
 **2.1.6.2 - 2021.03.06**
 - Fixed: Price issue with Visual Product Configurator
 - Fixed: WooCommerce subscription - renew subscription + fixed price issue
@@ -378,5 +533,6 @@ Check screenshots at https://villatheme.com/woo-multi-currency/ or https://villa
 
 /*2.0.0 - 2017.11.09*/
 - Updated: New version 2.0
-
+- VillaThemePlugins:[{"title":"9MAIL - WordPress Email Templates Designer","link":"https:\/\/1.envato.market\/kj3VaN","thumb":"https:\/\/s3.envato.com\/files\/398495606\/icon-80x80.jpg","image":"https:\/\/s3.envato.com\/files\/398495607\/01_preview.jpg","description":"","free_url":"https:\/\/bit.ly\/9mail-wp-email-templates-designer","slug":"9mail-wordpress-email-templates-designer","demo_url":"https:\/\/new2new.com\/?item=9mail"},{"title":"ALD - Aliexpress Dropshipping and Fulfillment for WooCommerce","link":"https:\/\/1.envato.market\/PeXrM","thumb":"https:\/\/s3.envato.com\/files\/313200023\/logo.png","image":"https:\/\/s3.envato.com\/files\/313200024\/01_preview.jpg","description":"","free_url":"http:\/\/bit.ly\/aliexpress-dropshipping-and-fulfillment-for-woocommerce","slug":"aliexpress-dropshipping-and-fulfillment-for-woocommerce","demo_url":"https:\/\/alidropship.new2new.com\/my-account\/"},{"title":"Bopo - WooCommerce Product Bundle Builder - Build Your Own Box","link":"https:\/\/1.envato.market\/4eLB0L","thumb":"https:\/\/s3.envato.com\/files\/373911199\/logo.jpg","image":"https:\/\/s3.envato.com\/files\/373911201\/01_preview.jpg","description":"","free_url":"https:\/\/bit.ly\/bopo-woo-product-bundle-builder","slug":"bopo-woo-product-bundle-builder","demo_url":"https:\/\/new2new.com\/?item=bopo"},{"title":"Bulky - WooCommerce Bulk Edit Products, Orders, Coupons","link":"https:\/\/1.envato.market\/vn4ZEA","thumb":"https:\/\/s3.envato.com\/files\/350081094\/bulky-logo.png","image":"https:\/\/s3.envato.com\/files\/350081095\/01_preview.jpg","description":"","free_url":"https:\/\/bit.ly\/bulk-edit-products-for-woo","slug":"bulky-woocommerce-bulk-edit-products","demo_url":"https:\/\/new2new.com\/?item=bulky-woocommerce-bulk-edit-products"},{"title":"Catna - WooCommerce Name Your Price and Offers","link":"https:\/\/1.envato.market\/kjamOx","thumb":"https:\/\/s3.envato.com\/files\/351503884\/catna-logo.jpg","image":"https:\/\/s3.envato.com\/files\/351503885\/01_preview.jpg","description":"","free_url":"https:\/\/bit.ly\/catna-woo-name-your-price-and-offers","slug":"catna-woocommerce-name-your-price-and-offers","demo_url":"https:\/\/new2new.com\/?item=catna-woocommerce-name-your-price-and-offers"},{"title":"CURCY - WooCommerce Multi Currency - Currency Switcher","link":"https:\/\/1.envato.market\/jABDP","thumb":"https:\/\/s3.envato.com\/files\/253444721\/logo.png","image":"https:\/\/s3.envato.com\/files\/253444722\/01_preview.jpg","description":"","free_url":"http:\/\/bit.ly\/woo-multi-currency","slug":"woocommerce-multi-currency","demo_url":"http:\/\/new2new.com\/?item=woo-multi-currency"},{"title":"eCommerce Notification - Live Feed Recent Sales","link":"https:\/\/1.envato.market\/K3W9N","thumb":"https:\/\/s3.envato.com\/files\/352150438\/logo.jpg","image":"https:\/\/s3.envato.com\/files\/352150439\/01_preview.jpg","description":"","free_url":"","slug":"ecommerce-notification","demo_url":"http:\/new2new.com\/?item=wordpress-ecommerce-notification"},{"title":"Fakiew - Virtual Reviews for WooCommerce","link":"https:\/\/1.envato.market\/b3zV5m","thumb":"https:\/\/s3.envato.com\/files\/397952552\/icon-80x80.jpg","image":"https:\/\/s3.envato.com\/files\/397952553\/01_preview.jpg","description":"","free_url":"http:\/\/bit.ly\/woo-virtual-reviews","slug":"woo-virtual-reviews","demo_url":"http:\/\/new2new.com\/?item=fakiew"},{"title":"Pofily - WooCommerce Product Filters -  SEO Product Filter","link":"https:\/\/1.envato.market\/kj9ZJn","thumb":"https:\/\/s3.envato.com\/files\/364625738\/logo.jpg","image":"https:\/\/s3.envato.com\/files\/364625739\/01_preview.jpg","description":"","free_url":"https:\/\/bit.ly\/pofily-woo-product-filters","slug":"pofily-woocommerce-product-filters","demo_url":"https:\/\/new2new.com\/?item=pofily"},{"title":"S2W - Import Shopify to WooCommerce - Migrate from Shopify to WooCommerce","link":"https:\/\/1.envato.market\/9arQ5","thumb":"https:\/\/s3.envato.com\/files\/280988792\/logo.png","image":"https:\/\/s3.envato.com\/files\/280988793\/01_preview.jpg","description":"","free_url":"http:\/\/bit.ly\/import-shopify-to-woocommerce","slug":"s2w-import-shopify-to-woocommerce","demo_url":"https:\/\/new2new.com\/?item=s2w"},{"title":"Sales Countdown Timer for WooCommerce and WordPress","link":"https:\/\/1.envato.market\/962d3","thumb":"https:\/\/s3.envato.com\/files\/353055370\/icon-80x80.jpg","image":"https:\/\/s3.envato.com\/files\/353055371\/01_preview.jpg","description":"","free_url":"http:\/\/bit.ly\/sales-countdown-timer","slug":"sales-countdown-timer","demo_url":"http:\/\/new2new.com\/?item=sales-countdown-timer"},{"title":"W2S - Migrate WooCommerce to Shopify","link":"https:\/\/1.envato.market\/vnr5Nj","thumb":"https:\/\/s3.envato.com\/files\/397715848\/icon-80x80.jpg","image":"https:\/\/s3.envato.com\/files\/397715849\/01_preview.jpg","description":"","free_url":"https:\/\/bit.ly\/w2s-migrate-woo-to-shopify","slug":"w2s-migrate-woocommerce-to-shopify","demo_url":"https:\/\/new2new.com\/?item=w2s"},{"title":"WebPOS - WooCommerce POS - Point of Sale","link":"https:\/\/1.envato.market\/7m7Jmd","thumb":"https:\/\/s3.envato.com\/files\/396660249\/icon-80x80.jpg","image":"https:\/\/s3.envato.com\/files\/396660250\/01_preview.jpeg","description":"","free_url":"https:\/\/bit.ly\/webpos-point-of-sale-for-woocommerce","slug":"webpos-point-of-sale-for-woocommerce","demo_url":"https:\/\/new2new.com\/?item=webpos"},{"title":"WooCommerce Abandoned Cart Recovery - Send Cart Recovery Email Plugin - SMS - Messenger","link":"https:\/\/1.envato.market\/roBbv","thumb":"https:\/\/s3.envato.com\/files\/280988198\/logo.png","image":"https:\/\/s3.envato.com\/files\/280988199\/01_preview.jpg","description":"","free_url":"http:\/\/bit.ly\/woo-abandoned-cart-recovery","slug":"woocommerce-abandoned-cart-recovery","demo_url":"http:\/\/new2new.com\/?item=woocommerce-abandoned-cart-recovery"},{"title":"WooCommerce Boost Sales - WooCommerce Cross sell and Upsell","link":"https:\/\/1.envato.market\/yQBL3","thumb":"https:\/\/s3.envato.com\/files\/350622164\/logo.jpg","image":"https:\/\/s3.envato.com\/files\/350622165\/01_preview.jpg","description":"","free_url":"http:\/\/bit.ly\/woo-boost-sales","slug":"woocommerce-boost-sales","demo_url":"http:\/\/new2new.com\/?item=woocommerce-boost-sales"},{"title":"WooCommerce Cart All In One - One Click Checkout - Sticky|Side Cart","link":"https:\/\/1.envato.market\/bW20B","thumb":"https:\/\/s3.envato.com\/files\/320018552\/logo.png","image":"https:\/\/s3.envato.com\/files\/320018553\/01_preview.jpg","description":"","free_url":"http:\/\/bit.ly\/woo-cart-all-in-one","slug":"woo-cart-all-in-one","demo_url":"https:\/\/new2new.com\/?item=woocommerce-cart-all-in-one"},{"title":"WooCommerce Checkout Upsell Funnel - Order Bump","link":"https:\/\/1.envato.market\/oeemke","thumb":"https:\/\/s3.envato.com\/files\/351562730\/logo-funnel.jpg","image":"https:\/\/s3.envato.com\/files\/351562731\/01_preview.jpg","description":"","free_url":"http:\/\/bit.ly\/woo-checkout-upsell-funnel","slug":"woocommerce-checkout-upsell-funnel","demo_url":"https:\/\/new2new.com\/?item=woocommerce-checkout-upsell-funnel"},{"title":"WooCommerce Coupon Box","link":"https:\/\/1.envato.market\/DzJ12","thumb":"https:\/\/s3.envato.com\/files\/280883533\/logo.png","image":"https:\/\/s3.envato.com\/files\/280883534\/01_preview.jpg","description":"","free_url":"http:\/\/bit.ly\/woo-coupon-box-free","slug":"woocommerce-coupon-box","demo_url":"http:\/\/new2new.com\/?item=woo-coupon-box"},{"title":"WooCommerce Email Template Customizer","link":"https:\/\/1.envato.market\/BZZv1","thumb":"https:\/\/s3.envato.com\/files\/305875470\/logo.png","image":"https:\/\/s3.envato.com\/files\/305875471\/01_preview.jpg","description":"","free_url":"http:\/\/bit.ly\/woo-email-template-customizer","slug":"woocommerce-email-template-customizer","demo_url":"https:\/\/new2new.com\/?item=woocommerce-email-template-customizer"},{"title":"WooCommerce Free Shipping Bar - Increase Average Order Value","link":"https:\/\/1.envato.market\/N3mPV","thumb":"https:\/\/s3.envato.com\/files\/353174709\/logo.jpg","image":"https:\/\/s3.envato.com\/files\/353174710\/01_preview.jpg","description":"","free_url":"http:\/\/bit.ly\/woo-free-shipping-bar","slug":"woocommerce-free-shipping-bar","demo_url":"http:\/\/new2new.com\/?item=woocommerce-free-shipping-bar"},{"title":"WooCommerce Lookbook - Shop by Instagram - Shoppable with Product Tags","link":"https:\/\/1.envato.market\/mV0bM","thumb":"https:\/\/s3.envato.com\/files\/280871714\/logo.png","image":"https:\/\/s3.envato.com\/files\/280871715\/01_preview.jpg","description":"","free_url":"http:\/\/bit.ly\/woo-lookbook","slug":"woocommerce-lookbook","demo_url":"http:\/\/new2new.com\/?item=woocommerce-lookbook"},{"title":"WooCommerce Lucky Wheel - Spin to win","link":"https:\/\/1.envato.market\/qXBNY","thumb":"https:\/\/s3.envato.com\/files\/280996372\/logo.png","image":"https:\/\/s3.envato.com\/files\/280996374\/01_preview.jpg","description":"","free_url":"http:\/\/bit.ly\/woo-lucky-wheel","slug":"woocommerce-lucky-wheel","demo_url":"http:\/\/new2new.com\/?item=woocommerce-lucky-wheel"},{"title":"WooCommerce Notification - Boost Your Sales","link":"https:\/\/1.envato.market\/djEZj","thumb":"https:\/\/s3.envato.com\/files\/353057742\/icon-80x80.jpg","image":"https:\/\/s3.envato.com\/files\/353057743\/01_preview.jpg","description":"","free_url":"http:\/\/bit.ly\/woo-notification","slug":"woocommerce-notification","demo_url":"http:\/\/new2new.com\/?item=woocommerce-notification"},{"title":"WooCommerce Orders Tracking - SMS - PayPal Tracking Autopilot","link":"https:\/\/1.envato.market\/6ZPBE","thumb":"https:\/\/s3.envato.com\/files\/352803924\/logo.jpg","image":"https:\/\/s3.envato.com\/files\/352803926\/01_preview.jpg","description":"","free_url":"http:\/\/bit.ly\/woo-orders-tracking","slug":"woocommerce-orders-tracking","demo_url":"http:\/\/new2new.com\/?item=woo-orders-tracking"},{"title":"WooCommerce Photo Reviews - Review Reminders - Review for Discounts","link":"https:\/\/1.envato.market\/L3WrM","thumb":"https:\/\/s3.envato.com\/files\/352851954\/icon-80x80.jpg","image":"https:\/\/s3.envato.com\/files\/352851955\/01_preview.jpg","description":"","free_url":"http:\/\/bit.ly\/woo-photo-reviews","slug":"woocommerce-photo-reviews","demo_url":"http:\/\/new2new.com\/?item=woocommerce-photo-reviews"},{"title":"WooCommerce Product Builder - Custom PC Builder - Product Configurator","link":"https:\/\/1.envato.market\/M3Wjq","thumb":"https:\/\/s3.envato.com\/files\/352612388\/icon-80x80.jpg","image":"https:\/\/s3.envato.com\/files\/352610841\/01_preview.jpg","description":"","free_url":"http:\/\/bit.ly\/woo-product-builder","slug":"woocommerce-product-builder","demo_url":"http:\/\/new2new.com\/?item=woocommerce-product-builder"},{"title":"WooCommerce Product Variations Swatches","link":"https:\/\/1.envato.market\/bd0ek","thumb":"https:\/\/s3.envato.com\/files\/285353733\/logo-pre.png","image":"https:\/\/s3.envato.com\/files\/285166362\/01_preview.jpg","description":"","free_url":"http:\/\/bit.ly\/product-variations-swatches-for-woocommerce","slug":"woocommerce-product-variations-swatches","demo_url":"http:\/\/new2new.com\/?item=woo-product-variations-swatches"},{"title":"WooCommerce Thank You Page Customizer - Increase Customer Retention Rate - Boost Sales","link":"https:\/\/1.envato.market\/Q3Weo","thumb":"https:\/\/s3.envato.com\/files\/281444301\/logo.png","image":"https:\/\/s3.envato.com\/files\/281444302\/01_preview.jpg","description":"","free_url":"http:\/\/bit.ly\/woo-thank-you-page-customizer","slug":"woocommerce-thank-you-page-customizer","demo_url":"http:\/\/new2new.com\/?item=woo-thank-you-page-customizer"},{"title":"WordPress Lucky Wheel - Lucky Wheel Spin and Win","link":"https:\/\/1.envato.market\/xDRb1","thumb":"https:\/\/s3.envato.com\/files\/281013744\/logo.png","image":"https:\/\/s3.envato.com\/files\/281013745\/01_preview.jpg","description":"","free_url":"http:\/\/bit.ly\/wp-lucky-wheel","slug":"wordpress-lucky-wheel","demo_url":"http:\/\/new2new.com\/?item=wordpress-lucky-wheel"},{"title":"WPBulky - WordPress Bulk Edit Post Types","link":"https:\/\/1.envato.market\/MXBDjK","thumb":"https:\/\/s3.envato.com\/files\/357882803\/icon80x80.jpg","image":"https:\/\/s3.envato.com\/files\/357882804\/01_preview.jpg","description":"","free_url":"https:\/\/bit.ly\/wpbulky","slug":"wpbulky-wordpress-bulk-edit-post-types","demo_url":"https:\/\/new2new.com\/?item=wpbulky"}]
+- VillaThemeCampaign:{"heading":"ALD \u2013 Aliexpress Dropshipping and Fulfillment for WooCommerce","description":"Discount 30% OFF","link":"https:\/\/1.envato.market\/PeXrM","id":"alidiscount","start":"2022-04-15","end":"2022-12-31","loop":"2,4"}
 == Upgrade Notice ==

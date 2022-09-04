@@ -11,6 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 4.1.0
  */
 class WC_Gateway_Stripe_Eps extends WC_Stripe_Payment_Gateway {
+
+	const ID = 'stripe_eps';
+
 	/**
 	 * Notices (array)
 	 *
@@ -57,11 +60,15 @@ class WC_Gateway_Stripe_Eps extends WC_Stripe_Payment_Gateway {
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->id           = 'stripe_eps';
-		$this->method_title = __( 'Stripe EPS', 'woocommerce-gateway-stripe' );
-		/* translators: link */
-		$this->method_description = sprintf( __( 'All other general Stripe settings can be adjusted <a href="%s">here</a>.', 'woocommerce-gateway-stripe' ), admin_url( 'admin.php?page=wc-settings&tab=checkout&section=stripe' ) );
-		$this->supports           = [
+		$this->id                 = self::ID;
+		$this->method_title       = __( 'Stripe EPS', 'woocommerce-gateway-stripe' );
+		$this->method_description = sprintf(
+		/* translators: 1) HTML anchor open tag 2) HTML anchor closing tag */
+			__( 'All other general Stripe settings can be adjusted %1$shere%2$s.', 'woocommerce-gateway-stripe' ),
+			'<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=stripe' ) ) . '">',
+			'</a>'
+		);
+		$this->supports = [
 			'products',
 			'refunds',
 		];
@@ -269,7 +276,13 @@ class WC_Gateway_Stripe_Eps extends WC_Stripe_Payment_Gateway {
 
 			do_action( 'wc_gateway_stripe_process_payment_error', $e, $order );
 
-			if ( $order->has_status( [ 'pending', 'failed' ] ) ) {
+			if ( $order->has_status(
+				apply_filters(
+					'wc_stripe_allowed_payment_processing_statuses',
+					[ 'pending', 'failed' ],
+					$order
+				)
+			) ) {
 				$this->send_failed_order_email( $order_id );
 			}
 

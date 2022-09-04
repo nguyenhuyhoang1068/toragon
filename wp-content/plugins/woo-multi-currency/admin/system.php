@@ -17,7 +17,8 @@ class WOOMULTI_CURRENCY_F_Admin_System {
 		add_action( 'admin_menu', array( $this, 'menu_page' ) );
 	}
 
-	public function page_callback() { ?>
+	public function page_callback() {
+		?>
         <h2><?php esc_html_e( 'System Status', 'woo-multi-currency' ) ?></h2>
         <table cellspacing="0" id="status" class="widefat">
             <tbody>
@@ -49,17 +50,17 @@ class WOOMULTI_CURRENCY_F_Admin_System {
 
             <tr>
                 <td data-export-label="<?php esc_html_e( 'PHP Time Limit', 'woo-multi-currency' ) ?>"><?php esc_html_e( 'PHP Time Limit', 'woo-multi-currency' ) ?></td>
-                <td><?php echo ini_get( 'max_execution_time' ); ?></td>
+                <td><?php echo esc_html( ini_get( 'max_execution_time' ) ); ?></td>
             </tr>
             <tr>
                 <td data-export-label="<?php esc_html_e( 'PHP Max Input Vars', 'woo-multi-currency' ) ?>"><?php esc_html_e( 'PHP Max Input Vars', 'woo-multi-currency' ) ?></td>
 
-                <td><?php echo ini_get( 'max_input_vars' ); ?></td>
+                <td><?php echo esc_html( ini_get( 'max_input_vars' ) ); ?></td>
             </tr>
             <tr>
                 <td data-export-label="<?php esc_html_e( 'Memory Limit', 'woo-multi-currency' ) ?>"><?php esc_html_e( 'Memory Limit', 'woo-multi-currency' ) ?></td>
 
-                <td><?php echo ini_get( 'memory_limit' ); ?></td>
+                <td><?php echo esc_html( ini_get( 'memory_limit' ) ); ?></td>
             </tr>
             <tr>
                 <td data-export-label="<?php esc_html_e( 'Allow URL Open', 'woo-multi-currency' ) ?>"><?php esc_html_e( 'Allow URL Open', 'woo-multi-currency' ) ?></td>
@@ -80,7 +81,7 @@ class WOOMULTI_CURRENCY_F_Admin_System {
 					if ( $check_session ) {
 						echo '<mark class="yes"><span class="dashicons dashicons-yes"></span> <code class="private">' . esc_html( session_save_path() ) . '</code></mark> ';
 					} else {
-						echo '<mark class="error"><span class="dashicons dashicons-warning"></span> ' . sprintf( __( 'To allow logging, make %1$s writable.', 'woo-multi-currency' ), '<code>' . session_save_path() . '</code>' ) . '</mark>';
+						echo '<mark class="error"><span class="dashicons dashicons-warning"></span> ' . sprintf( __( 'To allow logging, make %1$s writable.', 'woo-multi-currency' ), '<code>' . esc_html( session_save_path() ) . '</code>' ) . '</mark>';
 					}
 					?></td>
             </tr>
@@ -92,13 +93,13 @@ class WOOMULTI_CURRENCY_F_Admin_System {
 								<?php
 								$ip = new WC_Geolocation();
 								esc_html_e( '[WooCommerce] Your IP', 'woo-multi-currency' )
-								?> : <?php echo $ip->get_ip_address() ?>
+								?> : <?php echo esc_html( $ip->get_ip_address() ) ?>
                             </strong>
                         </li>
                         <li><strong>
 								<?php
 								esc_html_e( '[WooCommerce] Your GEO IP', 'woo-multi-currency' )
-								?> : <?php echo json_encode( $ip->geolocate_ip() ) ?>
+								?> : <?php echo esc_html( json_encode( $ip->geolocate_ip() ) ) ?>
                             </strong>
                         </li>
                         <li><h3>
@@ -112,7 +113,8 @@ class WOOMULTI_CURRENCY_F_Admin_System {
             </tr>
             </tbody>
         </table>
-	<?php }
+		<?php
+	}
 
 	/**
 	 * Register a custom menu page.
@@ -124,6 +126,5 @@ class WOOMULTI_CURRENCY_F_Admin_System {
 				'page_callback'
 			)
 		);
-
 	}
-} ?>
+}

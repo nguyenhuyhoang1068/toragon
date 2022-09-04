@@ -222,6 +222,15 @@ class TRP_Settings{
             array_unshift( $settings['publish-languages'], $settings['default-language'] );
         }
 
+        // check if submitted language codes are valid. Default language is included here too
+        $check_language_codes = array_unique( array_merge($settings['translation-languages'], $settings['publish-languages']) );
+        foreach($check_language_codes as $check_language_code ){
+            if ( !trp_is_valid_language_code($check_language_code) ){
+                add_settings_error( 'trp_advanced_settings', 'settings_error', esc_html__('Invalid language code. Please try again.', 'translatepress-multilingual'), 'error' );
+                return get_option( 'trp_settings', 'not_set' );
+            }
+        }
+
         if( !empty( $settings['native_or_english_name'] ) )
             $settings['native_or_english_name'] = sanitize_text_field( $settings['native_or_english_name']  );
         else
@@ -280,6 +289,22 @@ class TRP_Settings{
                 $settings['url-slugs'][$language_code] = sanitize_title( strtolower( $settings['url-slugs'][$language_code] )) ;
             }
         }
+
+        foreach ($settings['translation-languages'] as $value=>$language){
+            if(isset($settings['translation-languages-formality'][$value])) {
+                if ( $settings['translation-languages-formality'][ $value ] == 'informal' ) {
+                    $settings['translation-languages-formality-parameter'][ $language ] = 'informal';
+                } else {
+                    if ( $settings['translation-languages-formality'][ $value ] == 'formal' ) {
+                        $settings['translation-languages-formality-parameter'][ $language ] = 'formal';
+                    } else {
+                        $settings['translation-languages-formality-parameter'][ $language ] = 'default';
+                    }
+                }
+            }
+        }
+
+        unset($settings['translation-languages-formality']);
 
         // check for duplicates in url slugs
         $duplicate_exists = false;
@@ -365,6 +390,14 @@ class TRP_Settings{
             }
         }
 
+        // Might have saved invalid language codes in the past so this code protects against SQL Injections using invalid language codes which are used in queries
+        $check_language_codes = array_unique( array_merge($settings_option['translation-languages'], $settings_option['publish-languages']) );
+        foreach($check_language_codes as $check_language_code ) {
+            if ( !trp_is_valid_language_code( $check_language_code ) ) {
+                add_filter('plugins_loaded', array($this, 'show_invalid_language_codes_error_notice'), 999999);
+            }
+        }
+
 
         /**
          * These options (trp_advanced_settings,trp_machine_translation_settings) are not part of the actual trp_settings DB option.
@@ -389,12 +422,22 @@ class TRP_Settings{
         $this->settings = $settings_option;
     }
 
+    public function show_invalid_language_codes_error_notice(){
+        $trp = TRP_Translate_Press::get_trp_instance();
+        $error_manager = $trp->get_component( 'error_manager' );
+
+        $error_manager->record_error(
+            array( 'message'         => esc_html__('Language codes can contain only A-Z a-z 0-9 - _ characters. Check your language codes in TranslatePress General Settings.', 'translatepress-multilingual'),
+                   'notification_id' => 'trp_invalid_language_code' ) );
+    }
+
     public function get_default_trp_machine_translation_settings(){
         return apply_filters( 'trp_get_default_trp_machine_translation_settings', array(
             // default settings for trp_machine_translation_settings
             'machine-translation'               => 'no',
             'translation-engine'                => 'google_translate_v2',
             'block-crawlers'                    => 'yes',
+            'automatically-translate-slug'      => 'yes',
             'machine_translation_counter_date'  => date ("Y-m-d" ),
             'machine_translation_counter'       => 0,
             'machine_translation_limit'         => 1000000
@@ -467,7 +510,7 @@ class TRP_Settings{
      *
      * @param array $languages          Array of language codes to create menu items for.
      */
-    protected function create_menu_entries( $languages ){
+    public function create_menu_entries( $languages ){
         if ( ! $this->trp_languages ){
             $trp = TRP_Translate_Press::get_trp_instance();
             $this->trp_languages = $trp->get_component( 'languages' );
@@ -476,6 +519,11 @@ class TRP_Settings{
         $published_languages['current_language'] = __( 'Current Language', 'translatepress-multilingual' );
         $languages[] = 'current_language';
         $posts = get_posts( array( 'post_type' =>'language_switcher',  'posts_per_page'   => -1  ) );
+
+        if ( count( $published_languages ) == 3 ){
+            $languages[] = 'opposite_language';
+            $published_languages['opposite_language'] = __( 'Opposite Language', 'translatepress-multilingual' );
+        }
 
         foreach ( $published_languages as $language_code => $language_name ) {
             $existing_ls = null;
@@ -580,9 +628,33 @@ class TRP_Settings{
 
         array_unshift( $links, $settings_link );
 
-        $links['go_pro'] = sprintf( '<a href="%1$s" target="_blank" style="color: #e76054; font-weight: bold;">%2$s</a>', trp_add_affiliate_id_to_link('https://translatepress.com/pricing/?utm_source=wpbackend&utm_medium=clientsite&utm_content=tpeditor&utm_campaign=tpfree'), __( 'Pro Features', 'translatepress-multilingual' ) );
-
+        if( !trp_is_paid_version() ) {
+            $links['go_pro'] = sprintf( '<a href="%1$s" target="_blank" style="color: #e76054; font-weight: bold;">%2$s</a>', esc_url( trp_add_affiliate_id_to_link( 'https://translatepress.com/pricing/?utm_source=wpbackend&utm_medium=clientsite&utm_content=tpeditor&utm_campaign=tpfree' ) ), esc_html__( 'Pro Features', 'translatepress-multilingual' ) );
+        }else {
+            $license_details = get_option( 'trp_license_details' );
+            $is_demosite     = ( strpos( site_url(), 'https://demo.translatepress.com' ) !== false );
+            if ( !empty( $license_details ) && !$is_demosite ) {
+                if ( !empty( $license_details['invalid'] ) ) {
+                    $license_detail = $license_details['invalid'][0];
+                    if ( isset( $license_detail->error ) && $license_detail->error == 'missing' ) {
+                        $links['license'] = sprintf( '<a href="%1$s" target="_blank" style="color: #e76054; font-weight: bold;">%2$s</a>', esc_url(trp_add_affiliate_id_to_link( admin_url( '/admin.php?page=trp_license_key' ) ) ), esc_html__( 'Activate License', 'translatepress-multilingual' ) );
+                    }
+                }
+            }
+        }
         return $links;
+    }
+
+    public function trp_dismiss_email_course(){
+
+        $user_id = get_current_user_id();
+
+        if( empty( $user_id ) )
+            die();
+
+        update_user_meta( $user_id, 'trp_email_course_dismissed', 1 );
+        die();
+        
     }
 
 }

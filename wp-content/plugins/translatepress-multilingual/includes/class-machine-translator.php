@@ -29,6 +29,7 @@ class TRP_Machine_Translator {
             $this->trp_languages = $trp->get_component('languages');
         }
         $this->machine_translation_codes = $this->trp_languages->get_iso_codes($this->settings['translation-languages']);
+        add_filter( 'trp_exclude_words_from_automatic_translation', array( $this,'sort_exclude_words_from_automatic_translation_array'), 99999, 1);
     }
 
     /**
@@ -66,7 +67,7 @@ class TRP_Machine_Translator {
         }
 
         // if supported languages are not stored, fetch them and update option
-        if ( empty( $data['trp_mt_supported_languages'][$this->settings['trp_machine_translation_settings']['translation-engine']]['last-checked'] ) || $force_recheck ){
+        if ( empty( $data['trp_mt_supported_languages'][$this->settings['trp_machine_translation_settings']['translation-engine']]['last-checked'] ) || $force_recheck || ( method_exists($this,'check_formality') && !isset($data['trp_mt_supported_languages'][$this->settings['trp_machine_translation_settings']['translation-engine']]['formality-supported-languages']))){
             if ( empty( $data['trp_mt_supported_languages'] ) ) {
                 $data['trp_mt_supported_languages'] = array();
             }
@@ -75,6 +76,9 @@ class TRP_Machine_Translator {
             }
 
             $data['trp_mt_supported_languages'][$this->settings['trp_machine_translation_settings']['translation-engine']]['languages'] = $this->get_supported_languages();
+            if (method_exists($this, 'check_formality')) {
+                $data['trp_mt_supported_languages'][ $this->settings['trp_machine_translation_settings']['translation-engine'] ]['formality-supported-languages'] = $this->check_formality();
+            }
             $data['trp_mt_supported_languages'][$this->settings['trp_machine_translation_settings']['translation-engine']]['last-checked'] = date("Y-m-d H:i:s" );
             update_option('trp_db_stored_data', $data );
         }
@@ -111,6 +115,8 @@ class TRP_Machine_Translator {
     }
 
     /**
+     *
+     * @deprecated
      * Check the automatic translation API keys for Google Translate and DeepL.
      *
      * @param TRP_Translate_Press $machine_translator Machine translator instance.
@@ -120,12 +126,6 @@ class TRP_Machine_Translator {
      * @return array [ (string) $message, (bool) $error ].
      */
     public function automatic_translate_error_check( $machine_translator, $translation_engine, $api_key ) {
-
-        //@TODO need to find a better solution as the code bellow does not work
-
-//        if ($this->correct_api_key!=null){
-//                return $this->correct_api_key;
-//        }
 
         $is_error       = false;
         $return_message = '';
@@ -155,10 +155,16 @@ class TRP_Machine_Translator {
                     $is_error= false;
                     $response = $machine_translator->test_request();
                     $code     = wp_remote_retrieve_response_code( $response );
-                    if ( 200 !== $code && method_exists( 'TRP_DeepL', 'deepl_response_codes' ) ) {
-                        $is_error        = true;
-                        $translate_response = TRP_DeepL::deepl_response_codes( $code );
-                        $return_message     = $translate_response['message'];
+                    if ( 200 !== $code && ( method_exists( 'TRP_DeepL', 'deepl_response_codes' ) || method_exists( 'TRP_IN_DeepL', 'deepl_response_codes' ) ) ) {
+
+						// Test whether the old deepL add-on or the new repackaging model is used
+						if ( method_exists( 'TRP_DeepL', 'deepl_response_codes' ) ) {
+							$translate_response = TRP_DeepL::deepl_response_codes( $code );
+						} else {
+							$translate_response = TRP_IN_DeepL::deepl_response_codes( $code );
+						}
+	                    $is_error       = true;
+                        $return_message = $translate_response['message'];
                     }
                 }
                 break;
@@ -179,11 +185,16 @@ class TRP_Machine_Translator {
 
     public function is_correct_api_key(){
 
-        $machine_translator = $this;
-        $translation_engine = $this->settings['trp_machine_translation_settings']['translation-engine'];
-        $api_key = $this->get_api_key();
+        if(method_exists($this, 'check_api_key_validity')){
+            $verification = $this->check_api_key_validity();
+        }else {
+            //we only need this values for automatic translate error check function for backwards compatibility
 
-        $verification = $this->automatic_translate_error_check( $machine_translator, $translation_engine, $api_key );
+            $machine_translator = $this;
+            $translation_engine = $this->settings['trp_machine_translation_settings']['translation-engine'];
+            $api_key = $this->get_api_key();
+            $verification = $this->automatic_translate_error_check( $machine_translator, $translation_engine, $api_key );
+        }
         if($verification['error']== false) {
             return true;
         }
@@ -305,16 +316,19 @@ class TRP_Machine_Translator {
         if ( !empty($strings) && is_array($strings) && method_exists( $this, 'translate_array' ) && apply_filters( 'trp_disable_automatic_translations_due_to_error', false ) === false ) {
 
             /* google has a problem translating this characters ( '%', '$', '#' )...for some reasons it puts spaces after them so we need to 'encode' them and decode them back. hopefully it won't break anything important */
-            $trp_exclude_words_from_automatic_translation = apply_filters('trp_exclude_words_from_automatic_translation', array('%', '$', '#'));
+            /* we put '%s' before '%' because google seems to transform %s into % in strings for some languages which causes a 500 Fata Error in PHP 8*/
+            $trp_exclude_words_from_automatic_translation = apply_filters('trp_exclude_words_from_automatic_translation', array('%s','%', '$', '#'));
             $placeholders = $this->get_placeholders(count($trp_exclude_words_from_automatic_translation));
             $shortcode_tags_to_execute = apply_filters( 'trp_do_these_shortcodes_before_automatic_translation', array('trp_language') );
 
             $strings = array_unique($strings);
             $original_strings = $strings;
+
             foreach ($strings as $key => $string) {
                 /* html_entity_decode is needed before replacing the character "#" from the list because characters like &#8220; (8220 utf8)
                  * will get an extra space after '&' which will break the character, rendering it like this: & #8220;
                  */
+
                 $strings[$key] = str_replace($trp_exclude_words_from_automatic_translation, $placeholders, html_entity_decode( $string ));
                 $strings[$key] = trp_do_these_shortcodes( $strings[$key], $shortcode_tags_to_execute );
             }
@@ -336,6 +350,24 @@ class TRP_Machine_Translator {
         }else {
             return array();
         }
+    }
+
+    /**
+     * @param $trp_exclude_words_from_automatic_translation
+     * @return mixed
+     *
+     * We need to sort the $trp_exclude_words_from_automatic_translation array descending because we risk to not translate excluded multiple words when one
+     * is repeated ( example: Facebook, Facebook Store, Facebook View, because Facebook was the first one in the array it was replaced with a code and the
+     * other words group ( Store, View) were translated)
+     */
+    public function sort_exclude_words_from_automatic_translation_array($trp_exclude_words_from_automatic_translation){
+        usort($trp_exclude_words_from_automatic_translation, array($this,"sort_array"));
+
+        return $trp_exclude_words_from_automatic_translation;
+    }
+
+    public function sort_array($a, $b){
+        return strlen($b)-strlen($a);
     }
 
 

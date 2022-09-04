@@ -2,35 +2,40 @@
   "name": "geoip-detect",
   "version": "2.11.0",
   "description": "Geolocation IP Detection - Wordpress Plugin (JS)",
-  "main": "index.js",
   "repository": "git@github.com:yellowtree/geoip-detect.git",
   "author": "Benjamin Pick <benjaminpick@github.com>",
   "license": "GPL-3.0-or-later",
   "scripts": {
-    "clean": "rm -rf .cache",
-    "build-lodash": "lodash include=get,intersection -o js/lodash.custom.js",
-    "start": "rm -rf js/dist && parcel parcel.urls --out-dir js/dist --public-url .",
-    "build": "rm -rf js/dist && parcel build parcel.urls --out-dir js/dist --public-url .",
-    "test": "jest --coverage"
+    "clean": "rm -rf .parcel-cache",
+    "start": "parcel js/frontend.js --port 1234 --hmr-port 1236 --dist-dir js/dist --public-url .",
+    "build": "rm -f babel.config.json ; rm -rf js/dist && parcel build js/frontend.js --dist-dir js/dist --public-url .",
+    "test": "cp tests/babel.config.json . && jest --coverage ; rm babel.config.json",
+    "test-ddd": "cp tests/babel.config.json . && jest -t ddd ; rm babel.config.json",
+    "update-browserlist": "browserslist --update-db"
   },
   "private": false,
   "dependencies": {
-    "@babel/runtime": ">=7.12.0",
-    "emoji-flags": ">=1.3.0"
+    "@babel/runtime": "7.16.7",
+    "emoji-flags": "1.3.0",
+    "just-compare": "2.0.1",
+    "just-intersect": "4.0.2",
+    "just-safe-get": "4.0.1",
+    "just-safe-set": "4.0.1"
   },
   "devDependencies": {
-    "@babel/core": "7.13.8",
-    "@babel/plugin-transform-runtime": "7.13.9",
-    "@babel/preset-env": "7.13.9",
-    "babel-jest": "26.6.3",
+    "@babel/core": "7.16.7",
+    "@babel/plugin-transform-runtime": "7.16.7",
+    "@babel/preset-env": "7.16.7",
+    "babel-jest": "27.3.1",
     "babel-plugin-transform-class-properties": "6.24.1",
-    "eslint": "7.21.0",
-    "jest": "26.6.3",
-    "lodash-cli": "4.17.5",
-    "parcel-bundler": "1.12.4",
-    "parcel-plugin-assets-list": "1.7.1"
+    "eslint": "7.32.0",
+    "jest": "27.3.1",
+    "parcel": "2.0.1"
   },
-  "resolutions": {
-    "node-forge": "0.10.0"
+  "browserslist": "> 0.2%, last 2 versions, Firefox ESR, not dead",
+  "jest": {
+    "transform": {
+      "^.+\\.js$": "babel-jest"
+    }
   }
 }

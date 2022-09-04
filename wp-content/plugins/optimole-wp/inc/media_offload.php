@@ -340,6 +340,8 @@ class Optml_Media_Offload extends Optml_App_Replacer {
 					$size = $found_size;
 					$strip_url = str_replace( '-' . $found_size[0] . 'x' . $found_size[1], '', $url );
 				}
+				$strip_url = $this->add_schema( $strip_url );
+
 				$attachment_id = attachment_url_to_postid( $strip_url );
 			}
 
@@ -395,6 +397,8 @@ class Optml_Media_Offload extends Optml_App_Replacer {
 						if ( $found_size[0] !== false && $found_size[1] !== false ) {
 							$strip_url = str_replace( '-' . $found_size[0] . 'x' . $found_size[1], '', $url );
 						}
+						$strip_url = $this->add_schema( $strip_url );
+
 						$attachment_id = attachment_url_to_postid( $strip_url );
 					}
 				}
@@ -404,7 +408,7 @@ class Optml_Media_Offload extends Optml_App_Replacer {
 				$found_images[] = intval( $attachment_id );
 			}
 		}
-		return $found_images;
+		return apply_filters( 'optml_content_images_to_update', $found_images, $content );
 	}
 
 	/**
@@ -1038,7 +1042,7 @@ class Optml_Media_Offload extends Optml_App_Replacer {
 			$args ['post_type'] = 'attachment';
 			$args ['post_mime_type'] = 'image';
 			$args ['post_status'] = 'inherit';
-			$args ['post_parent'] = 0;
+			$args['post_parent__in'] = apply_filters( 'optml_offload_images_post_parents', [ 0 ] );
 			if ( $action === 'offload_images' ) {
 				$args['meta_query'] = [
 					'relation' => 'AND',
@@ -1131,6 +1135,7 @@ class Optml_Media_Offload extends Optml_App_Replacer {
 		if ( is_wp_error( $post_update ) || $post_update === 0 ) {
 			return false;
 		}
+		do_action( 'optml_updated_post', $post_id );
 		return true;
 	}
 	/**

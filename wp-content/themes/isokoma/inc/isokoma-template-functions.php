@@ -142,7 +142,10 @@ function retailer_featured_slider()
 		$auto_scroll = 'true';
 
 		?>
-		<h2 class="section-title">Sản phẩm nổi bật</h2>
+		<!-- hoang1068 start  -->
+		<!-- <h2 class="section-title">Sản phẩm nổi bật</h2> -->
+		<h2 class="section-title">Sản phẩm Pre-Order</h2>
+		<!-- hoang1068 end  -->
 		<div id="slider" class="flexslider" data-slide="<?php echo esc_html($auto_scroll); ?>">
 			<ul class="slides">
 				<?php
@@ -229,7 +232,10 @@ function isokoma_new_product_slider()
 		<div class="slider-products hot-products">
 			<div class="container">
 				<div class="info">
-					<h2 class="text-center"><?php _e('Sản phẩm nổi bật', 'isokoma'); ?></h2>
+					<!-- hoang1068 start -->
+					<!-- <h2 class="text-center"><?php //_e('Sản phẩm nổi bật', 'isokoma'); ?></h2> -->
+					<h2 class="text-center"><?php _e('Sản phẩm Pre-Order', 'isokoma'); ?></h2>
+					<!-- hoang1068 end -->
 					<p class="text-center"><?php _e('Những sản phẩm đặc biệt <nobr>của cửa hàng</nobr>', 'isokoma'); ?></p>
 					<img src="https://toragon.vn/wp-content/uploads/2022/01/design-element.png" alt="toragon">
 				</div>

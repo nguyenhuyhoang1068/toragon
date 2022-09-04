@@ -9,6 +9,7 @@ class TRP_Url_Converter {
 
     protected $absolute_home;
     protected $settings;
+    protected $admin_url;
 
     /**
      * TRP_Url_Converter constructor.
@@ -17,6 +18,8 @@ class TRP_Url_Converter {
      */
     public function __construct( $settings ){
         $this->settings = $settings;
+        //$admin_url is declared here because it was causing a conflict with Ultimate Dashboard since there was an action hooked on site_url
+        $this->admin_url = strtolower( admin_url() );
     }
 
     /**
@@ -54,11 +57,11 @@ class TRP_Url_Converter {
         $abs_home = $this->get_abs_home();
 
         if ( trp_force_slash_at_end_of_link( $this->settings ) ) {
-            $new_url = trailingslashit( trailingslashit($abs_home) . $url_slug );
+            $new_url = trailingslashit( trailingslashit( $abs_home ) . $url_slug );
+        } else {
+            $new_url = trailingslashit( $abs_home ) . $url_slug;
         }
-        else {
-            $new_url = trailingslashit($abs_home) . $url_slug;
-        }
+
 
         if ( ! empty( $path ) ){
             $new_url = trailingslashit($new_url) . ltrim( $path, '/' );
@@ -74,7 +77,6 @@ class TRP_Url_Converter {
      */
     public function is_admin_request() {
         $current_url = $this->cur_page_url();
-        $admin_url = strtolower( admin_url() );
 
         // we can't use wp_get_referer() It looks like it creates an infinite loop because it calls home_url() and we're filtering that
         // array('http','https') is added because of a compatibility issue with Scriptless Social Sharing that created an infinite loop
@@ -88,7 +90,7 @@ class TRP_Url_Converter {
         }
 
         //consider an admin request a call to the rest api that came from the admin area
-        if( false !== strpos( $current_url, '/wp-json/' ) && 0 === strpos( $referrer, $admin_url ) ){
+        if( false !== strpos( $current_url, '/wp-json/' ) && 0 === strpos( $referrer, $this->admin_url ) ){
             return true;
         }
 
@@ -96,11 +98,11 @@ class TRP_Url_Converter {
          * Check if this is a admin request. If true, it
          * could also be a AJAX request from the frontend.
          */
-        if ( 0 === strpos( $current_url, $admin_url ) ) {
+        if ( 0 === strpos( $current_url, $this->admin_url ) ) {
             /**
              * Check if the user comes from a admin page.
              */
-            if ( 0 === strpos( $referrer, $admin_url ) ) {
+            if ( 0 === strpos( $referrer, $this->admin_url ) ) {
                 return true;
             } else {
                 if ( function_exists( 'wp_doing_ajax' ) ) {
@@ -166,22 +168,37 @@ class TRP_Url_Converter {
         }
 
             $region_independent_languages = array();
-            foreach ( $languages as $language ) {
-                    // hreflang should have - instead of _ . For example: en-EN, not en_EN like the locale
-                    $hreflang = str_replace( '_', '-', $language );
-                    $hreflang = apply_filters( 'trp_hreflang', $hreflang, $language );
-                    echo '<link rel="alternate" hreflang="' . esc_attr( $hreflang ) . '" href="' . esc_url( $this->get_url_for_language( $language ) ) . '"/>' . "\n";
+            $hreflang_duplicates = array();
+            $hreflang_duplicates_region_independent  = array();
+        foreach ( $languages as $language ) {
+            if( apply_filters( 'trp_add_country_hreflang_tags', true ) ){
+                // hreflang should have - instead of _ . For example: en-EN, not en_EN like the locale
+                $hreflang = str_replace( '_', '-', $language );
+                $hreflang = apply_filters( 'trp_hreflang', $hreflang, $language );
+                $hreflang_duplicates[] = $hreflang;
+                echo '<link rel="alternate" hreflang="' . esc_attr( $hreflang ) . '" href="' . esc_url( $this->get_url_for_language( $language ) ) . '"/>' . "\n";
+            }
 
-                if ( apply_filters( 'trp_add_region_independent_hreflang_tags', true ) ) {
-                    if ( strpos( $language, '_' ) !== false ) {
-                        $language_independent_hreflang = strtok( $language, '_' );
-                        if ( !empty( $language_independent_hreflang ) && !in_array( $language_independent_hreflang, $region_independent_languages ) ) {
-                            $region_independent_languages[] = $language_independent_hreflang;
-                            echo '<link rel="alternate" hreflang="' . esc_attr( $language_independent_hreflang ) . '" href="' . esc_url( $this->get_url_for_language( $language ) ) . '"/>' . "\n";
-                        }
-                    }
+            if ( apply_filters( 'trp_add_region_independent_hreflang_tags', true ) ) {
+                $language_independent_hreflang = strtok( $language, '_' );
+                $language_independent_hreflang = apply_filters( 'trp_hreflang', $language_independent_hreflang, $language);
+                if ( !empty( $language_independent_hreflang ) && !in_array( $language_independent_hreflang, $region_independent_languages ) ) {
+                    $region_independent_languages[] = $language_independent_hreflang;
+                    $hreflang_duplicates_region_independent[$language] = '<link rel="alternate" hreflang="' . esc_attr( $language_independent_hreflang ) . '" href="' . esc_url( $this->get_url_for_language( $language ) ) . '"/>' . "\n";
+
                 }
             }
+        }
+
+        foreach ($languages as $language){
+            $language_hreflang = strtok( $language, '_' );
+            $language_hreflang = apply_filters( 'trp_hreflang', $language_hreflang, $language );
+            if (!in_array($language_hreflang, $hreflang_duplicates)){
+                if(isset($hreflang_duplicates_region_independent[ $language ] )) {
+                    echo $hreflang_duplicates_region_independent[ $language ]; /* phpcs:ignore */ /* escaped inside the array */
+                }
+            }
+        }
 
             if ( isset( $this->settings['trp_advanced_settings']['enable_hreflang_xdefault'] ) && $this->settings['trp_advanced_settings']['enable_hreflang_xdefault'] != 'disabled' ) {
                 $default_lang = $this->settings['trp_advanced_settings']['enable_hreflang_xdefault'];
@@ -189,6 +206,25 @@ class TRP_Url_Converter {
             }
         }
 
+
+    /**
+     * Function that replace iso 639-2 and iso 639-3 with iso 639-1 because this is the official one used for hreflang.
+     */
+
+    public function replace_iso_2_with_iso_3_for_hreflang($hreflang, $language = null){
+
+        $hreflang_iso_1 = apply_filters('trp_add_hreflang_correct_iso_code', array(
+            'bel' => 'be'
+        ));
+
+        foreach ($hreflang_iso_1 as $iso_2 => $iso_1) {
+            if ( $hreflang === $iso_2 ) {
+                return $iso_1;
+            }
+        }
+
+        return $hreflang;
+    }
 
     /**
      * Function that changes the lang attribute in the html tag to the current language.
@@ -200,10 +236,29 @@ class TRP_Url_Converter {
         global $TRP_LANGUAGE;
         $lang = get_bloginfo('language');
         if ( $lang && !empty($TRP_LANGUAGE) ) {
-            $output = str_replace( 'lang="'. $lang .'"', 'lang="'. str_replace('_', '-', $TRP_LANGUAGE ) .'"', $output );
+            if ( apply_filters( 'trp_add_default_lang_tags', true ) ) {
+                $output = str_replace( 'lang="' . $lang . '"', 'lang="' . str_replace( '_', '-', $TRP_LANGUAGE ) . '"', $output );
+            }
+            if ( apply_filters( 'trp_add_regional_lang_tags', true ) ) {
+                $language = strtok($TRP_LANGUAGE, '_');
+                $output = str_replace( 'lang="' . $lang . '"', 'lang="' . $language . '"', $output );
+
+            }
         }
 
         return $output;
+    }
+
+    /**
+     * @param $output
+     * @return $output
+     *
+     * adds a new attribute in footer, tp_language_lang, for Automatic User Language Detection to rely on for finding the current language
+     */
+    public function add_tp_language_lang_attribute(){
+        global $TRP_LANGUAGE;
+        $html ='<template id="tp-language" data-tp-language="'. esc_attr($TRP_LANGUAGE) . '"></template>';
+        echo $html; /* phpcs:ignore *///ignored because the html is constructed by us
     }
 
     /**
@@ -333,6 +388,14 @@ class TRP_Url_Converter {
             }
         }
 
+        $TRP_LANGUAGE = $this->get_lang_from_url_string( $url );
+
+        if ($TRP_LANGUAGE == null){
+            $TRP_LANGUAGE = $this->settings['default-language'];
+        }
+
+        $new_url_has_been_determined = false;
+
         if( $post_id ){
 
             /*
@@ -345,8 +408,6 @@ class TRP_Url_Converter {
              * due to URL's having extra path elements after the permalink slug. Using the class would strip those end points.
              *
              */
-
-            $TRP_LANGUAGE = $this->get_lang_from_url_string( $url );
 
             $processed_permalink = get_permalink($post_id);
 
@@ -362,28 +423,56 @@ class TRP_Url_Converter {
             trp_bulk_debug($debug, array('url' => $url, 'new url' => $new_url, 'found post id' => $post_id, 'url type' => 'based on permalink', 'for language' => $TRP_LANGUAGE));
             $TRP_LANGUAGE = $trp_language_copy;
 
-        }else if( isset( $trp_current_url_term_slug ) && isset($trp_current_url_taxonomy) &&
-            !is_wp_error( get_term_link( $trp_current_url_term_slug, $trp_current_url_taxonomy)) &&
-            strpos( $url, get_term_link( $trp_current_url_term_slug, $trp_current_url_taxonomy) ) === 0
-        ){ // check here if it is a term link
-            $current_term_link = get_term_link( $trp_current_url_term_slug, $trp_current_url_taxonomy);
-            $TRP_LANGUAGE = $language;
-                $check_term_link = get_term_link($trp_current_url_term_slug, $trp_current_url_taxonomy);
-                if (!is_wp_error($check_term_link))
-                    $new_url =  str_replace( $current_term_link, $check_term_link, $url );
-                else
-                    $new_url = $url;
+            $new_url_has_been_determined = true;
 
+        }
+
+        if( isset( $trp_current_url_term_slug ) && isset($trp_current_url_taxonomy) && $new_url_has_been_determined === false){
+            // check here if it is a term link
+            $current_term_link = get_term_link( $trp_current_url_term_slug, $trp_current_url_taxonomy);
+            if (!is_wp_error($current_term_link)){
+                $language_to_replace = $TRP_LANGUAGE;
+                $TRP_LANGUAGE = $language;
+                $current_term_link= apply_filters( 'trp_get_url_for_language', $current_term_link, $url, $language_to_replace, $this->get_abs_home(), $this->get_lang_from_url_string($url), $this->get_url_slug( $language ) );
+                $check_term_link = get_term_link($trp_current_url_term_slug, $trp_current_url_taxonomy);
+                if (!is_wp_error($check_term_link) && strpos(urldecode( $url ), $current_term_link) === 0) {
+                    $new_url = str_replace( $current_term_link, $check_term_link, urldecode( $url ) );
+                    $new_url = apply_filters( 'trp_get_url_for_language', $new_url, $url, $language, $this->get_abs_home(), $this->get_lang_from_url_string($url), $this->get_url_slug( $language ) );
+                    $new_url_has_been_determined = true;
+                }
                 $TRP_LANGUAGE = $trp_language_copy;
-        }else if( is_home() && ( isset( $_SERVER['REQUEST_URI'] ) && strpos( esc_url_raw( $_SERVER['REQUEST_URI'] ), 'sitemap') === false && strpos( esc_url_raw( $_SERVER['REQUEST_URI'] ), '.xml') === false ) ) {//for some reason in yoast sitemap is_home() is true ..so we need to check if we are not in the sitemap itself
+            }
+        }
+
+        /**
+         * We try to look for a possible posts archive link that can be on the front page or another page in order to add pagination.
+         */
+        $url_stripped = $url;
+        $posts_archive_link = get_post_type_archive_link('post');
+
+        if( !empty($url_obj->getQuery()) ){
+            $url_stripped = strtok($url_stripped, '?');
+        }
+        $url_stripped = rtrim($url_stripped, '/');
+
+        $posts_archive_link = strtok($posts_archive_link, '?');
+        $posts_archive_link = rtrim($this->maybe_add_pagination_to_blog_page($posts_archive_link), '/');
+
+        if( is_home() && $url_stripped === $posts_archive_link && ( isset( $_SERVER['REQUEST_URI'] ) && strpos( esc_url_raw( $_SERVER['REQUEST_URI'] ), 'sitemap') === false && strpos( esc_url_raw( $_SERVER['REQUEST_URI'] ), '.xml') === false ) &&
+        $new_url_has_been_determined === false)
+        {//for some reason in yoast sitemap is_home() is true ..so we need to check if we are not in the sitemap itself
             $TRP_LANGUAGE = $language;
             if ( empty($url_obj->getQuery()) ) {
-	            $new_url = $this->maybe_add_pagination_to_blog_page( get_post_type_archive_link( 'post' ) );
+	            $new_url = $this->maybe_add_pagination_to_blog_page( trailingslashit(get_post_type_archive_link( 'post' ) ));
             } else {
 	            $new_url = rtrim( $this->maybe_add_pagination_to_blog_page( get_post_type_archive_link( 'post' ) ), '/') . '/?' . $url_obj->getQuery();
             }
             $TRP_LANGUAGE = $trp_language_copy;
-        }else {
+
+            $new_url_has_been_determined = true;
+        }
+
+        if ($new_url_has_been_determined === false){
             // we're just adding the new language to the url
             $new_url_obj = $url_obj;
             if ($abs_home_url_obj->getPath() == "/") {
@@ -413,8 +502,12 @@ class TRP_Url_Converter {
                 $new_url = $new_url_obj->getUri();
 
                 trp_bulk_debug($debug, array('url' => $url, 'new url' => $new_url, 'lang' => $language, 'url type' => 'custom url with language', 'abs home path' => $abs_home_url_obj->getPath()));
+
+                $new_url_has_been_determined = true;
+
             }
         }
+        $TRP_LANGUAGE = $trp_language_copy;
 
         /* fix links for woocommerce on language switcher for product categories and product tags */
         if( class_exists( 'WooCommerce' ) ){
@@ -476,13 +569,28 @@ class TRP_Url_Converter {
             }else {
                 $path = trailingslashit( ABSPATH ) . str_replace( untrailingslashit( $this->get_abs_home() ), '', $url );
 
-                $return = is_file( $path );
+                if(apply_filters('trp_is_file', true, $path)) {
+                    $return = is_file( $path );
+                }else{
+                    $return = true;
+                }
             }
         }
 
         return apply_filters( 'trp_url_is_file', $return, $url, $this->get_abs_home() );
     }
 
+    public function does_url_contains_array($return, $path){
+        $elements_to_avoid = apply_filters( 'trp_elements_to_avoid_when_is_file_is_called', array("index.php", "/../"));
+        foreach ($elements_to_avoid as $element){
+            if( strpos($path, $element) !== false ){
+                $return = false;
+                return $return;
+            }
+        }
+
+        return $return;
+    }
 
 	/**
 	 * Check for a spacial type of URL. Currently includes mailto, tel, callto URL types.
@@ -603,7 +711,18 @@ class TRP_Url_Converter {
             if ($abs_home_url_obj->getPath() == "/"){
                 $abs_home_url_obj->setPath('');
             }
-            $possible_path = str_replace($abs_home_url_obj->getPath(), '', $url_obj->getPath());
+
+            $abs_home = $abs_home_url_obj->getPath();
+
+            //in some cases $abs_home_url_obj->getPath() can be null and this causes a PHP 8 notice
+            if ($abs_home !== null) {
+                $abs_home = $abs_home_url_obj->getPath();
+            }else{
+                $abs_home = '';
+            }
+            //we make sure that the path is the actual path and not a folder
+            $possible_path = str_replace( $abs_home, '', $url_obj->getPath() );
+
             $lang = ltrim( $possible_path,'/' );
             $lang = explode('/', $lang);
             if( $lang == false ){
@@ -643,13 +762,21 @@ class TRP_Url_Converter {
 
         $req_uri = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( $_SERVER['REQUEST_URI'] ) : '';
 
-        $home_path = trim( parse_url( $this->get_abs_home(), PHP_URL_PATH ), '/' );
+        //in some cases $this->get_abs_home() can be null and this causes a PHP 8 notice
+        $abs_home = $this->get_abs_home();
+        if ( $this->get_abs_home() !== null) {
+            $abs_home = $this->get_abs_home();
+        }else{
+            $abs_home = '';
+        }
+
+        $home_path = trim( parse_url( $abs_home, PHP_URL_PATH ), '/' );
         $home_path_regex = sprintf( '|^%s|i', preg_quote( $home_path, '|' ) );
 
         // Trim path info from the end and the leading home path from the front.
         $req_uri = ltrim($req_uri, '/');
         $req_uri = preg_replace( $home_path_regex, '', $req_uri );
-        $req_uri = trim($this->get_abs_home(), '/') . '/' . ltrim( $req_uri, '/' );
+        $req_uri = trim($abs_home, '/') . '/' . ltrim( $req_uri, '/' );
 
 
         if ( function_exists('apply_filters') ) $req_uri = apply_filters('trp_curpageurl', $req_uri);

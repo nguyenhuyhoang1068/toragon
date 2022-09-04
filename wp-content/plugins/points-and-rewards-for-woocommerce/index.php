@@ -8,5 +8,3 @@
  */
 
 esc_html_e( 'oops looks like nothing is here', 'points-and-rewards-for-woocommerce' );
-
-

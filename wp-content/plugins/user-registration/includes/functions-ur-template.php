@@ -4,14 +4,12 @@
  *
  * Functions for the templating system.
  *
- * @author   WPEverest
- * @category Core
  * @package  UserRegistration/Functions
  * @version  1.0.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
+	exit; // Exit if accessed directly.
 }
 
 add_action( 'template_redirect', 'ur_template_redirect' );
@@ -25,8 +23,8 @@ add_action( 'template_redirect', 'ur_registration_template_redirect' );
 function ur_template_redirect() {
 	global $wp;
 
-	if ( isset( $wp->query_vars['user-logout'] ) && ! empty( $_REQUEST['_wpnonce'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'user-logout' ) ) {
-		// Logout
+	if ( isset( $wp->query_vars['user-logout'] ) && ! empty( $_REQUEST['_wpnonce'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'user-logout' ) ) { //PHPCS:ignore;
+		// Logout.
 		$redirect_url = str_replace( '/user-logout', '', $wp->request );
 		wp_safe_redirect( str_replace( '&amp;', '&', wp_logout_url( $redirect_url ) ) );
 		exit;
@@ -43,7 +41,7 @@ function ur_template_redirect() {
  * Handle redirects before content is output - hooked into template_redirect so is_page works.
  */
 function ur_login_template_redirect() {
-	global $post;
+	 global $post;
 
 	$post_content = isset( $post->post_content ) ? $post->post_content : '';
 
@@ -58,6 +56,8 @@ function ur_login_template_redirect() {
 		$redirect_url = trim( $redirect_url, ']' );
 		$redirect_url = trim( $redirect_url, '"' );
 		$redirect_url = trim( $redirect_url, "'" );
+
+		$redirect_url = apply_filters( 'user_registration_redirect_url_after_login', $redirect_url );
 
 		if ( ! is_elementor_editing_page() && ! empty( $redirect_url ) ) {
 			wp_redirect( $redirect_url );
@@ -74,7 +74,6 @@ function ur_login_template_redirect() {
  * @since  1.5.1
  */
 function ur_registration_template_redirect() {
-
 	// Return if the user is not logged in.
 	if ( is_user_logged_in() === false ) {
 		return;
@@ -101,6 +100,7 @@ function ur_registration_template_redirect() {
 
 			$redirect_url = ur_get_single_post_meta( $form_id[0][0], 'user_registration_form_setting_redirect_options', '' );
 			$redirect_url = apply_filters( 'user_registration_redirect_from_registration_page', $redirect_url, $current_user );
+			$redirect_url = ur_string_translation( $form_id[0][0], 'user_registration_form_setting_redirect_options', $redirect_url );
 
 			if ( ! is_elementor_editing_page() && ! empty( $redirect_url ) ) {
 				wp_redirect( $redirect_url );
@@ -113,7 +113,7 @@ function ur_registration_template_redirect() {
 /**
  * Add body classes for UR pages.
  *
- * @param  array $classes
+ * @param  array $classes Classes.
  *
  * @return array
  */
@@ -139,9 +139,9 @@ if ( ! function_exists( 'user_registration_form_field' ) ) {
 	/**
 	 * Outputs a form fields on frontend.
 	 *
-	 * @param string $key
-	 * @param mixed  $args
-	 * @param string $value (default: null)
+	 * @param string $key Key.
+	 * @param mixed  $args Arguments.
+	 * @param string $value (default: null).
 	 *
 	 * @return string
 	 */
@@ -159,6 +159,8 @@ if ( ! function_exists( 'user_registration_form_field' ) ) {
 				unset( $rules['rules'][ $rules_key ] );
 			}
 		}
+
+		$required = '';
 
 		$rules['rules'] = array_values( $rules['rules'] );
 
@@ -194,14 +196,14 @@ if ( ! function_exists( 'user_registration_form_field' ) ) {
 			$args['class'][] = 'validate-required';
 			$required        = ' <abbr class="required" title="' . esc_attr__( 'required', 'user-registration' ) . '">*</abbr>';
 		} else {
-			$args['required'] = $required = '';
+			$args['required'] = '';
 		}
 
-		if ( is_null( $value ) ) {
+		if ( is_null( $value ) || empty( $value ) ) {
 			$value = $args['default'];
 		}
 
-		// Custom attribute handling
+		// Custom attribute handling.
 		$custom_attributes         = array();
 		$args['custom_attributes'] = array_filter( (array) $args['custom_attributes'] );
 
@@ -253,6 +255,17 @@ if ( ! function_exists( 'user_registration_form_field' ) ) {
 		$label_id        = $args['id'];
 		$sort            = $args['priority'] ? $args['priority'] : '';
 		$field_container = '<div class="form-row %1$s" id="%2$s" data-priority="' . esc_attr( $sort ) . '" ' . $cl_html . '>%3$s</div>';
+		$class = '';
+		if ( ! is_admin() ) {
+			$form_id = isset( $args['form_id'] ) ? $args['form_id'] : '';
+			$enable_field_icon   = ur_get_single_post_meta( $form_id, 'user_registration_enable_field_icon' );
+
+			if ( '1' === $enable_field_icon ) {
+				$class = '';
+			} else {
+				$class = 'without_icon';
+			}
+		}
 
 		switch ( $args['type'] ) {
 
@@ -266,12 +279,13 @@ if ( ! function_exists( 'user_registration_form_field' ) ) {
 
 			case 'checkbox':
 				$field_key     = isset( $args['field_key'] ) ? $args['field_key'] : '';
-				$default_value = isset( $args['default_value'] ) ? $args['default_value'] : '';    // Backward compatibility. Modified since 1.5.7
+				$default_value = isset( $args['default_value'] ) ? $args['default_value'] : '';    // Backward compatibility. Modified since 1.5.7.
 				$default       = ! empty( $value ) ? $value : $default_value;
+				$select_all    = isset( $args['select_all'] ) ? $args['select_all'] : '';
 				$options       = isset( $args['options'] ) ? $args['options'] : ( $args['choices'] ? $args['choices'] : array() ); // $args['choices'] for backward compatibility. Modified since 1.5.7.
-				$choice_limit = isset( $args['choice_limit'] ) ?  $args['choice_limit'] : "";
-				$choice_limit_attr = "";
-				if( "" !== $choice_limit ){
+				$choice_limit = isset( $args['choice_limit'] ) ? $args['choice_limit'] : '';
+				$choice_limit_attr = '';
+				if ( '' !== $choice_limit ) {
 					$choice_limit_attr = 'data-choice-limit="' . $choice_limit . '"';
 				}
 
@@ -290,6 +304,10 @@ if ( ! function_exists( 'user_registration_form_field' ) ) {
 
 					$field .= '<ul ' . $choice_limit_attr . '>';
 
+					if ( 'yes' === $select_all ) {
+						$field .= '<li class="ur-checkbox-list"><input type="checkbox" id="checkall" class="ur-input-checkbox"  data-check="' . esc_attr( $key ) . '"/>';
+						$field .= '<label class="ur-checkbox-label">  Select All</label></li>';
+					}
 					foreach ( $choices as $choice_index => $choice ) {
 
 						$value = '';
@@ -300,7 +318,6 @@ if ( ! function_exists( 'user_registration_form_field' ) ) {
 								$value = 'checked="checked"';
 							}
 						}
-
 						$field .= '<li class="ur-checkbox-list">';
 						$field .= '<input data-rules="' . esc_attr( $rules ) . '" data-id="' . esc_attr( $key ) . '" ' . implode( ' ', $custom_attributes ) . ' data-value="' . esc_attr( $choice_index ) . '" type="' . esc_attr( $args['type'] ) . '" class="input-checkbox ' . esc_attr( implode( ' ', $args['input_class'] ) ) . '" name="' . esc_attr( $key ) . '[]" id="' . esc_attr( $args['id'] ) . '_' . esc_attr( $choice_index ) . '" value="' . trim( $choice_index ) . '"' . esc_attr( $value ) . ' /> ';
 						$field .= '<label class="ur-checkbox-label" for="' . esc_attr( $args['id'] ) . '_' . esc_attr( $choice_index ) . '">' . trim( $choice ) . '</label> </li>';
@@ -317,17 +334,23 @@ if ( ! function_exists( 'user_registration_form_field' ) ) {
 			case 'password':
 				$extra_params_key = str_replace( 'user_registration_', 'ur_', $key ) . '_params';
 				$extra_params     = json_decode( get_user_meta( get_current_user_id(), $extra_params_key, true ) );
-
+				$field .= ' <span class="input-wrapper"> ';
 				if ( empty( $extra_params ) ) {
 					$field_container = '<div class="form-row %1$s hide_show_password" id="%2$s" data-priority="' . esc_attr( $sort ) . '">%3$s</div>';
-					$field          .= '<span class="password-input-group">';
-					$field          .= '<input data-rules="' . esc_attr( $rules ) . '" data-id="' . esc_attr( $key ) . '" type="' . esc_attr( $args['type'] ) . '" class="input-text input-' . esc_attr( $args['type'] ) . ' ' . esc_attr( implode( ' ', $args['input_class'] ) ) . '" name="' . esc_attr( $key ) . '" id="' . esc_attr( $args['id'] ) . '" placeholder="' . esc_attr( $args['placeholder'] ) . '"  value="' . esc_attr( $value ) . '" ' . implode( ' ', $custom_attributes ) . ' />';
+					$field          .= '<span class="password-input-group input-form-field-icons">';
+					$field          .= '<input data-rules="' . esc_attr( $rules ) . '" data-id="' . esc_attr( $key ) . '" type="' . esc_attr( $args['type'] ) . '" class="input-text ' . $class . ' input-' . esc_attr( $args['type'] ) . ' ' . esc_attr( implode( ' ', $args['input_class'] ) ) . '" name="' . esc_attr( $key ) . '" id="' . esc_attr( $args['id'] ) . '" placeholder="' . esc_attr( $args['placeholder'] ) . '"  value="' . esc_attr( $value ) . '" ' . implode( ' ', $custom_attributes ) . ' />';
 					if ( 'yes' === get_option( 'user_registration_login_option_hide_show_password', 'no' ) ) {
 						$field .= '<a href="javaScript:void(0)" class="password_preview dashicons dashicons-hidden" title=" Show password "></a>';
 					}
 					$field .= '</span>';
 				} else {
-					$field .= '<input data-rules="' . esc_attr( $rules ) . '" data-id="' . esc_attr( $key ) . '" type="' . esc_attr( $args['type'] ) . '" class="input-text ' . esc_attr( implode( ' ', $args['input_class'] ) ) . '" name="' . esc_attr( $key ) . '" id="' . esc_attr( $args['id'] ) . '" placeholder="' . esc_attr( $args['placeholder'] ) . '"  value="' . esc_attr( $value ) . '" ' . implode( ' ', $custom_attributes ) . ' />';
+					$field .= '<input data-rules="' . esc_attr( $rules ) . '" data-id="' . esc_attr( $key ) . '" type="' . esc_attr( $args['type'] ) . '" class="input-text  ' . esc_attr( implode( ' ', $args['input_class'] ) ) . '" name="' . esc_attr( $key ) . '" id="' . esc_attr( $args['id'] ) . '" placeholder="' . esc_attr( $args['placeholder'] ) . '"  value="' . esc_attr( $value ) . '" ' . implode( ' ', $custom_attributes ) . ' />';
+				}
+				if ( ! is_admin() ) {
+					if ( 'yes' === $enable_field_icon || '1' === $enable_field_icon ) {
+						$field .= '<span class="' . $args['icon'] . '"></span>';
+					}
+					$field .= ' </span> ';
 				}
 				break;
 
@@ -340,18 +363,60 @@ if ( ! function_exists( 'user_registration_form_field' ) ) {
 			case 'timepicker':
 				$extra_params_key = str_replace( 'user_registration_', 'ur_', $key ) . '_params';
 				$extra_params     = json_decode( get_user_meta( get_current_user_id(), $extra_params_key, true ) );
-				$username_length = isset( $args['username_length'] ) ?  $args['username_length'] : "";
-				$attr = "";
-				if( "" !== $username_length ) {
-					$attr = 'data-username-length="' . $username_length . '"';
+				$current_time     = isset( $args['current_time'] ) ? $args['current_time'] : '';
+				$time_interval    = isset( $args['time_interval'] ) ? $args['time_interval'] : '';
+				$time_min    = isset( $args['time_min'] ) ? $args['time_min'] : '';
+				$time_max    = isset( $args['time_max'] ) ? $args['time_max'] : '';
+				$username_length  = isset( $args['username_length'] ) ? $args['username_length'] : '';
+				$username_character = isset( $args['username_character'] ) ? $args['username_character'] : '';
+				$attr = '';
+				if ( '' !== $username_length ) {
+					$attr .= 'data-username-length="' . $username_length . '"';
 				}
 
+				if ( $username_character ) {
+					$attr .= 'data-username-character="' . $username_character . '"';
+				}
+
+				if ( '' !== $time_interval ) {
+					$attr .= 'data-time-interval="' . $time_interval . '"';
+				}
+
+				if ( '' !== $time_min ) {
+					$attr .= 'data-time-min="' . $time_min . '"';
+				}
+
+				if ( '' !== $time_max ) {
+					$attr .= 'data-time-max="' . $time_max . '"';
+				}
+
+				if ( $current_time ) {
+					$attr .= 'data-current-time="' . $current_time . '"';
+				}
+
+				$field .= ' <span class="input-wrapper"> ';
+				if ( isset( $args['autocomplete_address'] ) && 'yes' == $args['autocomplete_address'] ) {
+					$attr .= 'data-autocomplete-address="' . $args['autocomplete_address'] . '"';
+					$attr .= 'data-address-style="' . $args['address_style'] . '"';
+					$attr .= 'data-current-location="' . get_option( 'user_registration_google_map_current_location', '' ) . '"';
+					if ( 'map' == $args['address_style'] ) {
+						$field .= '<div id="ur-geolocation-map" class="ur-geolocation-map"></div>';
+					}
+				}
 				if ( empty( $extra_params ) ) {
-					$field .= '<input data-rules="' . esc_attr( $rules ) . '" data-id="' . esc_attr( $key ) . '" type="' . esc_attr( $args['type'] ) . '" class="input-text input-' . esc_attr( $args['type'] ) . ' ' . esc_attr( implode( ' ', $args['input_class'] ) ) . '" name="' . esc_attr( $key ) . '" id="' . esc_attr( $args['id'] ) . '" placeholder="' . esc_attr( $args['placeholder'] ) . '"  value="' . esc_attr( $value ) . '" ' . implode( ' ', $custom_attributes ) . ' ' . $attr . '/>';
+					$field .= '<input data-rules="' . esc_attr( $rules ) . '" data-id="' . esc_attr( $key ) . '" type="' . esc_attr( $args['type'] ) . '" class="input-text ' . $class . ' input-' . esc_attr( $args['type'] ) . ' ' . esc_attr( implode( ' ', $args['input_class'] ) ) . '" name="' . esc_attr( $key ) . '" id="' . esc_attr( $args['id'] ) . '" placeholder="' . esc_attr( $args['placeholder'] ) . '"  value="' . esc_attr( $value ) . '" ' . implode( ' ', $custom_attributes ) . ' ' . $attr . '/>';
 				} else {
 					$field .= '<input data-rules="' . esc_attr( $rules ) . '" data-id="' . esc_attr( $key ) . '" type="' . esc_attr( $args['type'] ) . '" class="input-text ' . esc_attr( implode( ' ', $args['input_class'] ) ) . '" name="' . esc_attr( $key ) . '" id="' . esc_attr( $args['id'] ) . '" placeholder="' . esc_attr( $args['placeholder'] ) . '"  value="' . esc_attr( $value ) . '" ' . implode( ' ', $custom_attributes ) . ' ' . $attr . ' />';
 				}
+
+				if ( ! is_admin() ) {
+					if ( 'yes' === $enable_field_icon || '1' === $enable_field_icon && 'file' != $args['type'] ) {
+						$field .= '<span class="' . esc_attr( $args['icon'] ) . '"></span>';
+					}
+					$field .= ' </span> ';
+				}
 				break;
+
 			case 'date':
 				$extra_params_key = str_replace( 'user_registration_', 'ur_', $key ) . '_params';
 				$extra_params     = json_decode( get_user_meta( get_current_user_id(), $extra_params_key, true ) );
@@ -373,15 +438,25 @@ if ( ! function_exists( 'user_registration_form_field' ) ) {
 						}
 					}
 				}
+
+				$field .= ' <span class="input-wrapper"> ';
+
 				if ( empty( $extra_params ) ) {
-					$field .= '<input data-rules="' . esc_attr( $rules ) . '" data-id="' . esc_attr( $key ) . '" type="text" id="load_flatpickr" value="' . esc_attr( $actual_value ) . '" class="regular-text" readonly placeholder="' . esc_attr( $args['placeholder'] ) . '" />';
+					$field .= '<input data-rules="' . esc_attr( $rules ) . '" data-id="' . esc_attr( $key ) . '" type="text" id="load_flatpickr" value="' . esc_attr( $actual_value ) . '" class="regular-text ' . esc_attr( $class ) . '" readonly placeholder="' . esc_attr( $args['placeholder'] ) . '" ' . implode( ' ', $custom_attributes ) . ' />';
 					$field .= '<input type="hidden" id="formated_date" value="' . esc_attr( $value ) . '"/>';
 					$field .= '<input data-rules="' . esc_attr( $rules ) . '" data-id="' . esc_attr( $key ) . '" type="text" data-field-type="' . esc_attr( $args['type'] ) . '" value="' . esc_attr( $actual_value ) . '" class="input-text input-' . esc_attr( $args['type'] ) . ' ' . esc_attr( implode( ' ', $args['input_class'] ) ) . '" name="' . esc_attr( $key ) . '" id="' . esc_attr( $args['id'] ) . '" placeholder="' . esc_attr( $args['placeholder'] ) . '"  ' . implode( ' ', $custom_attributes ) . ' style="display:none"/>';
 				} else {
-					$field .= '<input data-rules="' . esc_attr( $rules ) . '" data-id="' . esc_attr( $key ) . '" type="text" id="load_flatpickr" value="' . esc_attr( $actual_value ) . '"  class="regular-text" readonly placeholder="' . esc_attr( $args['placeholder'] ) . '" />';
+					$field .= '<input data-rules="' . esc_attr( $rules ) . '" data-id="' . esc_attr( $key ) . '" type="text" id="load_flatpickr" value="' . esc_attr( $actual_value ) . '"  class="regular-text ' . $class . '" readonly placeholder="' . esc_attr( $args['placeholder'] ) . '" ' . implode( ' ', $custom_attributes ) . ' />';
 					$field .= '<input type="hidden" id="formated_date" value="' . esc_attr( $value ) . '"/>';
 					$field .= '<input data-rules="' . esc_attr( $rules ) . '" data-id="' . esc_attr( $key ) . '" type="text" data-field-type="' . esc_attr( $args['type'] ) . '" value="' . esc_attr( $actual_value ) . '" class="input-text ' . esc_attr( implode( ' ', $args['input_class'] ) ) . '" name="' . esc_attr( $key ) . '" id="' . esc_attr( $args['id'] ) . '" placeholder="' . esc_attr( $args['placeholder'] ) . '"  ' . implode( ' ', $custom_attributes ) . ' style="display:none" />';
 				}
+
+				if ( 'yes' === $enable_field_icon || '1' === $enable_field_icon ) {
+					if ( ! is_admin() ) {
+						$field .= '<span class="' . esc_attr( $args['icon'] ) . '"></span>';
+					}
+				}
+				$field .= '</span> ';
 				break;
 
 			case 'color':
@@ -389,13 +464,13 @@ if ( ! function_exists( 'user_registration_form_field' ) ) {
 				break;
 
 			case 'select':
-				$default_value = isset( $args['default_value'] ) ? $args['default_value'] : ''; // Backward compatibility. Modified since 1.5.7
+				$default_value = isset( $args['default_value'] ) ? $args['default_value'] : ''; // Backward compatibility. Modified since 1.5.7.
 
 				$value   = ! empty( $value ) ? $value : $default_value;
 				$options = $field .= '';
 				if ( ! empty( $args['options'] ) ) {
-					// If we have a blank option, select2 needs a placeholder
-					if ( ! empty( $args['placeholder'] ) ) {
+					// If we have a blank option, select2 needs a placeholder.
+					if ( '' === $value && ! empty( $args['placeholder'] ) ) {
 						$options .= '<option value="" selected disabled>' . esc_html( $args['placeholder'] ) . '</option>';
 					}
 
@@ -403,7 +478,7 @@ if ( ! function_exists( 'user_registration_form_field' ) ) {
 					foreach ( $args['options'] as $option_key => $option_text ) {
 						$selected_attribute = '';
 
-						if ( empty( $args['placeholder'] ) ) {
+						if ( '' !== $value ) {
 							$selected_attribute = selected( $value, trim( $option_key ), false );
 						}
 						$options .= '<option value="' . esc_attr( trim( $option_key ) ) . '" ' . $selected_attribute . '>' . esc_attr( trim( $option_text ) ) . '</option>';
@@ -428,7 +503,7 @@ if ( ! function_exists( 'user_registration_form_field' ) ) {
 					foreach ( $args['options'] as $option_key => $option_text ) {
 
 						if ( '' === $option_key ) {
-							// If we have a blank option, select2 needs a placeholder
+							// If we have a blank option, select2 needs a placeholder.
 							if ( empty( $args['placeholder'] ) ) {
 								$args['placeholder'] = $option_text ? $option_text : __( 'Choose an option', 'user-registration' );
 							}
@@ -449,7 +524,7 @@ if ( ! function_exists( 'user_registration_form_field' ) ) {
 				break;
 
 			case 'radio':
-				$default_value = isset( $args['default_value'] ) ? $args['default_value'] : ''; // Backward compatibility. Modified since 1.5.7
+				$default_value = isset( $args['default_value'] ) ? $args['default_value'] : ''; // Backward compatibility. Modified since 1.5.7.
 				$value         = ! empty( $value ) ? $value : $default_value;
 				$label_id      = current( array_keys( $args['options'] ) );
 				if ( ! empty( $args['options'] ) ) {
@@ -481,8 +556,7 @@ if ( ! function_exists( 'user_registration_form_field' ) ) {
 					$field .= '</ul>';
 				}
 				break;
-
-		}// End switch().
+		} // End switch().
 
 		if ( $args['description'] ) {
 			$field .= '<span class="description">' . $args['description'] . '</span>';
@@ -514,18 +588,18 @@ if ( ! function_exists( 'user_registration_form_field' ) ) {
 		if ( $args['return'] ) {
 			return $field;
 		} else {
-			echo $field;
+			echo $field; //PHPCS:ignore;
 		}
 	}
-}// End if().
+} // End if().
 
 if ( ! function_exists( 'user_registration_form_data' ) ) {
 
 	/**
 	 * Get form fields to display on profile tab
 	 *
-	 * @param string $user_id
-	 * @param string $form_id
+	 * @param string $user_id User Id.
+	 * @param string $form_id Form Id.
 	 *
 	 * @return array
 	 */
@@ -575,7 +649,7 @@ if ( ! function_exists( 'user_registration_form_data' ) ) {
 								$extra_params['options'] = ! empty( $options ) ? $options : $advanced_options;
 								$extra_params['options'] = array_map( 'trim', $extra_params['options'] );
 
-								$extra_params['options'] = array_combine( $extra_params['options'], $extra_params['options']);
+								$extra_params['options'] = array_combine( $extra_params['options'], $extra_params['options'] );
 
 								break;
 
@@ -585,7 +659,7 @@ if ( ! function_exists( 'user_registration_form_data' ) ) {
 								$extra_params['options'] = ! empty( $options ) ? $options : $advanced_options;
 								$extra_params['options'] = array_map( 'trim', $extra_params['options'] );
 
-								$extra_params['options'] =  array_combine( $extra_params['options'], $extra_params['options']);
+								$extra_params['options'] = array_combine( $extra_params['options'], $extra_params['options'] );
 
 								break;
 
@@ -595,6 +669,7 @@ if ( ! function_exists( 'user_registration_form_data' ) ) {
 								$max_date          = isset( $field->advance_setting->max_date ) ? str_replace( '/', '-', $field->advance_setting->max_date ) : '';
 								$set_current_date  = isset( $field->advance_setting->set_current_date ) ? $field->advance_setting->set_current_date : '';
 								$enable_date_range = isset( $field->advance_setting->enable_date_range ) ? $field->advance_setting->enable_date_range : '';
+								$date_localization = isset( $field->advance_setting->date_localization ) ? $field->advance_setting->date_localization : '';
 								$extra_params['custom_attributes']['data-date-format'] = $date_format;
 
 								if ( isset( $field->advance_setting->enable_min_max ) && 'true' === $field->advance_setting->enable_min_max ) {
@@ -603,6 +678,7 @@ if ( ! function_exists( 'user_registration_form_data' ) ) {
 								}
 								$extra_params['custom_attributes']['data-default-date'] = $set_current_date;
 								$extra_params['custom_attributes']['data-mode']         = $enable_date_range;
+								$extra_params['custom_attributes']['data-locale']       = $date_localization;
 								break;
 
 							case 'country':
@@ -663,13 +739,13 @@ if ( ! function_exists( 'user_registration_form_data' ) ) {
 						if ( isset( $filtered_data_array['fields'] ) ) {
 							$fields = $filtered_data_array['fields'];
 						}
-					}// End if().
-				}// End foreach().
-			}// End foreach().
-		}// End foreach().
+					} // End if().
+				} // End foreach().
+			} // End foreach().
+		} // End foreach().
 		return $fields;
 	}
-}// End if().
+} // End if().
 
 if ( ! function_exists( 'user_registration_account_content' ) ) {
 
@@ -719,7 +795,7 @@ if ( ! function_exists( 'user_registration_account_edit_profile' ) ) {
 	 * My Account > Edit profile template.
 	 */
 	function user_registration_account_edit_profile() {
-		UR_Shortcode_My_Account::edit_profile();
+		 UR_Shortcode_My_Account::edit_profile();
 	}
 }
 
@@ -729,24 +805,48 @@ if ( ! function_exists( 'user_registration_account_edit_account' ) ) {
 	 * My Account > Edit account template.
 	 */
 	function user_registration_account_edit_account() {
-		UR_Shortcode_My_Account::edit_account();
+		 UR_Shortcode_My_Account::edit_account();
 	}
 }
 
 /**
  * Get logout endpoint.
  *
+ * @param string $redirect URL.
+ *
  * @return string
  */
-
 function ur_logout_url( $redirect = '' ) {
 	$logout_endpoint = get_option( 'user_registration_logout_endpoint' );
-	if ( ( ur_post_content_has_shortcode( 'user_registration_login' ) || ur_post_content_has_shortcode( 'user_registration_my_account' ) ) && is_user_logged_in() ) {
-		global $post;
-		$post_content = isset( $post->post_content ) ? $post->post_content : '';
-		preg_match( '/' . get_shortcode_regex() . '/s', $post_content, $matches );
 
-		$attributes = shortcode_parse_atts( $matches[3] );
+	global $post;
+	$wp_version = '5.0';
+	$post_content = isset( $post->post_content ) ? $post->post_content : '';
+
+	if ( ( ur_post_content_has_shortcode( 'user_registration_login' ) || ur_post_content_has_shortcode( 'user_registration_my_account' ) ) && is_user_logged_in() ) {
+		if ( version_compare( $GLOBALS['wp_version'], $wp_version, '>=' ) ) {
+			$blocks = parse_blocks( $post_content );
+			$new_shortcode = '';
+
+			foreach ( $blocks as $block ) {
+				if ( 'core/shortcode' === $block['blockName'] && isset( $block['innerHTML'] ) ) {
+					$new_shortcode = $block['innerHTML'];
+				} elseif ( 'user-registration/form-selector' === $block['blockName'] && isset( $block['attrs']['shortcode'] ) ) {
+					$new_shortcode = '[' . $block['attrs']['shortcode'] . ']';
+				}
+
+				if ( 'user-registration/form-selector' === $block['blockName'] && isset( $block['attrs']['logoutUrl'] ) ) {
+					$redirect = $block['attrs']['logoutUrl'];
+				}
+			}
+			preg_match( '/' . get_shortcode_regex() . '/s', $new_shortcode, $matches );
+
+		} else {
+			preg_match( '/' . get_shortcode_regex() . '/s', $post_content, $matches );
+		}
+
+		$matches_attr = isset( $matches[3] ) ? $matches[3] : '';
+		$attributes = shortcode_parse_atts( $matches_attr );
 		/**
 		 * Introduced logout_redirect parameter in user_registration_my_account shortcode.
 		 *
@@ -758,6 +858,14 @@ function ur_logout_url( $redirect = '' ) {
 			$redirect = trim( $redirect, '"' );
 			$redirect = trim( $redirect, "'" );
 			$redirect = '' != $redirect ? home_url( $redirect ) : ur_get_page_permalink( 'myaccount' );
+		}
+	} else {
+		$blocks = parse_blocks( $post->post_content );
+
+		foreach ( $blocks as $block ) {
+			if ( 'user-registration/form-selector' === $block['blockName'] && isset( $block['attrs']['logoutUrl'] ) ) {
+				$redirect = home_url( $block['attrs']['logoutUrl'] );
+			}
 		}
 	}
 	$redirect = apply_filters( 'user_registration_redirect_after_logout', $redirect );
@@ -780,7 +888,7 @@ function ur_logout_url( $redirect = '' ) {
  * @return bool
  */
 function is_elementor_editing_page() {
-	return ( ! empty( $_POST['action'] ) && 'elementor_ajax' === $_POST['action'] ) ||
-			! empty( $_GET['elementor-preview'] ) ||
-			( ! empty( $_GET['action'] ) && 'elementor' === $_GET['action'] );
+	return ( ! empty( $_POST['action'] ) && 'elementor_ajax' === $_POST['action'] ) || //PHPCS:ignore;
+		! empty( $_GET['elementor-preview'] ) ||
+		( ! empty( $_GET['action'] ) && 'elementor' === $_GET['action'] );
 }

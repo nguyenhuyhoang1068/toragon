@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WOOMULTI_CURRENCY_F_Admin_Admin {
 	protected $settings;
 
-	function __construct() {
+	public function __construct() {
 		$this->settings = WOOMULTI_CURRENCY_F_Data::get_ins();
 		add_filter(
 			'plugin_action_links_woo-multi-currency/woo-multi-currency.php', array(
@@ -23,47 +23,9 @@ class WOOMULTI_CURRENCY_F_Admin_Admin {
 		);
 		add_action( 'init', array( $this, 'init' ) );
 		add_action( 'admin_init', array( $this, 'admin_init' ) );
-		add_action( 'admin_notices', array( $this, 'cache_plugins_note' ) );
 		add_action( 'admin_menu', array( $this, 'menu_page' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 99 );
 		add_filter( 'woocommerce_general_settings', array( $this, 'woocommerce_general_settings' ) );
-	}
-
-	public function cache_plugins_note() {
-		$page = isset( $_GET['page'] ) ? wp_unslash( $_GET['page'] ) : '';
-		if ( $page != 'woo-multi-currency' ) {
-			return;
-		}
-		if ( is_plugin_active( 'wp-super-cache/wp-cache.php' ) && ! is_plugin_active( 'country-caching-extension-for-wp-super-cache/cc_wpsc_init.php' ) ) { ?>
-            <div class="notice notice-warning">
-
-                <div class="villatheme-content">
-                    <p>
-						<?php echo __( 'You are using <strong>WP Super Cache</strong>. Please install and active <strong>Country Caching For WP Super Cache</strong> that helps <strong>Multi Currency for WooCommerce</strong> is working fine with WP Super Cache.', 'woo-multi-currency' ) ?>
-                    </p>
-                </div>
-
-            </div>
-		<?php }
-
-		if ( is_plugin_active( 'wp-fastest-cache/wpFastestCache.php' ) ) {
-			if ( defined( 'WPFC_CACHE_QUERYSTRING' ) && WPFC_CACHE_QUERYSTRING ) {
-				return;
-			}
-			?>
-
-            <div class="notice notice-warning">
-                <div class="villatheme-content">
-                    <p>
-						<?php echo __( 'You are using <strong>WP Fastest Cache</strong>. Please make follow these steps to help <strong>Multi Currency for WooCommerce</strong> work fine with WP Fastest Cache.', 'woo-multi-currency' ) ?>
-                    </p>
-                    <ul>
-                        <li><?php echo __( '1. In <strong>WooCommerce → Settings → General → Default customer location</strong> make sure you have selected: <strong>Geolocate with page caching support</strong>', 'woo-multi-currency' ) ?></li>
-                        <li><?php echo __( '2. Open wp-config.php file via FTP then insert <strong>define(\'WPFC_CACHE_QUERYSTRING\', true);</strong>', 'woo-multi-currency' ) ?></li>
-                    </ul>
-                </div>
-            </div>
-		<?php }
 	}
 
 	/**
@@ -154,9 +116,13 @@ class WOOMULTI_CURRENCY_F_Admin_Admin {
 			delete_option( 'wmc_selected_currencies' );
 		}
 		/*Set currency again in backend*/
-		if ( ! is_ajax() ) {
+		if ( ! wp_doing_ajax() ) {
 			$frontend_call_admin = false;
-			if ( isset( $_GET['page'], $_GET['chart'] ) && $_GET['page'] === 'stats' && $_GET['chart'] === 'admin-bar-hours-scale' ) {//Fix with Jetpack stats request from front end
+			//Fix with Jetpack stats request from frontend
+			if ( isset( $_GET['page'], $_GET['chart'] ) && sanitize_text_field( wp_unslash( $_GET['page'] ) ) === 'stats' && in_array( sanitize_text_field( $_GET['chart'] ), array(
+					'admin-bar-hours-scale',
+					'admin-bar-hours-scale-2x'
+				) ) ) {
 				$frontend_call_admin = true;
 			}
 			if ( ! $frontend_call_admin ) {
@@ -171,7 +137,7 @@ class WOOMULTI_CURRENCY_F_Admin_Admin {
 	 * Init Script in Admin
 	 */
 	public function admin_enqueue_scripts() {
-		$page = isset( $_REQUEST['page'] ) ? wp_unslash( $_REQUEST['page'] ) : '';
+		$page = isset( $_REQUEST['page'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['page'] ) ) : '';
 		if ( $page == 'woo-multi-currency' ) {
 			global $wp_scripts;
 			$scripts = $wp_scripts->registered;
@@ -184,43 +150,35 @@ class WOOMULTI_CURRENCY_F_Admin_Admin {
 					wp_dequeue_script( $script->handle );
 				}
 			}
-
+			wp_dequeue_style( 'eopa-admin-css' );
 			/*Stylesheet*/
-			wp_enqueue_style( 'woo-multi-currency-button', WOOMULTI_CURRENCY_F_CSS . 'button.min.css' );
-			wp_enqueue_style( 'woo-multi-currency-table', WOOMULTI_CURRENCY_F_CSS . 'table.min.css' );
-			wp_enqueue_style( 'woo-multi-currency-transition', WOOMULTI_CURRENCY_F_CSS . 'transition.min.css' );
-			wp_enqueue_style( 'woo-multi-currency-form', WOOMULTI_CURRENCY_F_CSS . 'form.min.css' );
-			wp_enqueue_style( 'woo-multi-currency-icon', WOOMULTI_CURRENCY_F_CSS . 'icon.min.css' );
-			wp_enqueue_style( 'woo-multi-currency-dropdown', WOOMULTI_CURRENCY_F_CSS . 'dropdown.min.css' );
-			wp_enqueue_style( 'woo-multi-currency-checkbox', WOOMULTI_CURRENCY_F_CSS . 'checkbox.min.css' );
-			wp_enqueue_style( 'woo-multi-currency-segment', WOOMULTI_CURRENCY_F_CSS . 'segment.min.css' );
-			wp_enqueue_style( 'woo-multi-currency-menu', WOOMULTI_CURRENCY_F_CSS . 'menu.min.css' );
-			wp_enqueue_style( 'woo-multi-currency-tab', WOOMULTI_CURRENCY_F_CSS . 'tab.css' );
-			wp_enqueue_style( 'woo-multi-currency-input', WOOMULTI_CURRENCY_F_CSS . 'input.min.css' );
-			wp_enqueue_style( 'woo-multi-currency-popup', WOOMULTI_CURRENCY_F_CSS . 'popup.min.css' );
-			wp_enqueue_style( 'woo-multi-currency-message', WOOMULTI_CURRENCY_F_CSS . 'message.min.css' );
+			wp_enqueue_style( 'semantic-ui-button', WOOMULTI_CURRENCY_F_CSS . 'button.min.css' );
+			wp_enqueue_style( 'semantic-ui-table', WOOMULTI_CURRENCY_F_CSS . 'table.min.css' );
+			wp_enqueue_style( 'semantic-ui-transition', WOOMULTI_CURRENCY_F_CSS . 'transition.min.css' );
+			wp_enqueue_style( 'semantic-ui-form', WOOMULTI_CURRENCY_F_CSS . 'form.min.css' );
+			wp_enqueue_style( 'semantic-ui-icon', WOOMULTI_CURRENCY_F_CSS . 'icon.min.css' );
+			wp_enqueue_style( 'semantic-ui-dropdown', WOOMULTI_CURRENCY_F_CSS . 'dropdown.min.css' );
+			wp_enqueue_style( 'semantic-ui-checkbox', WOOMULTI_CURRENCY_F_CSS . 'checkbox.min.css' );
+			wp_enqueue_style( 'semantic-ui-segment', WOOMULTI_CURRENCY_F_CSS . 'segment.min.css' );
+			wp_enqueue_style( 'semantic-ui-menu', WOOMULTI_CURRENCY_F_CSS . 'menu.min.css' );
+			wp_enqueue_style( 'semantic-ui-tab', WOOMULTI_CURRENCY_F_CSS . 'tab.css' );
+			wp_enqueue_style( 'semantic-ui-input', WOOMULTI_CURRENCY_F_CSS . 'input.min.css' );
+			wp_enqueue_style( 'semantic-ui-popup', WOOMULTI_CURRENCY_F_CSS . 'popup.min.css' );
+			wp_enqueue_style( 'semantic-ui-message', WOOMULTI_CURRENCY_F_CSS . 'message.min.css' );
 			wp_enqueue_style( 'woo-multi-currency', WOOMULTI_CURRENCY_F_CSS . 'woo-multi-currency-admin.css' );
 			wp_enqueue_style( 'select2', WOOMULTI_CURRENCY_F_CSS . 'select2.min.css' );
 
 			wp_enqueue_script( 'select2' );
-			wp_enqueue_script( 'woo-multi-currency-transition', WOOMULTI_CURRENCY_F_JS . 'transition.min.js', array( 'jquery' ) );
-			wp_enqueue_script( 'woo-multi-currency-dropdown', WOOMULTI_CURRENCY_F_JS . 'dropdown.js', array( 'jquery' ) );
-			wp_enqueue_script( 'woo-multi-currency-checkbox', WOOMULTI_CURRENCY_F_JS . 'checkbox.js', array( 'jquery' ) );
-			wp_enqueue_script( 'woo-multi-currency-tab', WOOMULTI_CURRENCY_F_JS . 'tab.js', array( 'jquery' ) );
+			wp_enqueue_script( 'semantic-ui-transition', WOOMULTI_CURRENCY_F_JS . 'transition.min.js', array( 'jquery' ) );
+			wp_enqueue_script( 'semantic-ui-dropdown', WOOMULTI_CURRENCY_F_JS . 'dropdown.js', array( 'jquery' ) );
+			wp_enqueue_script( 'semantic-ui-checkbox', WOOMULTI_CURRENCY_F_JS . 'checkbox.js', array( 'jquery' ) );
+			wp_enqueue_script( 'semantic-ui-tab', WOOMULTI_CURRENCY_F_JS . 'tab.js', array( 'jquery' ) );
 			wp_enqueue_script( 'woo-multi-currency-address', WOOMULTI_CURRENCY_F_JS . 'jquery.address-1.6.min.js', array( 'jquery' ) );
 			wp_enqueue_script( 'jquery-ui-sortable' );
 			wp_enqueue_script( 'woo-multi-currency', WOOMULTI_CURRENCY_F_JS . 'woo-multi-currency-admin.js', array( 'jquery' ), WOOMULTI_CURRENCY_F_VERSION );
 			/*Color picker*/
-			wp_enqueue_script(
-				'iris', admin_url( 'js/iris.min.js' ), array(
-				'jquery-ui-draggable',
-				'jquery-ui-slider',
-				'jquery-touch-punch'
-			), false, 1
-			);
-
+			wp_enqueue_script( 'iris' );
 		}
-
 	}
 
 	/**
@@ -231,7 +189,7 @@ class WOOMULTI_CURRENCY_F_Admin_Admin {
 	 * @return mixed
 	 */
 	public function settings_link( $links ) {
-		$settings_link = '<a href="admin.php?page=woo-multi-currency" title="' . __( 'Settings', 'woo-multi-currency' ) . '">' . __( 'Settings', 'woo-multi-currency' ) . '</a>';
+		$settings_link = '<a href="admin.php?page=woo-multi-currency" title="' . esc_html__( 'Settings', 'woo-multi-currency' ) . '">' . esc_html__( 'Settings', 'woo-multi-currency' ) . '</a>';
 		array_unshift( $links, $settings_link );
 
 		return $links;

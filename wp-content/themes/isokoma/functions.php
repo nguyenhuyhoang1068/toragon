@@ -739,7 +739,7 @@ add_action( 'woocommerce_register_form', 'woocommerce_register_form_password_rep
 function custom_count_wishlist() {
 	$url = WPcleverWoosw::get_url();
 	$icon_html  = "<div class='menu-item woosw-menu-item menu-item-type-woosw'><a href='{$url}'>";
-	$icon_html .= '<span class="woosw-menu-item-inner" data-count="'.WPcleverWoosw::get_count().'"><img src="https://toragon.vn/wp-content/uploads/2022/01/heartic.png" alt="wishlist"></span>';
+	$icon_html .= '<span class="woosw-menu-item-inner" data-count="'.WPcleverWoosw::get_count().'"><img src="https://toragon.dev/wp-content/uploads/2022/01/heartic.png" alt="wishlist"></span>';
 	$icon_html .= '</a></div>';
 	return $icon_html;
 }
@@ -991,5 +991,10 @@ add_filter( 'rest_authentication_errors', function( $result ) {
 	}
 	return $result;
 });
-
+/* hoang1068 start */
+// Transfer text editor to the old version
+add_filter('use_block_editor_for_post', '__return_false');
+// Transfer widgets to the old version
+add_filter('use_widgets_block_editor', '__return_false');
+/* hoang1068 end */
  

@@ -1,3 +1,63 @@
+##### [Version 3.4.4](https://github.com/Codeinwp/optimole-wp/compare/v3.4.3...v3.4.4) (2022-07-14)
+
+* Enhance WooCommerce and WPBakery compatibilities when users are offloading the images to Optimole cloud.
+* Improve compatibility with all plugins that are editing the media modal tabs.
+
+##### [Version 3.4.3](https://github.com/Codeinwp/optimole-wp/compare/v3.4.2...v3.4.3) (2022-05-30)
+
+* Enhance Thrive compatibility when users are offloading the images to Optimole cloud.
+
+##### [Version 3.4.2](https://github.com/Codeinwp/optimole-wp/compare/v3.4.1...v3.4.2) (2022-05-25)
+
+Fix edge cases for auto allowing domain on site migration.
+
+##### [Version 3.4.1](https://github.com/Codeinwp/optimole-wp/compare/v3.4.0...v3.4.1) (2022-05-10)
+
+* Auto allow domain when the website URL is being changed, such as moving from production -> staging or viceversa
+
+#### [Version 3.4.0](https://github.com/Codeinwp/optimole-wp/compare/v3.3.5...v3.4.0) (2022-04-18)
+
+* Adds Machine Learning(ML) quality compression which will predict the right quality for your image in order to get the smallest possible size with minimum perceived quality losses, delivering images with ~40% smaller size than the current solution.
+* Adds AVIF format conversion enabled by default for everyone. 
+* Fix edge case when content URL is relative and prevents Optimole from replacing the URLs.
+
+##### [Version 3.3.5](https://github.com/Codeinwp/optimole-wp/compare/v3.3.4...v3.3.5) (2022-03-31)
+
+#### Fixes
+- updates compatibility with FacetWP 
+- fixes warning regarding image size calculation
+
+##### [Version 3.3.4](https://github.com/Codeinwp/optimole-wp/compare/v3.3.3...v3.3.4) (2022-03-25)
+
+* Add support for HEIC/AVIF formats as source input
+
+##### [Version 3.3.3](https://github.com/Codeinwp/optimole-wp/compare/v3.3.2...v3.3.3) (2022-03-18)
+
+ #### Fixes
+- adds filter <code>optml_gif_to_video_flags</code> to exclude GIF placeholders from video conversion
+- adds compatibility with Avada live to remove replacement in edit mode
+
+##### [Version 3.3.2](https://github.com/Codeinwp/optimole-wp/compare/v3.3.1...v3.3.2) (2022-03-17)
+
+#### Fixes
+* Hardening security for users with administrator roles. 
+* Update dependencies to the latest version.
+
+##### [Version 3.3.1](https://github.com/Codeinwp/optimole-wp/compare/v3.3.0...v3.3.1) (2022-03-10)
+
+#### Features
+- Adds filter, `optml_should_avif_ext` , for more control over which images are converted to AVIF, by default SVG images are not converted
+#### Fixes
+- Plugin interface header display size on safari
+
+#### [Version 3.3.0](https://github.com/Codeinwp/optimole-wp/compare/v3.2.1...v3.3.0) (2022-02-25)
+
+#### Features
+* Adds opt-in AVIF compatibility, improving the image optimization savings on average with at 30%
+* Major dashboard UI/UX improvements make it cleaner and easier to use.
+* Adds separate functionality for clearing only CSS/JS when Optimole is serving those.
+* Improve Optimole Cloud optimizations speed and performances
+
 ##### [Version 3.2.1](https://github.com/Codeinwp/optimole-wp/compare/v3.2.0...v3.2.1) (2021-10-01)
 
 * Fix issue when the quota exceeded message shows up on new connections. 

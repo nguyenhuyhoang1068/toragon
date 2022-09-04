@@ -28,7 +28,7 @@ define('GEOIP_DETECT_DATA_UPDATE_FILENAME', 'GeoLite2-City.mmdb');
 class AutoDataSource extends ManualDataSource
 {
 	public function getId() { return 'auto'; }
-	public function getLabel() { return __('Automatic download & update of Maxmind GeoIP Lite City', 'geoip-detect'); }
+	public function getLabel() { return __('Maxmind GeoIP Lite City (Automatic download & update)', 'geoip-detect'); }
 	public function getShortLabel() { return sprintf(__('%s (updated weekly)', 'geoip-detect'), parent::getShortLabel()); }
 	public function getDescriptionHTML() { 
 		return __('(License: See <a href="https://www.maxmind.com/en/site-license-overview" target="_blank">Site Licence Overview</a> or <a href="https://www.maxmind.com/en/end-user-license-agreement" target="_blank">End User Licence Agreement</a>.)', 'geoip-detect'); }
@@ -116,7 +116,7 @@ HTML;
 
 	public function maxmindGetFilename() {
 		$data_filename = $this->maxmindGetUploadFilename();
-		if (!is_readable($data_filename))
+		if (!is_readable($data_filename) || !is_file($data_filename))
 			$data_filename = '';
 
 		/**
@@ -215,6 +215,9 @@ HTML;
 		if (!is_readable($outFile)) {
 			return 'Error: Something went wrong: the unpacked file cannot be found.';
 		}
+		if (!is_file($outFile)) {
+			return 'Error: Something went wrong: the unpacked file is a folder.';
+		}
 
 		update_option('geoip-detect-auto_downloaded_file', '');
 		unlink($tmpFile);
@@ -224,7 +227,7 @@ HTML;
 
 	// Ungzip File
 	protected function unpackArchive($downloadedFilename, $outFile) {
-		if (!is_readable($downloadedFilename))
+		if (!is_readable($downloadedFilename) || !is_file($downloadedFilename))
 			return __('Downloaded file could not be opened for reading.', 'geoip-detect');
 		if (!\is_writable(dirname($outFile)))
 			return sprintf(__('Database could not be written (%s).', 'geoip-detect'), $outFile);
@@ -264,7 +267,7 @@ HTML;
 			}
 		}
 
-		if (!\is_readable($inFile))
+		if (!\is_readable($inFile) || !\is_file($inFile))
 			return __('Downloaded file could not be opened for reading.', 'geoip-detect');
 	
 		$ret = copy($inFile, $outFile);

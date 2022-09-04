@@ -19,16 +19,16 @@ if ( ! class_exists( 'WP_List_Table' ) ) {
  * @name Membership_Log_List_Table
  * @since      1.0.0
  * @category Class
- * @author makewebbetter<webmaster@makewebbetter.com>
- * @link http://www.makewebbetter.com/
+ * @author makewebbetter<webmaster@wpswings.com>
+ * @link https://www.wpswings.com/
  */
 class Membership_Log_List_Table extends WP_List_Table {
 	/**
 	 * This variable used for the totoal data.
 	 *
 	 * @var $example_data
-	 * @author makewebbetter<webmaster@makewebbetter.com>
-	 * @link http://www.makewebbetter.com/
+	 * @author makewebbetter<webmaster@wpswings.com>
+	 * @link https://www.wpswings.com/
 	 */
 	public $example_data;
 
@@ -37,8 +37,8 @@ class Membership_Log_List_Table extends WP_List_Table {
 	 *
 	 * @name get_columns.
 	 * @since      1.0.0
-	 * @author makewebbetter<webmaster@makewebbetter.com>
-	 * @link http://www.makewebbetter.com/
+	 * @author makewebbetter<webmaster@wpswings.com>
+	 * @link https://www.wpswings.com/
 	 */
 	public function get_columns() {
 
@@ -56,9 +56,9 @@ class Membership_Log_List_Table extends WP_List_Table {
 	 * This show points table list.
 	 *
 	 * @name column_default.
-	 * @author makewebbetter<webmaster@makewebbetter.com>
+	 * @author makewebbetter<webmaster@wpswings.com>
 	 * @since      1.0.0
-	 * @link http://www.makewebbetter.com/
+	 * @link https://www.wpswings.com/
 	 * @param array  $item array of the row.
 	 * @param string $column_name column name of the Table.
 	 */
@@ -87,15 +87,15 @@ class Membership_Log_List_Table extends WP_List_Table {
 	 *
 	 * @name process_bulk_action.
 	 * @since      1.0.0
-	 * @author makewebbetter<webmaster@makewebbetter.com>
-	 * @link http://www.makewebbetter.com/
+	 * @author makewebbetter<webmaster@wpswings.com>
+	 * @link https://www.wpswings.com/
 	 */
 	public function process_bulk_action() {
 
 		if ( 'bulk-delete' === $this->current_action() ) {
 			if ( isset( $_POST['membership-log'] ) ) {
-				$mwb_membership_nonce = sanitize_text_field( wp_unslash( $_POST['membership-log'] ) );
-				if ( wp_verify_nonce( $mwb_membership_nonce, 'membership-log' ) ) {
+				$wps_membership_nonce = sanitize_text_field( wp_unslash( $_POST['membership-log'] ) );
+				if ( wp_verify_nonce( $wps_membership_nonce, 'membership-log' ) ) {
 					if ( isset( $_POST['mpr_points_ids'] ) && ! empty( $_POST['mpr_points_ids'] ) ) {
 						$all_id = map_deep( wp_unslash( $_POST['mpr_points_ids'] ), 'sanitize_text_field' );
 						if ( ! empty( $all_id ) && is_array( $all_id ) ) {
@@ -115,8 +115,8 @@ class Membership_Log_List_Table extends WP_List_Table {
 	 * @name process_bulk_action.
 	 * @since      1.0.0
 	 * @return array
-	 * @author makewebbetter<webmaster@makewebbetter.com>
-	 * @link http://www.makewebbetter.com/
+	 * @author makewebbetter<webmaster@wpswings.com>
+	 * @link https://www.wpswings.com/
 	 */
 	public function get_bulk_actions() {
 		$actions = array(
@@ -131,8 +131,8 @@ class Membership_Log_List_Table extends WP_List_Table {
 	 * @name get_sortable_columns.
 	 * @since      1.0.0
 	 * @return array
-	 * @author makewebbetter<webmaster@makewebbetter.com>
-	 * @link http://www.makewebbetter.com/
+	 * @author makewebbetter<webmaster@wpswings.com>
+	 * @link https://www.wpswings.com/
 	 */
 	public function get_sortable_columns() {
 		$sortable_columns = array(
@@ -148,8 +148,8 @@ class Membership_Log_List_Table extends WP_List_Table {
 	 *
 	 * @name prepare_items.
 	 * @since      1.0.0
-	 * @author makewebbetter<webmaster@makewebbetter.com>
-	 * @link http://www.makewebbetter.com/
+	 * @author makewebbetter<webmaster@wpswings.com>
+	 * @link https://www.wpswings.com/
 	 */
 	public function prepare_items() {
 		$per_page              = 10;
@@ -161,7 +161,7 @@ class Membership_Log_List_Table extends WP_List_Table {
 
 		$this->example_data = $this->get_users_points();
 		$data               = $this->example_data;
-		$tst                = usort( $data, array( $this, 'mwb_wpr_usort_reorder' ) );
+		$tst                = usort( $data, array( $this, 'wps_wpr_usort_reorder' ) );
 		$current_page       = $this->get_pagenum();
 		$total_items        = count( $data );
 		$data               = array_slice( $data, ( ( $current_page - 1 ) * $per_page ), $per_page );
@@ -179,15 +179,15 @@ class Membership_Log_List_Table extends WP_List_Table {
 	/**
 	 * Return sorted associative array.
 	 *
-	 * @name mwb_wpr_usort_reorder.
+	 * @name wps_wpr_usort_reorder.
 	 * @since      1.0.0
 	 * @return array
-	 * @author makewebbetter<webmaster@makewebbetter.com>
-	 * @link http://www.makewebbetter.com/
+	 * @author makewebbetter<webmaster@wpswings.com>
+	 * @link https://www.wpswings.com/
 	 * @param array $cloumna column id .
 	 * @param array $cloumnb .
 	 */
-	public function mwb_wpr_usort_reorder( $cloumna, $cloumnb ) {
+	public function wps_wpr_usort_reorder( $cloumna, $cloumnb ) {
 		$orderby = ( ! empty( $_REQUEST['orderby'] ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['orderby'] ) ) : 'id';
 		$order   = ( ! empty( $_REQUEST['order'] ) ) ? sanitize_text_field( wp_unslash( $_REQUEST['order'] ) ) : 'desc';
 		if ( is_numeric( $cloumna[ $orderby ] ) && is_numeric( $cloumnb[ $orderby ] ) ) {
@@ -211,8 +211,8 @@ class Membership_Log_List_Table extends WP_List_Table {
 	 *
 	 * @name column_cb.
 	 * @since      1.0.0
-	 * @author makewebbetter<webmaster@makewebbetter.com>
-	 * @link http://www.makewebbetter.com/
+	 * @author makewebbetter<webmaster@wpswings.com>
+	 * @link https://www.wpswings.com/
 	 * @param array $item array of the items.
 	 */
 	public function column_cb( $item ) {
@@ -227,8 +227,8 @@ class Membership_Log_List_Table extends WP_List_Table {
 	 * @name get_users_points.
 	 * @since      1.0.0
 	 * @return array
-	 * @author makewebbetter<webmaster@makewebbetter.com>
-	 * @link http://www.makewebbetter.com/
+	 * @author makewebbetter<webmaster@wpswings.com>
+	 * @link https://www.wpswings.com/
 	 */
 	public function get_users_points() {
 		$args['meta_query'] = array(
@@ -238,7 +238,7 @@ class Membership_Log_List_Table extends WP_List_Table {
 				'compare' => 'EXISTS',
 			),
 			array(
-				'key' => 'mwb_wpr_points',
+				'key' => 'wps_wpr_points',
 
 			),
 		);
@@ -254,7 +254,7 @@ class Membership_Log_List_Table extends WP_List_Table {
 				'id'          => $value->data->ID,
 				'user_name'   => $value->data->user_nicename,
 				'user_email'  => $value->data->user_email,
-				'user_points' => get_user_meta( $value->data->ID, 'mwb_wpr_points', true ),
+				'user_points' => get_user_meta( $value->data->ID, 'wps_wpr_points', true ),
 				'user_level'  => get_user_meta( $value->data->ID, 'membership_level', true ),
 			);
 		}
@@ -262,7 +262,7 @@ class Membership_Log_List_Table extends WP_List_Table {
 	}
 }
 ?>
-<h3 class="wp-heading-inline" id="mwb_wpr_points_table_heading">
+<h3 class="wp-heading-inline" id="wps_wpr_points_table_heading">
 	<?php esc_html_e( 'Membership Log', 'points-and-rewards-for-woocommerce' ); ?></h3>
 <form method="post">
 	<input type="hidden" name="page"
@@ -271,7 +271,7 @@ class Membership_Log_List_Table extends WP_List_Table {
 	<?php
 	$mylisttable = new Membership_Log_List_Table();
 	$mylisttable->prepare_items();
-	$mylisttable->search_box( __( 'Search Users', 'points-and-rewards-for-woocommerce' ), 'mwb-wpr-user' );
+	$mylisttable->search_box( __( 'Search Users', 'points-and-rewards-for-woocommerce' ), 'wps-wpr-user' );
 	$mylisttable->display();
 	?>
 </form>

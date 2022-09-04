@@ -33,6 +33,8 @@ class TRP_Translate_Press{
     protected $search;
     protected $install_plugins;
     protected $reviews;
+    protected $rewrite_rules;
+    protected $check_invalid_text;
 
     public $active_pro_addons = array();
     public static $translate_press = null;
@@ -58,7 +60,7 @@ class TRP_Translate_Press{
         define( 'TRP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
         define( 'TRP_PLUGIN_BASE', plugin_basename( __DIR__ . '/index.php' ) );
         define( 'TRP_PLUGIN_SLUG', 'translatepress-multilingual' );
-        define( 'TRP_PLUGIN_VERSION', '2.1.2' );
+        define( 'TRP_PLUGIN_VERSION', '2.3.4' );
 
 	    wp_cache_add_non_persistent_groups(array('trp'));
 
@@ -116,6 +118,8 @@ class TRP_Translate_Press{
         require_once TRP_PLUGIN_DIR . 'includes/class-search.php';
         require_once TRP_PLUGIN_DIR . 'includes/class-install-plugins.php';
         require_once TRP_PLUGIN_DIR . 'includes/class-reviews.php';
+        require_once TRP_PLUGIN_DIR . 'includes/class-rewrite-rules.php';
+        require_once TRP_PLUGIN_DIR . 'includes/class-check-invalid-text.php';
         require_once TRP_PLUGIN_DIR . 'assets/lib/tp-add-ons-listing/tp-add-ons-listing.php';
         if ( did_action( 'elementor/loaded' ) )
             require_once TRP_PLUGIN_DIR . 'includes/class-elementor-language-for-blocks.php';
@@ -156,6 +160,8 @@ class TRP_Translate_Press{
         $this->search                     = new TRP_Search( $this->settings->get_settings() );
         $this->install_plugins            = new TRP_Install_Plugins();
         $this->reviews                    = new TRP_Reviews( $this->settings->get_settings() );
+        $this->rewrite_rules              = new TRP_Rewrite_Rules( $this->settings->get_settings() );
+        $this->check_invalid_text         = new TRP_Check_Invalid_Text( );
     }
 
     /**
@@ -246,8 +252,10 @@ class TRP_Translate_Press{
 
 
 	    $this->loader->add_action( 'admin_menu', $this->upgrade, 'register_menu_page' );
+        $this->loader->add_action( 'admin_init', $this->upgrade, 'show_admin_error_message' );
 	    $this->loader->add_action( 'admin_init', $this->upgrade, 'show_admin_notice' );
 	    $this->loader->add_action( 'admin_init', $this->upgrade, 'show_notification_about_add_ons_removal' );
+        $this->loader->add_action( 'admin_init', $this->upgrade, 'trp_prepare_options_for_database_optimization' );
 	    $this->loader->add_action( 'admin_enqueue_scripts', $this->upgrade, 'enqueue_update_script', 10, 1 );
 	    $this->loader->add_action( 'wp_ajax_trp_update_database', $this->upgrade, 'trp_update_database' );
 
@@ -271,6 +279,11 @@ class TRP_Translate_Press{
         $this->loader->add_action( 'admin_init', $this->reviews, 'display_review_notice' );
         $this->loader->add_action( 'trp_dismiss_notification', $this->reviews, 'dismiss_notification', 10, 2 );
 
+        // Email Course
+	    $this->loader->add_action( 'wp_ajax_trp_dismiss_email_course', $this->settings, 'trp_dismiss_email_course' );
+
+        // Filter rewrite rules for .htaccess
+        $this->loader->add_filter( 'mod_rewrite_rules', $this->rewrite_rules, 'trp_remove_language_param', 100 );
     }
 
     /**
@@ -318,6 +331,7 @@ class TRP_Translate_Press{
         $this->loader->add_action( 'admin_bar_menu', $this->translation_manager, 'add_shortcut_to_translation_editor', 90, 1 );
         $this->loader->add_action( 'admin_head', $this->translation_manager, 'add_styling_to_admin_bar_button', 10 );
         $this->loader->add_filter( 'show_admin_bar', $this->translation_manager, 'hide_admin_bar_when_in_editor', 90 );
+        $this->loader->add_action( 'enqueue_block_editor_assets', $this->translation_manager, 'trp_add_shortcut_to_trp_editor_gutenberg', 90);
 
         $this->loader->add_filter( 'template_include', $this->string_translation, 'string_translation_editor', 99999 );
         $this->loader->add_filter( 'trp_string_types', $this->string_translation, 'register_string_types', 10, 1 );
@@ -329,6 +343,9 @@ class TRP_Translate_Press{
         $this->loader->add_filter( 'home_url', $this->url_converter, 'add_language_to_home_url', 1, 4 );
         $this->loader->add_action( 'wp_head', $this->url_converter, 'add_hreflang_to_head' );
         $this->loader->add_filter( 'language_attributes', $this->url_converter, 'change_lang_attr_in_html_tag', 10, 1 );
+        $this->loader->add_filter('trp_is_file', $this->url_converter, 'does_url_contains_array', 10, 2);
+        $this->loader->add_filter('trp_hreflang', $this->url_converter, 'replace_iso_2_with_iso_3_for_hreflang', 10, 2);
+        $this->loader->add_filter('wp_footer', $this->url_converter, 'add_tp_language_lang_attribute', 1);
 
 
         $this->loader->add_filter( 'widget_text', null, 'do_shortcode', 11 );
@@ -391,6 +408,10 @@ class TRP_Translate_Press{
         //search
         $this->loader->add_filter( 'pre_get_posts', $this->search, 'trp_search_filter', 99999999 );
         $this->loader->add_filter( 'get_search_query', $this->search, 'trp_search_query', 10 );
+
+        /* prevent indexing edit translation preview pages */
+        $this->loader->add_action( 'trp_head', $this->translation_manager, 'output_noindex_tag', 100 );
+        $this->loader->add_action( 'wp_head', $this->translation_manager, 'output_noindex_tag', 100 );
     }
 
     /**

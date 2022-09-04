@@ -16,25 +16,29 @@ $rpt_name = isset( $rpt_name ) ? $rpt_name : 'rpt_wc';
 $field_name_layout = isset( $field_name_layout ) ? $field_name_layout : 'rpt_new_layout';
 $field_name_sale = isset( $field_name_sale ) ? $field_name_sale : 'rpt_apply_sale';
 
-woocommerce_wp_checkbox(
-	array(
-		'id'      => $field_name_sale,
-		'value'   => $apply_on_sale ? $apply_on_sale : 'no',
-		'label'   => __( 'Change the Sale Price?', 'rpt_wc' ),
-		'description'   => __( 'While the Product is on sale, the price change will change the sale price instead of regular', 'rpt_wc' ),
-		'cbvalue' => 'yes',
-	)
-);
+if ( false !== $field_name_sale ) {
+	woocommerce_wp_checkbox(
+		array(
+			'id'          => $field_name_sale,
+			'value'       => $apply_on_sale ? $apply_on_sale : 'no',
+			'label'       => __( 'Change the Sale Price?', 'rpt_wc' ),
+			'description' => __( 'While the Product is on sale, the price change will change the sale price instead of regular', 'rpt_wc' ),
+			'cbvalue'     => 'yes',
+		)
+	);
+}
 
-woocommerce_wp_checkbox(
-	array(
-		'id'      => $field_name_layout,
-		'value'   => $use_new_layout ? $use_new_layout : 'no',
-		'label'   => __( 'Show Countdown?', 'rpt_wc' ),
-		'description'   => __( 'Use the countcount with showing new price', 'rpt_wc' ),
-		'cbvalue' => 'yes',
-	)
-);
+if ( false !== $field_name_layout ) {
+	woocommerce_wp_checkbox(
+		array(
+			'id'          => $field_name_layout,
+			'value'       => $use_new_layout ? $use_new_layout : 'no',
+			'label'       => __( 'New Layout?', 'rpt_wc' ),
+			'description' => __( 'Use the Layout with showing new price', 'rpt_wc' ),
+			'cbvalue'     => 'yes',
+		)
+	);
+}
 ?>
 
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
@@ -68,7 +72,7 @@ woocommerce_wp_checkbox(
 					$time = isset( $datetime_arr[1] ) ? substr( $datetime_arr[1], 0, -3 ) : '00:00';
 					?>
 					<tr>
-						<?php do_action( 'rpt_wc_table_td_start', $count ); ?>
+						<?php do_action( 'rpt_wc_table_td_start', $count, $rpt_name ); ?>
 						<td class="rpt-date-column">
 							<input name="<?php echo $rpt_name; ?>[<?php echo $count; ?>][date]" class="widefat rpt-datepicker" value="<?php echo $date; ?>">
 						</td>
@@ -100,7 +104,7 @@ woocommerce_wp_checkbox(
 			} else {
 			?>
 			<tr>
-				<?php do_action( 'rpt_wc_table_td_start', 0 ); ?>
+				<?php do_action( 'rpt_wc_table_td_start', 0, $rpt_name ); ?>
 				<td class="rpt-date-column">
 					<input name="<?php echo $rpt_name; ?>[0][date]" class="widefat rpt-datepicker">
 				</td>
@@ -131,5 +135,7 @@ woocommerce_wp_checkbox(
 	</table>
  
 	<button type="button" id="rpt_add_row" data-formname="<?php echo $rpt_name; ?>" class="button button-default rpt-add-row"><?php _e( 'Add Time Point', 'rpt-wc' ); ?></button>
-    
+    <?php if ( ! defined( 'RPT_PREMIUM' ) || ! RPT_PREMIUM || cpwtfw_fs()->is_not_paying() ) { ?>
+        <a class="rpt-upgrade-link" target="_blank" href="<?php echo esc_url( cpwtfw_fs()->get_upgrade_url() ); ?>"><?php esc_html_e( 'Bulk timed prices & Variations? Upgrade.', 'rpt-wc' ); ?></a>
+    <?php } ?>
 </div>

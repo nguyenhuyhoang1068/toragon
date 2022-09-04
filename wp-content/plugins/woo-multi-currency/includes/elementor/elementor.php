@@ -13,5 +13,9 @@ add_action( 'elementor/widgets/widgets_registered', function () {
 	$drop_down_widget = new WOOMULTI_CURRENCY_Elementor_Widget();
 
 // Let Elementor know about our widget
-	Elementor\Plugin::instance()->widgets_manager->register_widget_type( $drop_down_widget );
+	if ( version_compare( ELEMENTOR_VERSION, '3.5.0', '>=' )){
+		Elementor\Plugin::instance()->widgets_manager->register( $drop_down_widget );
+	}else {
+		Elementor\Plugin::instance()->widgets_manager->register_widget_type( $drop_down_widget );
+	}
 } );

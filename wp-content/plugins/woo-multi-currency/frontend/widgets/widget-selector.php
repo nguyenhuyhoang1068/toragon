@@ -15,8 +15,8 @@ if ( ! class_exists( 'WMC_Widget' ) ) {
 			$this->settings = WOOMULTI_CURRENCY_F_Data::get_ins();
 			parent::__construct(
 				'wmc_widget', // Base ID
-				esc_attr__( 'Currency Selector', 'woo-multi-currency' ), // Name
-				array( 'description' => esc_attr__( 'Change display currency on shop page. Widget of Multi Currency for WooCommerce by VillaTheme', 'woo-multi-currency' ), ) // Args
+				esc_html__( 'Currency Selector', 'woo-multi-currency' ), // Name
+				array( 'description' => esc_html__( 'Change display currency on shop page. Widget of Multi Currency for WooCommerce by VillaTheme', 'woo-multi-currency' ), ) // Args
 			);
 		}
 
@@ -28,14 +28,12 @@ if ( ! class_exists( 'WMC_Widget' ) ) {
 		 */
 		public function widget( $args, $instance ) {
 			if ( $this->settings->get_enable() ) {
-				echo $args['before_widget'];
+				echo WOOMULTI_CURRENCY_F_Data::wp_kses_post( $args['before_widget'] );
 				if ( ! empty( $instance['title'] ) ) {
-					echo $args['before_title'] . apply_filters( 'widget_title', $instance['title'] ) . $args['after_title'];
+					echo WOOMULTI_CURRENCY_F_Data::wp_kses_post( $args['before_title'] . apply_filters( 'widget_title', $instance['title'] ) . $args['after_title'] );
 				}
-
-				echo do_shortcode( apply_filters( 'wmc_shortcode', "[woo_multi_currency]", $instance ) );
-
-				echo $args['after_widget'];
+				echo WOOMULTI_CURRENCY_F_Data::wp_kses_post( do_shortcode( apply_filters( 'wmc_shortcode', "[woo_multi_currency]", $instance ) ) );
+				echo WOOMULTI_CURRENCY_F_Data::wp_kses_post( $args['after_widget'] );
 			}
 		}
 
@@ -52,27 +50,27 @@ if ( ! class_exists( 'WMC_Widget' ) ) {
 			$items     = $setting->get_list_shortcodes();
 			?>
             <p>
-                <label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php esc_html_e( 'Title:', 'woo-multi-currency' ); ?></label>
+                <label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( 'Title:', 'woo-multi-currency' ); ?></label>
                 <input placeholder="<?php echo esc_attr__( 'Please enter your title', 'woo-multi-currency' ) ?>"
-                       class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>"
-                       name="<?php echo $this->get_field_name( 'title' ); ?>" type="text"
+                       class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"
+                       name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text"
                        value="<?php echo esc_attr( $title ); ?>">
             </p>
             <p>
-                <label for="<?php echo $this->get_field_id( 'layout' ); ?>"><?php esc_html_e( 'Layout', 'woo-multi-currency' ) ?></label>
+                <label for="<?php echo esc_attr( $this->get_field_id( 'layout' ) ); ?>"><?php esc_html_e( 'Layout', 'woo-multi-currency' ) ?></label>
                 <br/>
-                <select class="widefat" id="<?php echo $this->get_field_id( 'layout' ); ?>"
-                        name="<?php echo $this->get_field_name( 'layout' ); ?>">
+                <select class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'layout' ) ); ?>"
+                        name="<?php echo esc_attr( $this->get_field_name( 'layout' ) ); ?>">
 					<?php foreach ( $items as $k => $item ) { ?>
-                        <option value="<?php echo $k ?>" <?php selected( $k, $layout ) ?>><?php echo $item ?></option>
+                        <option value="<?php echo esc_attr( $k ) ?>" <?php selected( $k, $layout ) ?>><?php echo esc_html( $item ) ?></option>
 					<?php } ?>
                 </select>
             </p>
             <p>
-                <label for="<?php echo $this->get_field_id( 'flag_size' ); ?>"><?php esc_html_e( 'Flag size', 'woo-multi-currency' ) ?></label>
+                <label for="<?php echo esc_attr( $this->get_field_id( 'flag_size' ) ); ?>"><?php esc_html_e( 'Flag size', 'woo-multi-currency' ) ?></label>
                 <br/>
-                <select class="widefat" id="<?php echo $this->get_field_id( 'flag_size' ); ?>"
-                        name="<?php echo $this->get_field_name( 'flag_size' ); ?>">
+                <select class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'flag_size' ) ); ?>"
+                        name="<?php echo esc_attr( $this->get_field_name( 'flag_size' ) ); ?>">
 
                     <option value="0" <?php selected( $flag_size, 0 ) ?>><?php esc_html_e( 'Small', 'woo-multi-currency' ) ?></option>
                     <option value="1" <?php selected( $flag_size, 1 ) ?>><?php esc_html_e( 'Large', 'woo-multi-currency' ) ?></option>
@@ -99,8 +97,5 @@ if ( ! class_exists( 'WMC_Widget' ) ) {
 
 			return apply_filters( 'wmc_save_widget_data', $instance, $new_instance, $old_instance );
 		}
-
-
 	}
 }
-?>

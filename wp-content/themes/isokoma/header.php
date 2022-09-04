@@ -109,7 +109,7 @@
               <div class="ml-3">
                 <a href="<?php echo get_permalink( get_option('woocommerce_myaccount_page_id') ); ?>">
                   <div class="cart_count">
-                    <img src="https://toragon.vn/wp-content/uploads/2022/01/tiger.png" alt="cart">
+                    <img src="https://toragon.dev/wp-content/uploads/2022/01/tiger.png" alt="cart">
                   </div>
                 </a>
               </div>
@@ -119,7 +119,7 @@
               <div class="ml-3">
                 <a href="<?php echo wc_get_cart_url(); ?>">
                   <div class="cart_count">
-                    <img src="https://toragon.vn/wp-content/uploads/2022/01/briefcaseic.png" alt="cart">
+                    <img src="https://toragon.dev/wp-content/uploads/2022/01/briefcaseic.png" alt="cart">
                     <div class="header-cart-count"><?php echo WC()->cart->get_cart_contents_count(); ?></div>
                   </div>
                 </a>
@@ -149,7 +149,7 @@
           <div class="ml-3">
             <a href="<?php echo get_permalink( get_option('woocommerce_myaccount_page_id') ); ?>">
               <div class="cart_count">
-                <img src="https://toragon.vn/wp-content/uploads/2022/01/tiger.png" alt="cart">
+                <img src="https://toragon.dev/wp-content/uploads/2022/01/tiger.png" alt="cart">
               </div>
             </a>
           </div>
@@ -159,7 +159,7 @@
           <div class="ml-3">
             <a href="<?php echo wc_get_cart_url(); ?>">
               <div class="cart_count">
-                <img src="https://toragon.vn/wp-content/uploads/2022/01/briefcaseic.png" alt="cart">
+                <img src="https://toragon.dev/wp-content/uploads/2022/01/briefcaseic.png" alt="cart">
                 <div class="header-cart-count"><?php echo WC()->cart->get_cart_contents_count(); ?></div>
               </div>
             </a>

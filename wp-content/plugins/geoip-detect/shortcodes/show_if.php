@@ -64,6 +64,9 @@
  *
  * Show TEXT if the visitor is from Berlin, otherwise show OTHER (since 4.1.0)
  * 		`[geoip_detect2_show_if city="Berlin"]TEXT[else]OTHER[/geoip_detect2_show_if]`
+ * 
+ * Show NO COUNTRY if no country was detected (since 4.3.0)
+ * 		`[geoip_detect2_show_if country=""]NO COUNTRY[/geoip_detect2_show_if]`
  *
  * LIMITATIONS:
  * - You cannot nest several of these shortcodes within one another. Instead, seperate them into several blocks of shortcodes.
@@ -90,12 +93,11 @@ function geoip_detect2_shortcode_show_if($attr, $content = '', $shortcodeName = 
 		
 		$shortcode_options['parsed'] = $parsed;
 		$span_attributes = [ 'class' => 'js-geoip-detect-show-if', 'style' => 'display: none !important' ];
-		$span_tagname = 'span'; // TODO: Should be 'div' under certain cirumstances, to test
 		
-		$span_if = _geoip_detect2_create_placeholder($span_tagname, $span_attributes, $shortcode_options, do_shortcode($content_if));
+		$span_if = _geoip_detect2_create_placeholder('span', $span_attributes, $shortcode_options, do_shortcode($content_if));
 
 		$shortcode_options['parsed']['not'] = ($shortcode_options['parsed']['not'] === 1 ? 0 : 1); // negate
-		$span_else = _geoip_detect2_create_placeholder($span_tagname, $span_attributes, $shortcode_options, do_shortcode($content_else));
+		$span_else = _geoip_detect2_create_placeholder('span', $span_attributes, $shortcode_options, do_shortcode($content_else));
 		
 		return $span_if . $span_else;
 	} else {
@@ -153,7 +155,7 @@ function geoip_detect2_shortcode_parse_conditions_from_attributes(array $attr, b
 
 
 	foreach ($attributeNames as $shortcodeParamName => $maxmindName) {
-		if (!empty($attr[$shortcodeParamName])) {
+		if (isset($attr[$shortcodeParamName])) {
 			$condition = [
 				'p' => $maxmindName,
 				'v' => geoip_detect2_shortcode_prepare_values($attr[$shortcodeParamName]),
@@ -166,14 +168,14 @@ function geoip_detect2_shortcode_parse_conditions_from_attributes(array $attr, b
 	}
 
 	// Custom property
-	if (!empty($attr['property'])) {
-		if (!empty($attr['property_value'])) {
+	if (isset($attr['property'])) {
+		if (isset($attr['property_value'])) {
 			$condition = [
 				'p' => $attr['property'],
 				'v' => geoip_detect2_shortcode_prepare_values($attr['property_value']),
 			];
 			$conditions[] = $condition;			
-		} else if (!empty($attr['not_property_value'])) {
+		} else if (isset($attr['not_property_value'])) {
 			$condition = [
 				'p' => $attr['property'],
 				'v' => geoip_detect2_shortcode_prepare_values($attr['not_property_value']),
@@ -191,6 +193,7 @@ function geoip_detect2_shortcode_parse_conditions_from_attributes(array $attr, b
 function geoip_detect2_shortcode_prepare_values(string $value) : string {
 	// Parse User Input Values of Attribute
 	$attributeValuesArray = explode(',', $value);
+	
 	$attributeValuesArray = array_map('trim', $attributeValuesArray);
 	$attributeValuesArray = array_map('mb_strtolower', $attributeValuesArray);
 
@@ -230,7 +233,7 @@ function geoip_detect2_shortcode_evaluate_conditions(array $parsed, \GeoIp2\Mode
 			} else {
 				$values = [ $value ];
 			}
-	
+
 			$subConditionMatching = geoip_detect2_shortcode_check_subcondition($condition['v'], $values);
 	
 		} catch (\Exception $e) {
@@ -263,13 +266,22 @@ function geoip_detect2_shortcode_evaluate_conditions(array $parsed, \GeoIp2\Mode
  * @see ./js/shortcodes.js : function geoip_detect2_shortcode_check_subcondition()
  */
 function geoip_detect2_shortcode_check_subcondition(string $expectedValues, array $actualValues) : bool {
-	if ($actualValues[0] === true) {
-		$actualValues = ['true', 'yes', 'y', '1'];
-	} else if ($actualValues[0] === false) {
-		$actualValues = ['false', 'no', 'n', '0', ''];
+	if (isset($actualValues[0])) {
+		if ($actualValues[0] === true) {
+			$actualValues = ['true', 'yes', 'y', '1'];
+		} else if ($actualValues[0] === false) {
+			$actualValues = ['false', 'no', 'n', '0', ''];
+		}
 	}
-
+	
 	$expectedValues = explode(',', $expectedValues);
+
+	if (in_array("", $expectedValues)) {
+		// Value is not defined in record?
+		if (count($actualValues) === 0) { 
+			return true;
+		}
+	}
 
 	// Compare case-insensitively
 	$actualValues = array_map('mb_strtolower', $actualValues);
